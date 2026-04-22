@@ -1,0 +1,58 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+  ],
+  "settings": {
+    "cSpell.ignorePaths": [
+      "**.lock",
+      "**.toml",
+      ".git/objects",
+      ".vscode",
+      ".vscode-insiders",
+      "node_modules/**",
+      "package-lock.json",
+      "package.json",
+      "settings.json",
+      "vscode-extension",
+    ],
+    "cSpell.spellCheckOnlyWorkspaceFiles": true,
+    "cSpell.words": [
+      "chrono",
+      "hasher",
+      "icns",
+      "iconify",
+      "imageops",
+      "jsxs",
+      "lanczos",
+      "lucide",
+      "moji",
+      "pdfium",
+      "rusqlite",
+      "tailwindcss",
+      "tauri",
+      "uncategorized",
+      "unerasable",
+      "vframes",
+      "vite",
+      "webm",
+    ],
+    "files.associations": {
+      "*.css": "tailwindcss"
+    },
+    "prettier.printWidth": 180,
+    "prettier.semi": false,
+    "prettier.singleQuote": true,
+    "prettier.tabWidth": 2,
+    "prettier.trailingComma": "all",
+    "tailwindCSS.classAttributes": [
+      "class",
+      ".*ClassName(s)?",
+      ".*css(List)?",
+    ],
+    "tailwindCSS.experimental.classRegex": [
+      ["\\s*(?::\\s*[^=]+)?\\s*=\\s*([^;]*);", "['\"`]([^'\"`]*)['\"`]"]
+    ],
+  }
+}

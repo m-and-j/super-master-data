@@ -1,0 +1,3 @@
+[submodule "mj.js"]
+	path = mj.js
+	url = git@github.com:m-and-j/mj.js.git
