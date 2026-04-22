@@ -19,10 +19,9 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@mj/*": ["mj.js/src/*"],
+      "@/*": ["./src/*"],
+      "@mj/*": ["./mj.js/src/*"],
     },
     "jsx": "react-jsx",
     "jsxImportSource": "@mj/jsx",
