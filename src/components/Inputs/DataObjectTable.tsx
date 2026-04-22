@@ -1,7 +1,7 @@
 import CellHeader from '@/components/Inputs/CellHeader'
 import DataObjectRow from '@/components/Inputs/DataObjectRow'
 import { DataObjectColumn } from '@/systems/types'
-import { formatCSS, MJ, MJCustomElementWithProps, Reference } from '@mj/jsx'
+import { formatCSS, MJ, MJCustomElement, Reference } from '@mj/jsx'
 
 interface Props {
   columns?: DataObjectColumn[]
@@ -12,13 +12,8 @@ interface Props {
 /**
  * データオブジェクトテーブル
  */
-export default class DataObjectTable extends MJCustomElementWithProps<Props>()(HTMLDivElement) {
+export default class DataObjectTable extends MJCustomElement<Props>()(HTMLDivElement) {
   private columns: DataObjectColumn[] = []
-
-  /** JSX補完用 */
-  constructor(_props: Props) {
-    super()
-  }
 
   connectedCallback() {
     const { className } = this.props

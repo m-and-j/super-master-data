@@ -1,6 +1,6 @@
 import TabPanel from '@/components/Controllers/TabPanel'
 import { regulationEscape } from '@/utilities/helper'
-import { formatCSS, MJ, MJCustomElementWithProps, ref, Reference } from '@mj/jsx'
+import { formatCSS, MJ, MJCustomElement, ref, Reference } from '@mj/jsx'
 import { MJRouter } from '@mj/router'
 
 interface Props extends MJ.CEProps<TabItem> {
@@ -13,15 +13,10 @@ interface Props extends MJ.CEProps<TabItem> {
 /**
  * タブバー
  */
-export default class TabItem extends MJCustomElementWithProps<Props>()(HTMLLabelElement) {
+export default class TabItem extends MJCustomElement<Props>()(HTMLLabelElement) {
   private radio: Reference<HTMLInputElement> = ref()
   private labelDiv: Reference<HTMLDivElement> = ref()
   private path?: string
-
-  /** JSX補完用 */
-  constructor(_props: Props) {
-    super()
-  }
 
   connectedCallback() {
     this.path = this.props.path
@@ -29,7 +24,7 @@ export default class TabItem extends MJCustomElementWithProps<Props>()(HTMLLabel
     this.onmousedown = (e: MouseEvent) => TabPanel.instance.remove(e, this)
   }
 
-  createNode({ path, defaultActive, children }: Props) {
+  createNode({ defaultActive, children }: Props) {
     return (
       <>
         <input
