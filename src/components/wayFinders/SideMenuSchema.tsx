@@ -12,8 +12,8 @@ interface Props {
 export default class SideMenuSchema extends MJComponent<Props> {
   createNode({ name }: Props) {
     const projectInfo = preferences.getProjectInfo()
-    const newMode = !name && location.pathname !== '/enumerations-edit-json'
-    const jsonMode = location.pathname === '/enumerations-edit-json'
+    const newMode = !name && location.pathname !== '/schemas-edit-json'
+    const jsonMode = location.pathname === '/schemas-edit-json'
     return (
       <div class="flex-[0_0_300px] border-r-3 border-zinc-500 flex flex-col p-2">
         <MJLink to="/schemas" className={['px-1 text-blue-500', newMode ? 'bg-zinc-700' : '']}>

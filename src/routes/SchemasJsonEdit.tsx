@@ -2,10 +2,13 @@ import Button from '@/components/inputs/Button'
 import ShotMessage from '@/components/notifications/ShotMessage'
 import ToastMessage from '@/components/notifications/ToastMessage'
 import SideMenuSchema from '@/components/wayFinders/SideMenuSchema'
+import { DataClassification, DataClassificationType } from '@/systems/define'
 import preferences from '@/systems/preferences'
-import { DataObject, DataObjectColumn } from '@/systems/types'
+import { DataObject, DataObjectColumn, DataObjectColumnType } from '@/systems/types'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
+
+const VALID_CLASSIFICATIONS: DataClassificationType[] = Object.values(DataClassification)
 
 export default class SchemasJsonEdit extends MJPage {
   private jsonTextarea: Reference<HTMLTextAreaElement> = ref()
@@ -13,7 +16,7 @@ export default class SchemasJsonEdit extends MJPage {
   createNode() {
     const { name } = this.params
     const projectInfo = preferences.getProjectInfo()
-    const jsonText = JSON.stringify(projectInfo.enumerations, null, 2)
+    const jsonText = JSON.stringify(projectInfo.schemas, null, 2)
     return (
       <div class="flex items-stretch min-h-[calc(100vh-52px)]">
         {/** 左メニュー */}
@@ -23,7 +26,7 @@ export default class SchemasJsonEdit extends MJPage {
         <div class="flex-auto">
           <form class="flex flex-col p-2 gap-2 min-h-[calc(100vh-52px)]" onsubmit={(e) => this.saveJson(e)}>
             <div class="flex items-center justify-between">
-              <div class="text-sm text-zinc-400">列挙型JSONを直接編集します。</div>
+              <div class="text-sm text-zinc-400">スキーマJSONを直接編集します。</div>
               <Button type="submit" variant="primary" size="sm">
                 <div class="flex items-center justify-center gap-1">
                   <span class="icon-[ic--baseline-save] text-lg"></span>
@@ -96,6 +99,22 @@ export default class SchemasJsonEdit extends MJPage {
         }
         if (typeof column.description !== 'string') {
           return { ok: false, error: `[${i}].columns[${j}] description が string ではありません。` }
+        }
+        const type = column.type as Partial<DataObjectColumnType> | null | undefined
+        if (!type || typeof type !== 'object') {
+          return { ok: false, error: `[${i}].columns[${j}].type がオブジェクトではありません。` }
+        }
+        if (typeof type.classification !== 'string' || !VALID_CLASSIFICATIONS.includes(type.classification as DataClassificationType)) {
+          return { ok: false, error: `[${i}].columns[${j}].type.classification は ${VALID_CLASSIFICATIONS.join(' / ')} のいずれかである必要があります。` }
+        }
+        if (typeof type.array !== 'boolean') {
+          return { ok: false, error: `[${i}].columns[${j}].type.array が boolean ではありません。` }
+        }
+        if (typeof type.nullable !== 'boolean') {
+          return { ok: false, error: `[${i}].columns[${j}].type.nullable が boolean ではありません。` }
+        }
+        if (typeof type.typeName !== 'string') {
+          return { ok: false, error: `[${i}].columns[${j}].type.typeName が string ではありません。` }
         }
       }
     }
