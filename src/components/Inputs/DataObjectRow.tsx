@@ -36,7 +36,7 @@ export default class DataObjectRow extends MJComponent<Props> {
         <CellTypeCheckBox label="Array" checked={array} onchange={(val) => this.changeArray(val)} />
         <CellTypeCheckBox label="Nullable" checked={nullable} onchange={(val) => this.changeNullable(val)} />
         <CellText className="flex-2" value={description} onchange={(e) => this.changeDescription(e)} />
-        <Button className="flex-[0_0_50px]" variant="danger" size="min" onclick={() => deleteRow(index)}>
+        <Button className="flex-[0_0_50px]" variant="danger" size="none" onclick={() => deleteRow(index)}>
           <span class="icon-[ic--baseline-delete-forever] text-2xl"></span>
         </Button>
       </div>

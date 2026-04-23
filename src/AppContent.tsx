@@ -4,9 +4,11 @@ import ShotMessage from '@/components/notifications/ShotMessage'
 import ToastMessage from '@/components/notifications/ToastMessage'
 import NavigationTab from '@/components/wayFinders/NavigationTab'
 import Enumerations from '@/routes/Enumerations'
+import EnumerationsJsonEdit from '@/routes/EnumerationsJsonEdit'
 import Home from '@/routes/Home'
 import MasterData from '@/routes/MasterData'
 import Schemas from '@/routes/Schemas'
+import SchemasJsonEdit from '@/routes/SchemasJsonEdit'
 import Tables from '@/routes/Tables'
 import { MJComponent } from '@mj/jsx'
 import { MJRouter } from '@mj/router'
@@ -39,10 +41,13 @@ export default class AppContent extends MJComponent {
             { path: '/tables', Page: Tables },
             { path: '/schemas', Page: Schemas },
             { path: '/schemas/{name}', Page: Schemas },
+            { path: '/schemas-edit-json', Page: SchemasJsonEdit },
             { path: '/enumerations', Page: Enumerations },
             { path: '/enumerations/{name}', Page: Enumerations },
+            { path: '/enumerations-edit-json', Page: EnumerationsJsonEdit },
             { path: '/master-data', Page: MasterData },
           ]}
+          debug
         />
         <ConfirmModal />
         <LoadingMessage />

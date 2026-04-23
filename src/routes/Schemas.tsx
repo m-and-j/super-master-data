@@ -1,11 +1,12 @@
 import Button from '@/components/inputs/Button'
 import DataObjectTable from '@/components/inputs/DataObjectTable'
 import InputText from '@/components/inputs/InputText'
+import SideMenuSchema from '@/components/wayFinders/SideMenuSchema'
 import preferences from '@/systems/preferences'
 import { DataObject } from '@/systems/types'
 import { FormDataEx } from '@/utilities/helper-frontend'
 import { ref, Reference } from '@mj/jsx'
-import { MJLink, MJPage, MJRouter } from '@mj/router'
+import { MJPage, MJRouter } from '@mj/router'
 
 export default class Schemas extends MJPage {
   private targetSchema?: DataObject
@@ -17,21 +18,9 @@ export default class Schemas extends MJPage {
     this.targetSchema = projectInfo.schemas.find((s) => s.name === name)
     return (
       <div class="flex items-stretch min-h-[calc(100vh-52px)]">
-        <div class="flex-[0_0_200px] border-r-3 border-zinc-500 flex flex-col p-2">
-          <div class={['px-1', name ? '' : 'bg-zinc-700']}>
-            <MJLink to="/schemas" className="text-blue-500">
-              新規スキーマ
-            </MJLink>
-          </div>
-          <hr class="my-3 border-zinc-500" />
-          {projectInfo.schemas.map((s) => (
-            <div class={['px-1', s.name === name ? 'bg-zinc-700' : '']}>
-              <MJLink to={`/schemas/${s.name}`} className="text-blue-500">
-                {s.name}
-              </MJLink>
-            </div>
-          ))}
-        </div>
+        {/** 左メニュー */}
+        <SideMenuSchema name={name} />
+
         <div class="flex-auto">
           <form onsubmit={(e) => this.register(e)}>
             <div class="flex items-center gap-2">

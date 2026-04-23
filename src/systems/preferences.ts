@@ -109,6 +109,22 @@ class Preferences {
     await this.save()
   }
 
+  /**
+   * スキーマリストを丸ごと置換する(JSON 直接編集用)。
+   */
+  async replaceSchemas(schemas: DataObject[]) {
+    this.projectInfo.schemas = schemas.sort((a, b) => a.name.localeCompare(b.name))
+    await this.save()
+  }
+
+  /**
+   * 列挙型リストを丸ごと置換する(JSON 直接編集用)。
+   */
+  async replaceEnumerations(enumerations: EnumerationObject[]) {
+    this.projectInfo.enumerations = enumerations.sort((a, b) => a.name.localeCompare(b.name))
+    await this.save()
+  }
+
   private setFilePath(path: string) {
     this.filePath = path
     localStorage.setItem(STORAGE_KEY, path)
