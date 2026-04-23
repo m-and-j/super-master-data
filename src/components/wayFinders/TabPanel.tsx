@@ -1,4 +1,4 @@
-import TabItem from '@/components/Controllers/TabItem'
+import TabItem from '@/components/wayFinders/TabItem'
 import { MouseButtonCode } from '@/systems/define'
 import { MJ, MJComponent, ref, Reference } from '@mj/jsx'
 import { MJRouter } from '@mj/router'

@@ -1,6 +1,10 @@
-import ScrollArea from '@/components/Controllers/ScrollArea'
-import TabItem from '@/components/Controllers/TabItem'
-import TabPanel from '@/components/Controllers/TabPanel'
+import ConfirmModal from '@/components/modals/ConfirmModal'
+import LoadingMessage from '@/components/notifications/LoadingMessage'
+import ShotMessage from '@/components/notifications/ShotMessage'
+import ToastMessage from '@/components/notifications/ToastMessage'
+import ScrollArea from '@/components/viewers/ScrollArea'
+import TabItem from '@/components/wayFinders/TabItem'
+import TabPanel from '@/components/wayFinders/TabPanel'
 import Enumerations from '@/routes/Enumerations'
 import Home from '@/routes/Home'
 import MasterData from '@/routes/MasterData'
@@ -66,6 +70,10 @@ export default class AppContent extends MJComponent {
             { path: '/master-data', Page: MasterData },
           ]}
         />
+        <ConfirmModal />
+        <LoadingMessage />
+        <ShotMessage />
+        <ToastMessage />
       </>
     )
   }

@@ -1,8 +1,9 @@
-import Button from '@/components/Inputs/Button'
-import DataObjectTable from '@/components/Inputs/DataObjectTable'
-import InputText from '@/components/Inputs/InputText'
+import Button from '@/components/inputs/Button'
+import DataObjectTable from '@/components/inputs/DataObjectTable'
+import InputText from '@/components/inputs/InputText'
 import preferences from '@/systems/preferences'
 import { DataObject } from '@/systems/types'
+import { FormDataEx } from '@/utilities/helper-frontend'
 import { ref, Reference } from '@mj/jsx'
 import { MJLink, MJPage, MJRouter } from '@mj/router'
 
@@ -66,9 +67,9 @@ export default class Schemas extends MJPage {
 
   register(event: SubmitEvent) {
     event.preventDefault()
-    const formData = new FormData(event.target as HTMLFormElement)
-    const name = (formData.get('name') as string) ?? ''
-    const description = (formData.get('description') as string) ?? ''
+    const formData = new FormDataEx(event)
+    const name = formData.getString('name', '')
+    const description = formData.getString('description', '')
     const columns = this.dataObjectTable.value?.getColumns() ?? []
     if (this.targetSchema) {
       preferences.updateSchema(this.targetSchema.name, { name, description, columns })

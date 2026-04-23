@@ -1,5 +1,5 @@
-import CellHeader from '@/components/Inputs/CellHeader'
-import DataObjectRow from '@/components/Inputs/DataObjectRow'
+import CellHeader from '@/components/inputs/CellHeader'
+import DataObjectRow from '@/components/inputs/DataObjectRow'
 import { DataObjectColumn } from '@/systems/types'
 import { formatCSS, MJ, MJCustomElement, Reference } from '@mj/jsx'
 

@@ -1,5 +1,5 @@
-import TabPanel from '@/components/Controllers/TabPanel'
-import { regulationEscape } from '@/utilities/helper'
+import TabPanel from '@/components/wayFinders/TabPanel'
+import { regulationEscape } from '@/utilities/helper-text'
 import { formatCSS, MJ, MJCustomElement, ref, Reference } from '@mj/jsx'
 import { MJRouter } from '@mj/router'
 
