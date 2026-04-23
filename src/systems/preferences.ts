@@ -30,8 +30,6 @@ class Preferences {
             this.filePath = savedPath
           } catch (e) {
             console.error('前回のプロジェクトファイルの読み込みに失敗しました:', e)
-            // 読み込めなかったパスは保持するが、プロジェクトは空のまま
-            this.filePath = savedPath
           }
         }
         resolve()
@@ -49,6 +47,10 @@ class Preferences {
    */
   getFilePath() {
     return this.filePath
+  }
+
+  existsFile() {
+    return Boolean(this.filePath)
   }
 
   /**

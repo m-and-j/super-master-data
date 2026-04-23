@@ -2,9 +2,7 @@ import ConfirmModal from '@/components/modals/ConfirmModal'
 import LoadingMessage from '@/components/notifications/LoadingMessage'
 import ShotMessage from '@/components/notifications/ShotMessage'
 import ToastMessage from '@/components/notifications/ToastMessage'
-import ScrollArea from '@/components/viewers/ScrollArea'
-import TabItem from '@/components/wayFinders/TabItem'
-import TabPanel from '@/components/wayFinders/TabPanel'
+import NavigationTab from '@/components/wayFinders/NavigationTab'
 import Enumerations from '@/routes/Enumerations'
 import Home from '@/routes/Home'
 import MasterData from '@/routes/MasterData'
@@ -25,39 +23,15 @@ export default class AppContent extends MJComponent {
     return (
       <>
         {/** Navigation Tab */}
-        <div class="flex">
-          <ScrollArea x className="flex-auto">
-            <TabPanel>
-              <TabItem path="/" unerasable>
-                <span class="icon-[ic--baseline-home] text-2xl"></span>
-              </TabItem>
-              <TabItem path="/tables" group="/tables" unerasable>
-                <div class="flex items-center gap-1">
-                  <span class="icon-[ic--outline-table-chart] text-xl"></span>
-                  テーブル
-                </div>
-              </TabItem>
-              <TabItem path="/schemas" group="/schemas" unerasable>
-                <div class="flex items-center gap-1">
-                  <span class="icon-[ic--outline-schema] text-xl"></span>
-                  スキーマ
-                </div>
-              </TabItem>
-              <TabItem path="/enumerations" unerasable>
-                <div class="flex items-center gap-1">
-                  <span class="icon-[ic--round-format-list-bulleted] text-xl"></span>
-                  列挙型
-                </div>
-              </TabItem>
-              <TabItem path="/master-data" unerasable>
-                <div class="flex items-center gap-1">
-                  <span class="icon-[ic--outline-dataset] text-xl"></span>
-                  マスターデータ
-                </div>
-              </TabItem>
-            </TabPanel>
-          </ScrollArea>
-        </div>
+        <NavigationTab
+          destinations={[
+            { path: '/', icon: 'icon-[ic--baseline-home] text-2xl', unerasable: true, always: true },
+            { path: '/tables', group: '/tables', title: 'テーブル', icon: 'icon-[ic--outline-table-chart] text-xl', unerasable: true },
+            { path: '/schemas', group: '/schemas', title: 'スキーマ', icon: 'icon-[ic--outline-schema] text-xl', unerasable: true },
+            { path: '/enumerations', group: '/enumerations', title: '列挙型', icon: 'icon-[ic--round-format-list-bulleted] text-xl', unerasable: true },
+            { path: '/master-data', group: '/master-data', title: 'マスターデータ', icon: 'icon-[ic--outline-dataset] text-xl', unerasable: true },
+          ]}
+        />
 
         <MJRouter
           routes={[

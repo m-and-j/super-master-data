@@ -1,6 +1,7 @@
 import Button from '@/components/inputs/Button'
 import InputText from '@/components/inputs/InputText'
 import ToastMessage from '@/components/notifications/ToastMessage'
+import TabPanel from '@/components/wayFinders/NavigationTab'
 import preferences from '@/systems/preferences'
 import { FormDataEx } from '@/utilities/helper-frontend'
 import { MJPage, MJRouter } from '@mj/router'
@@ -15,8 +16,6 @@ export default class Home extends MJPage {
 
     return (
       <div class="mt-10 mx-auto max-w-3xl flex flex-col gap-6 p-4">
-        <h1 class="text-2xl">Home</h1>
-
         {/** プロジェクトファイル */}
         <section class="border border-zinc-600 rounded-md p-4 flex flex-col gap-3">
           <h2 class="font-semibold">プロジェクトファイル</h2>
@@ -29,15 +28,15 @@ export default class Home extends MJPage {
           <div class="flex justify-end gap-2">
             <Button variant="secondary" size="sm" onclick={() => this.onClickOpen()}>
               <span class="icon-[ic--baseline-folder-open] text-lg"></span>
-              開く...
+              開く
             </Button>
             <Button variant="success" size="sm" onclick={() => this.onClickNew()}>
               <span class="icon-[ic--baseline-add] text-lg"></span>
-              新規作成...
+              新規作成
             </Button>
             <Button variant="primary" size="sm" onclick={() => this.onClickSaveAs()} disabled={!filePath}>
               <span class="icon-[ic--baseline-save-as] text-lg"></span>
-              別名で保存...
+              別名で保存
             </Button>
           </div>
         </section>
@@ -80,7 +79,9 @@ export default class Home extends MJPage {
     if (typeof selected === 'string') {
       try {
         await preferences.openProject(selected)
+        TabPanel.instance.render()
         MJRouter.instance.reload()
+        ToastMessage.instance.open('success', `プロジェクトファイルを読み込みました。`)
       } catch (e) {
         console.error(e)
         ToastMessage.instance.open('danger', `プロジェクトファイルの読み込みに失敗しました。\n${selected}`)
@@ -97,6 +98,7 @@ export default class Home extends MJPage {
     if (typeof selected === 'string') {
       try {
         await preferences.createNewProject(selected)
+        TabPanel.instance.render()
         MJRouter.instance.reload()
       } catch (e) {
         console.error(e)
@@ -115,6 +117,7 @@ export default class Home extends MJPage {
     if (typeof selected === 'string') {
       try {
         await preferences.saveAs(selected)
+        TabPanel.instance.render()
         MJRouter.instance.reload()
       } catch (e) {
         console.error(e)
