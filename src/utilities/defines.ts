@@ -29,3 +29,11 @@ export const VariantIconClassNames = Object.values(VariantIconClassName)
  */
 export const Sizes = ['none', 'xs', 'sm', 'md', 'lg'] as const
 export type SizeType = (typeof Sizes)[number]
+
+/**
+ * ローカルストレージ用キー定義
+ */
+export const LocalStorageKeys = {
+  Theme: 'super-master-data.theme',
+  FilePath: 'super-master-data.filePath',
+}

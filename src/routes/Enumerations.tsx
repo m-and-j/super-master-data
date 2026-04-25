@@ -1,6 +1,7 @@
 import Button from '@/components/inputs/Button'
 import EnumerationTable from '@/components/inputs/EnumerationTable'
 import InputText from '@/components/inputs/InputText'
+import ConfirmModal from '@/components/modals/ConfirmModal'
 import ToastMessage from '@/components/notifications/ToastMessage'
 import SideMenuEnumeration from '@/components/wayFinders/SideMenuEnumeration'
 import { ColumnParams } from '@/systems/define'
@@ -36,19 +37,28 @@ export default class Enumerations extends MJPage {
                 <InputText name="description" placeholder="内容" value={this.targetEnumeration?.description} />
               </div>
             </div>
-            <div class="mt-6 mx-2 flex justify-between">
+            <div class="mt-6 mx-2 flex gap-2">
               <Button variant="success" size="sm" onclick={() => this.dataObjectTable.value?.addRow()}>
                 <div class="flex items-center justify-center gap-1">
                   <span class="icon-[ic--baseline-add] text-lg"></span>
                   項目追加
                 </div>
               </Button>
+              <div class="flex-auto"></div>
               <Button type="submit" variant="primary" size="sm">
                 <div class="flex items-center justify-center gap-1">
                   <span class="icon-[ic--baseline-save] text-lg"></span>
                   保存
                 </div>
               </Button>
+              {this.targetEnumeration && (
+                <Button type="button" variant="danger" size="sm" onclick={() => this.confirmDelete()}>
+                  <div class="flex items-center justify-center gap-1">
+                    <span class="icon-[ic--baseline-delete] text-lg"></span>
+                    削除
+                  </div>
+                </Button>
+              )}
             </div>
             <EnumerationTable items={this.targetEnumeration?.items} className="mt-2" ref={this.dataObjectTable} />
           </form>
@@ -57,7 +67,7 @@ export default class Enumerations extends MJPage {
     )
   }
 
-  private register(event: SubmitEvent) {
+  private async register(event: SubmitEvent) {
     event.preventDefault()
     const formData = new FormDataEx(event)
     const name = formData.getString('name', '')
@@ -73,12 +83,36 @@ export default class Enumerations extends MJPage {
         description: itemDescriptions[i],
       })
     }
-    if (this.targetEnumeration) {
-      preferences.updateEnumeration(this.targetEnumeration.name, { name, description, items })
-    } else {
-      preferences.addEnumeration({ name, description, items })
+    try {
+      if (this.targetEnumeration) {
+        await preferences.updateEnumeration(this.targetEnumeration.name, { name, description, items })
+        MJRouter.instance.reload()
+      } else {
+        await preferences.addEnumeration({ name, description, items })
+        MJRouter.instance.push(`/enumerations/${name}`)
+      }
+      ToastMessage.instance.open('success', '保存しました。')
+    } catch (e) {
+      if (e instanceof Error) {
+        ToastMessage.instance.open('danger', e.message)
+      }
     }
-    MJRouter.instance.reload()
-    ToastMessage.instance.open('success', '保存しました。')
+  }
+
+  private confirmDelete() {
+    if (this.targetEnumeration) {
+      const targetName = this.targetEnumeration.name
+      ConfirmModal.instance?.open(`「${targetName}」を削除します。よろしいですか?`, {
+        headerTitle: '削除確認',
+        positive: { label: '削除', variant: 'danger', callback: () => this.executeDelete(targetName) },
+        negative: { label: 'キャンセル', callback: () => {} },
+      })
+    }
+  }
+
+  private async executeDelete(name: string) {
+    await preferences.deleteEnumeration(name)
+    MJRouter.instance.push('/enumerations')
+    ToastMessage.instance.open('success', `「${name}」を削除しました。`)
   }
 }

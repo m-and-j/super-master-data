@@ -11,6 +11,7 @@ import Schemas from '@/routes/Schemas'
 import SchemasJsonEdit from '@/routes/SchemasJsonEdit'
 import Tables from '@/routes/Tables'
 import TablesJsonEdit from '@/routes/TablesJsonEdit'
+import { LocalStorageKeys } from '@/utilities/defines'
 import { MJComponent } from '@mj/jsx'
 import { MJRouter } from '@mj/router'
 
@@ -58,5 +59,11 @@ export default class AppContent extends MJComponent {
         <ToastMessage />
       </>
     )
+  }
+
+  async afterRender() {
+    const pcDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const theme = localStorage.getItem(LocalStorageKeys.Theme) ?? (pcDark ? 'dark' : 'light')
+    document.documentElement.dataset.theme = theme
   }
 }

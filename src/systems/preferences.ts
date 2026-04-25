@@ -1,7 +1,6 @@
 import { DataObject, EnumerationObject, ProjectInfo } from '@/systems/types'
+import { LocalStorageKeys } from '@/utilities/defines'
 import { readFile, writeFile } from '@tauri-apps/plugin-fs'
-
-const STORAGE_KEY = 'super-master-data.filePath'
 
 const createEmptyProject = (): ProjectInfo => ({
   name: '',
@@ -23,7 +22,7 @@ class Preferences {
   async load() {
     if (!this.loadingPromise) {
       this.loadingPromise = new Promise<void>(async (resolve) => {
-        const savedPath = localStorage.getItem(STORAGE_KEY) ?? undefined
+        const savedPath = localStorage.getItem(LocalStorageKeys.FilePath) ?? undefined
         if (savedPath) {
           try {
             await this.readProjectFrom(savedPath)
@@ -98,9 +97,13 @@ class Preferences {
    * @param schema
    */
   async addTable(table: DataObject) {
-    this.projectInfo.tables.push(table)
-    this.projectInfo.tables.sort((a, b) => a.name.localeCompare(b.name))
-    await this.save()
+    if (this.projectInfo.tables.some((t) => t.name === table.name)) {
+      throw new Error('すでに同名のテーブルが存在します。')
+    } else {
+      this.projectInfo.tables.push(table)
+      this.projectInfo.tables.sort((a, b) => a.name.localeCompare(b.name))
+      await this.save()
+    }
   }
 
   /**
@@ -114,13 +117,26 @@ class Preferences {
   }
 
   /**
+   * テーブルデータ削除
+   * @param name
+   */
+  async deleteTable(name: string) {
+    this.projectInfo.tables = this.projectInfo.tables.filter((t) => t.name !== name)
+    await this.save()
+  }
+
+  /**
    * スキーマ追加
    * @param schema
    */
   async addSchema(schema: DataObject) {
-    this.projectInfo.schemas.push(schema)
-    this.projectInfo.schemas.sort((a, b) => a.name.localeCompare(b.name))
-    await this.save()
+    if (this.projectInfo.schemas.some((s) => s.name === schema.name)) {
+      throw new Error('すでに同名のスキーマが存在します。')
+    } else {
+      this.projectInfo.schemas.push(schema)
+      this.projectInfo.schemas.sort((a, b) => a.name.localeCompare(b.name))
+      await this.save()
+    }
   }
 
   /**
@@ -134,13 +150,26 @@ class Preferences {
   }
 
   /**
+   * スキーマ削除
+   * @param name
+   */
+  async deleteSchema(name: string) {
+    this.projectInfo.schemas = this.projectInfo.schemas.filter((s) => s.name !== name)
+    await this.save()
+  }
+
+  /**
    * 列挙型追加
    * @param enumeration
    */
   async addEnumeration(enumeration: EnumerationObject) {
-    this.projectInfo.enumerations.push(enumeration)
-    this.projectInfo.enumerations.sort((a, b) => a.name.localeCompare(b.name))
-    await this.save()
+    if (this.projectInfo.enumerations.some((e) => e.name === enumeration.name)) {
+      throw new Error('すでに同名の列挙型が存在します。')
+    } else {
+      this.projectInfo.enumerations.push(enumeration)
+      this.projectInfo.enumerations.sort((a, b) => a.name.localeCompare(b.name))
+      await this.save()
+    }
   }
 
   /**
@@ -150,6 +179,15 @@ class Preferences {
    */
   async updateEnumeration(name: string, enumeration: EnumerationObject) {
     this.projectInfo.enumerations = this.projectInfo.enumerations.map((e) => (e.name === name ? enumeration : e))
+    await this.save()
+  }
+
+  /**
+   * 列挙型削除
+   * @param name
+   */
+  async deleteEnumeration(name: string) {
+    this.projectInfo.enumerations = this.projectInfo.enumerations.filter((e) => e.name !== name)
     await this.save()
   }
 
@@ -179,7 +217,7 @@ class Preferences {
 
   private setFilePath(path: string) {
     this.filePath = path
-    localStorage.setItem(STORAGE_KEY, path)
+    localStorage.setItem(LocalStorageKeys.FilePath, path)
   }
 
   private async readProjectFrom(path: string) {
