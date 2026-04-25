@@ -6,9 +6,11 @@ export interface ProjectInfo {
   tables: DataObject[]
   schemas: DataObject[]
   enumerations: EnumerationObject[]
+  outputs: OutputProject[]
 }
 
 export interface DataObject {
+  uuid: string
   name: string
   description: string
   columns: DataObjectColumn[]
@@ -29,6 +31,7 @@ export interface DataObjectColumnType {
 }
 
 export interface EnumerationObject {
+  uuid: string
   name: string
   description: string
   items: EnumerationItem[]
@@ -38,4 +41,20 @@ export interface EnumerationItem {
   label: string
   value: number
   description: string
+}
+
+export interface OutputProject {
+  uuid: string
+  name: string
+  description: string
+  dataPath: string
+  codeExtension: string
+  entity: OutputItem
+  schema: OutputItem
+  enumeration: OutputItem
+}
+
+export interface OutputItem {
+  path: string
+  template: string
 }

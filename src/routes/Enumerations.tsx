@@ -16,13 +16,13 @@ export default class Enumerations extends MJPage {
   private dataObjectTable: Reference<EnumerationTable> = ref()
 
   createNode() {
-    const { name } = this.params
+    const { uuid } = this.params
     const projectInfo = preferences.getProjectInfo()
-    this.targetEnumeration = projectInfo.enumerations.find((e) => e.name === name)
+    this.targetEnumeration = projectInfo.enumerations.find((e) => e.uuid === uuid)
     return (
       <div class="flex items-stretch min-h-[calc(100vh-52px)]">
         {/** 左メニュー */}
-        <SideMenuEnumeration name={name} />
+        <SideMenuEnumeration uuid={uuid} />
 
         {/** コンテンツ部分 */}
         <div class="flex-auto">
@@ -85,10 +85,10 @@ export default class Enumerations extends MJPage {
     }
     try {
       if (this.targetEnumeration) {
-        await preferences.updateEnumeration(this.targetEnumeration.name, { name, description, items })
+        await preferences.updateEnumeration(this.targetEnumeration.uuid, name, description, items)
         MJRouter.instance.reload()
       } else {
-        await preferences.addEnumeration({ name, description, items })
+        await preferences.addEnumeration(name, description, items)
         MJRouter.instance.push(`/enumerations/${name}`)
       }
       ToastMessage.instance.open('success', '保存しました。')
@@ -101,18 +101,20 @@ export default class Enumerations extends MJPage {
 
   private confirmDelete() {
     if (this.targetEnumeration) {
-      const targetName = this.targetEnumeration.name
-      ConfirmModal.instance?.open(`「${targetName}」を削除します。よろしいですか?`, {
+      const { uuid, name } = this.targetEnumeration
+      ConfirmModal.instance?.open(`「${name}」を削除します。よろしいですか?`, {
         headerTitle: '削除確認',
-        positive: { label: '削除', variant: 'danger', callback: () => this.executeDelete(targetName) },
+        positive: {
+          label: '削除',
+          variant: 'danger',
+          callback: async () => {
+            await preferences.deleteEnumeration(uuid)
+            MJRouter.instance.push('/enumerations')
+            ToastMessage.instance.open('success', `「${name}」を削除しました。`)
+          },
+        },
         negative: { label: 'キャンセル', callback: () => {} },
       })
     }
-  }
-
-  private async executeDelete(name: string) {
-    await preferences.deleteEnumeration(name)
-    MJRouter.instance.push('/enumerations')
-    ToastMessage.instance.open('success', `「${name}」を削除しました。`)
   }
 }

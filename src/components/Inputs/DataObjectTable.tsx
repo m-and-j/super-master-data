@@ -4,7 +4,7 @@ import { DataObjectColumn } from '@/systems/types'
 import { formatCSS, MJ, MJCustomElement, Reference } from '@mj/jsx'
 
 interface Props {
-  schemaName: string
+  schemaName?: string
   columns?: DataObjectColumn[]
   className?: MJ.ClassProp
   ref?: Reference<DataObjectTable>
@@ -51,7 +51,6 @@ export default class DataObjectTable extends MJCustomElement<Props>()(HTMLDivEle
   }
 
   async addRow() {
-    console.log(this.columns)
     this.columns.push({ name: '', label: '', type: { classification: 'scalar', typeName: 'int', array: false, nullable: false }, description: '' })
     await this.render()
   }

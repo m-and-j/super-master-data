@@ -1,50 +1,41 @@
 import Button from '@/components/inputs/Button'
-import DataObjectTable from '@/components/inputs/DataObjectTable'
 import InputText from '@/components/inputs/InputText'
 import ConfirmModal from '@/components/modals/ConfirmModal'
 import ToastMessage from '@/components/notifications/ToastMessage'
-import SideMenuTable from '@/components/wayFinders/SideMenuTable'
+import SideMenuOutput from '@/components/wayFinders/SideMenuOutput'
 import preferences from '@/systems/preferences'
-import { DataObject } from '@/systems/types'
+import { OutputProject } from '@/systems/types'
 import { FormDataEx } from '@/utilities/helper-frontend'
-import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
 
-export default class Tables extends MJPage {
-  private targetTable?: DataObject
-  private dataObjectTable: Reference<DataObjectTable> = ref()
+export default class Outputs extends MJPage {
+  private targetOutput?: OutputProject
 
   createNode() {
     const { uuid } = this.params
     const projectInfo = preferences.getProjectInfo()
-    const targetTable = projectInfo.tables.find((t) => t.uuid === uuid)
-    if (targetTable) {
-      this.targetTable = JSON.parse(JSON.stringify(targetTable))
+    const targetOutput = projectInfo.outputs.find((s) => s.uuid === uuid)
+    if (targetOutput) {
+      this.targetOutput = JSON.parse(JSON.stringify(targetOutput))
     }
     return (
       <div class="flex items-stretch min-h-[calc(100vh-52px)]">
         {/** 左メニュー */}
-        <SideMenuTable uuid={uuid} />
+        <SideMenuOutput uuid={uuid} />
 
         <div class="flex-auto">
           <form onsubmit={(e) => this.register(e)}>
             <div class="flex items-center gap-2 mx-3">
-              <div class="flex-[0_0_100px] text-right">テーブル名</div>
+              <div class="flex-[0_0_100px] text-right">出力名</div>
               <div class="flex-[0_0_400px]">
-                <InputText name="name" placeholder="テーブル名" value={this.targetTable?.name} />
+                <InputText name="name" placeholder="出力名" value={this.targetOutput?.name} />
               </div>
               <div class="flex-[0_0_50px] text-right">説明</div>
               <div class="flex-auto">
-                <InputText name="description" placeholder="内容" value={this.targetTable?.description} />
+                <InputText name="description" placeholder="内容" value={this.targetOutput?.description} />
               </div>
             </div>
             <div class="mt-6 mx-2 flex gap-2">
-              <Button variant="success" size="sm" onclick={() => this.dataObjectTable.value?.addRow()}>
-                <div class="flex items-center justify-center gap-1">
-                  <span class="icon-[ic--baseline-add] text-lg"></span>
-                  項目追加
-                </div>
-              </Button>
               <div class="flex-auto"></div>
               <Button type="submit" variant="primary" size="sm">
                 <div class="flex items-center justify-center gap-1">
@@ -52,7 +43,7 @@ export default class Tables extends MJPage {
                   保存
                 </div>
               </Button>
-              {this.targetTable && (
+              {this.targetOutput && (
                 <Button type="button" variant="danger" size="sm" onclick={() => this.confirmDelete()}>
                   <div class="flex items-center justify-center gap-1">
                     <span class="icon-[ic--baseline-delete] text-lg"></span>
@@ -61,7 +52,6 @@ export default class Tables extends MJPage {
                 </Button>
               )}
             </div>
-            <DataObjectTable schemaName={this.targetTable?.name} columns={this.targetTable?.columns} className="mt-2" ref={this.dataObjectTable} />
           </form>
         </div>
       </div>
@@ -73,14 +63,13 @@ export default class Tables extends MJPage {
     const formData = new FormDataEx(event)
     const name = formData.getString('name', '')
     const description = formData.getString('description', '')
-    const columns = this.dataObjectTable.value?.getColumns() ?? []
     try {
-      if (this.targetTable) {
-        await preferences.updateTable(this.targetTable.uuid, name, description, columns)
+      if (this.targetOutput) {
+        await preferences.updateOutput(this.targetOutput.uuid, name, description, '', '', { path: '', template: '' }, { path: '', template: '' }, { path: '', template: '' })
         MJRouter.instance.reload()
       } else {
-        await preferences.addTable(name, description, columns)
-        MJRouter.instance.push(`/tables/${name}`)
+        await preferences.addOutput(name, description, '', '', { path: '', template: '' }, { path: '', template: '' }, { path: '', template: '' })
+        MJRouter.instance.push(`/outputs/${name}`)
       }
       ToastMessage.instance.open('success', '保存しました。')
     } catch (e) {
@@ -91,16 +80,16 @@ export default class Tables extends MJPage {
   }
 
   private confirmDelete() {
-    if (this.targetTable) {
-      const { uuid, name } = this.targetTable
+    if (this.targetOutput) {
+      const { uuid, name } = this.targetOutput
       ConfirmModal.instance?.open(`「${name}」を削除します。よろしいですか?`, {
         headerTitle: '削除確認',
         positive: {
           label: '削除',
           variant: 'danger',
           callback: async () => {
-            await preferences.deleteTable(uuid)
-            MJRouter.instance.push('/tables')
+            await preferences.deleteOutput(uuid)
+            MJRouter.instance.push('/outputs')
             ToastMessage.instance.open('success', `「${name}」を削除しました。`)
           },
         },

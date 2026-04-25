@@ -29,6 +29,7 @@
       "lucide",
       "moji",
       "pdfium",
+      "printshop",
       "rusqlite",
       "tailwindcss",
       "tauri",

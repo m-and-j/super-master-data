@@ -15,16 +15,16 @@ export default class Schemas extends MJPage {
   private dataObjectTable: Reference<DataObjectTable> = ref()
 
   createNode() {
-    const { name } = this.params
+    const { uuid } = this.params
     const projectInfo = preferences.getProjectInfo()
-    const targetSchema = projectInfo.schemas.find((s) => s.name === name)
+    const targetSchema = projectInfo.schemas.find((s) => s.uuid === uuid)
     if (targetSchema) {
       this.targetSchema = JSON.parse(JSON.stringify(targetSchema))
     }
     return (
       <div class="flex items-stretch min-h-[calc(100vh-52px)]">
         {/** 左メニュー */}
-        <SideMenuSchema name={name} />
+        <SideMenuSchema uuid={uuid} />
 
         <div class="flex-auto">
           <form onsubmit={(e) => this.register(e)}>
@@ -61,7 +61,7 @@ export default class Schemas extends MJPage {
                 </Button>
               )}
             </div>
-            <DataObjectTable schemaName={name} columns={this.targetSchema?.columns} className="mt-2" ref={this.dataObjectTable} />
+            <DataObjectTable schemaName={this.targetSchema?.name} columns={this.targetSchema?.columns} className="mt-2" ref={this.dataObjectTable} />
           </form>
         </div>
       </div>
@@ -76,10 +76,10 @@ export default class Schemas extends MJPage {
     const columns = this.dataObjectTable.value?.getColumns() ?? []
     try {
       if (this.targetSchema) {
-        await preferences.updateSchema(this.targetSchema.name, { name, description, columns })
+        await preferences.updateSchema(this.targetSchema.uuid, name, description, columns)
         MJRouter.instance.reload()
       } else {
-        await preferences.addSchema({ name, description, columns })
+        await preferences.addSchema(name, description, columns)
         MJRouter.instance.push(`/schemas/${name}`)
       }
       ToastMessage.instance.open('success', '保存しました。')
@@ -92,18 +92,20 @@ export default class Schemas extends MJPage {
 
   private confirmDelete() {
     if (this.targetSchema) {
-      const targetName = this.targetSchema.name
-      ConfirmModal.instance?.open(`「${targetName}」を削除します。よろしいですか?`, {
+      const { uuid, name } = this.targetSchema
+      ConfirmModal.instance?.open(`「${name}」を削除します。よろしいですか?`, {
         headerTitle: '削除確認',
-        positive: { label: '削除', variant: 'danger', callback: () => this.executeDelete(targetName) },
+        positive: {
+          label: '削除',
+          variant: 'danger',
+          callback: async () => {
+            await preferences.deleteSchema(uuid)
+            MJRouter.instance.push('/schemas')
+            ToastMessage.instance.open('success', `「${name}」を削除しました。`)
+          },
+        },
         negative: { label: 'キャンセル', callback: () => {} },
       })
     }
-  }
-
-  private async executeDelete(name: string) {
-    await preferences.deleteSchema(name)
-    MJRouter.instance.push('/schemas')
-    ToastMessage.instance.open('success', `「${name}」を削除しました。`)
   }
 }

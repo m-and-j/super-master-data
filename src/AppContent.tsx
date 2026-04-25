@@ -7,6 +7,8 @@ import Enumerations from '@/routes/Enumerations'
 import EnumerationsJsonEdit from '@/routes/EnumerationsJsonEdit'
 import Home from '@/routes/Home'
 import MasterData from '@/routes/MasterData'
+import Outputs from '@/routes/Outputs'
+import OUtputsJsonEdit from '@/routes/OutputsJsonEdit'
 import Schemas from '@/routes/Schemas'
 import SchemasJsonEdit from '@/routes/SchemasJsonEdit'
 import Tables from '@/routes/Tables'
@@ -30,6 +32,7 @@ export default class AppContent extends MJComponent {
         <NavigationTab
           destinations={[
             { path: '/', icon: 'icon-[ic--baseline-home] text-2xl', unerasable: true, always: true },
+            { path: '/outputs', group: '/outputs', title: '出力', icon: 'icon-[ic--outline-local-printshop] text-xl', unerasable: true },
             { path: '/tables', group: '/tables', title: 'テーブル', icon: 'icon-[ic--outline-table-chart] text-xl', unerasable: true },
             { path: '/schemas', group: '/schemas', title: 'スキーマ', icon: 'icon-[ic--outline-schema] text-xl', unerasable: true },
             { path: '/enumerations', group: '/enumerations', title: '列挙型', icon: 'icon-[ic--round-format-list-bulleted] text-xl', unerasable: true },
@@ -40,16 +43,19 @@ export default class AppContent extends MJComponent {
         <MJRouter
           routes={[
             { path: '/', Page: Home },
-            { path: '/tables', Page: Tables },
-            { path: '/tables/{name}', Page: Tables },
-            { path: '/tables-edit-json', Page: TablesJsonEdit },
-            { path: '/schemas', Page: Schemas },
-            { path: '/schemas/{name}', Page: Schemas },
-            { path: '/schemas-edit-json', Page: SchemasJsonEdit },
             { path: '/enumerations', Page: Enumerations },
-            { path: '/enumerations/{name}', Page: Enumerations },
+            { path: '/enumerations/{uuid}', Page: Enumerations },
             { path: '/enumerations-edit-json', Page: EnumerationsJsonEdit },
             { path: '/master-data', Page: MasterData },
+            { path: '/outputs', Page: Outputs },
+            { path: '/outputs/{uuid}', Page: Outputs },
+            { path: '/outputs-edit-json', Page: OUtputsJsonEdit },
+            { path: '/schemas', Page: Schemas },
+            { path: '/schemas/{uuid}', Page: Schemas },
+            { path: '/schemas-edit-json', Page: SchemasJsonEdit },
+            { path: '/tables', Page: Tables },
+            { path: '/tables/{uuid}', Page: Tables },
+            { path: '/tables-edit-json', Page: TablesJsonEdit },
           ]}
           debug
         />

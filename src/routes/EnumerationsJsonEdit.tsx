@@ -10,13 +10,12 @@ export default class EnumerationsJsonEdit extends MJPage {
   private jsonTextarea: Reference<HTMLTextAreaElement> = ref()
 
   createNode() {
-    const { name } = this.params
     const projectInfo = preferences.getProjectInfo()
     const jsonText = JSON.stringify(projectInfo.enumerations, null, 2)
     return (
       <div class="flex items-stretch min-h-[calc(100vh-52px)]">
         {/** 左メニュー */}
-        <SideMenuEnumeration name={name} />
+        <SideMenuEnumeration />
 
         {/** コンテンツ部分 */}
         <div class="flex-auto">
@@ -46,9 +45,9 @@ export default class EnumerationsJsonEdit extends MJPage {
   private async saveJson(event: SubmitEvent) {
     event.preventDefault()
     const text = this.jsonTextarea.value?.value ?? ''
-    const parsed = this.tryParseEnumerations(text)
+    const parsed = this.tryParse(text)
     if (parsed.ok) {
-      await preferences.replaceEnumerations(parsed.value)
+      await preferences.replace({ enumerations: parsed.value })
       ToastMessage.instance.open('success', 'JSON を保存しました。')
       MJRouter.instance.reload()
     } else {
@@ -59,7 +58,7 @@ export default class EnumerationsJsonEdit extends MJPage {
   /**
    * テキストを EnumerationObject[] としてパース&ざっくり形式チェック。
    */
-  private tryParseEnumerations(text: string): { ok: true; value: EnumerationObject[] } | { ok: false; error: string } {
+  private tryParse(text: string): { ok: true; value: EnumerationObject[] } | { ok: false; error: string } {
     let parsed: unknown
     try {
       parsed = JSON.parse(text)

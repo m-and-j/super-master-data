@@ -13,13 +13,12 @@ export default class TablesJsonEdit extends MJPage {
   private jsonTextarea: Reference<HTMLTextAreaElement> = ref()
 
   createNode() {
-    const { name } = this.params
     const projectInfo = preferences.getProjectInfo()
     const jsonText = JSON.stringify(projectInfo.tables, null, 2)
     return (
       <div class="flex items-stretch min-h-[calc(100vh-52px)]">
         {/** 左メニュー */}
-        <SideMenuTable name={name} />
+        <SideMenuTable />
 
         {/** コンテンツ部分 */}
         <div class="flex-auto">
@@ -49,9 +48,9 @@ export default class TablesJsonEdit extends MJPage {
   private async saveJson(event: SubmitEvent) {
     event.preventDefault()
     const text = this.jsonTextarea.value?.value ?? ''
-    const parsed = this.tryParseTables(text)
+    const parsed = this.tryParse(text)
     if (parsed.ok) {
-      await preferences.replaceTables(parsed.value)
+      await preferences.replace({ tables: parsed.value })
       ToastMessage.instance.open('success', 'JSON を保存しました。')
       MJRouter.instance.reload()
     } else {
@@ -62,7 +61,7 @@ export default class TablesJsonEdit extends MJPage {
   /**
    * テキストを DataObject[] としてパース&ざっくり形式チェック。
    */
-  private tryParseTables(text: string): { ok: true; value: DataObject[] } | { ok: false; error: string } {
+  private tryParse(text: string): { ok: true; value: DataObject[] } | { ok: false; error: string } {
     let parsed: unknown
     try {
       parsed = JSON.parse(text)

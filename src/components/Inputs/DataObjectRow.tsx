@@ -8,7 +8,7 @@ import { DataObjectColumn } from '@/systems/types'
 import { MJComponent, ref, Reference } from '@mj/jsx'
 
 interface Props {
-  schemaName: string
+  schemaName?: string
   index: number
   column: DataObjectColumn
   deleteRow: (index: number) => void

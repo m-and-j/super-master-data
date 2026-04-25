@@ -7,29 +7,29 @@ interface Props {
 }
 
 /**
- * サイドメニュー(列挙型)
+ * サイドメニュー(出力)
  */
-export default class SideMenuEnumeration extends MJComponent<Props> {
+export default class SideMenuOutput extends MJComponent<Props> {
   createNode({ uuid }: Props) {
     const projectInfo = preferences.getProjectInfo()
-    const newMode = !uuid && location.pathname !== '/enumerations-edit-json'
-    const jsonMode = location.pathname === '/enumerations-edit-json'
+    const newMode = !uuid && location.pathname !== '/outputs-edit-json'
+    const jsonMode = location.pathname === '/outputs-edit-json'
     return (
       <div class="flex-[0_0_300px] border-r-3 border-zinc-500 flex flex-col p-2">
-        <MJLink to="/enumerations" className={['px-1 text-blue-500', newMode ? 'bg-zinc-700' : '']}>
-          新規列挙型
+        <MJLink to="/outputs" className={['px-1 text-blue-500', newMode ? 'bg-zinc-700' : '']}>
+          新規出力設定
         </MJLink>
         <hr class="my-3 border-zinc-500" />
         <div class="flex flex-col h-[calc(100vh-170px)] overflow-y-scroll" style={{ scrollbarColor: '#888 transparent', scrollbarWidth: 'thin' }}>
-          {projectInfo.enumerations.map((e) => (
-            <MJLink to={`/enumerations/${e.uuid}`} className={['text-blue-500 px-1', e.uuid === uuid ? 'bg-zinc-700' : '']}>
+          {projectInfo.outputs.map((e) => (
+            <MJLink to={`/outputs/${e.uuid}`} className={['text-blue-500 px-1', e.uuid === uuid ? 'bg-zinc-700' : '']}>
               {e.name}
             </MJLink>
           ))}
           <div class="flex-auto" />
         </div>
         <hr class="my-3 border-zinc-500" />
-        <MJLink to="/enumerations-edit-json" className={['px-1 text-blue-500', jsonMode ? 'bg-zinc-700' : '']}>
+        <MJLink to="/outputs-edit-json" className={['px-1 text-blue-500', jsonMode ? 'bg-zinc-700' : '']}>
           JSON編集
         </MJLink>
       </div>

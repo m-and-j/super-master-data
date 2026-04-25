@@ -3,16 +3,16 @@ import { MJComponent } from '@mj/jsx'
 import { MJLink } from '@mj/router'
 
 interface Props {
-  name?: string
+  uuid?: string
 }
 
 /**
  * サイドメニュー(スキーマ)
  */
 export default class SideMenuSchema extends MJComponent<Props> {
-  createNode({ name }: Props) {
+  createNode({ uuid }: Props) {
     const projectInfo = preferences.getProjectInfo()
-    const newMode = !name && location.pathname !== '/schemas-edit-json'
+    const newMode = !uuid && location.pathname !== '/schemas-edit-json'
     const jsonMode = location.pathname === '/schemas-edit-json'
     return (
       <div class="flex-[0_0_300px] border-r-3 border-zinc-500 flex flex-col p-2">
@@ -22,7 +22,7 @@ export default class SideMenuSchema extends MJComponent<Props> {
         <hr class="my-3 border-zinc-500" />
         <div class="flex flex-col h-[calc(100vh-170px)] overflow-y-scroll" style={{ scrollbarColor: '#888 transparent', scrollbarWidth: 'thin' }}>
           {projectInfo.schemas.map((e) => (
-            <MJLink to={`/schemas/${e.name}`} className={['text-blue-500 px-1', e.name === name ? 'bg-zinc-700' : '']}>
+            <MJLink to={`/schemas/${e.uuid}`} className={['text-blue-500 px-1', e.uuid === uuid ? 'bg-zinc-700' : '']}>
               {e.name}
             </MJLink>
           ))}

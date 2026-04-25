@@ -13,13 +13,12 @@ export default class SchemasJsonEdit extends MJPage {
   private jsonTextarea: Reference<HTMLTextAreaElement> = ref()
 
   createNode() {
-    const { name } = this.params
     const projectInfo = preferences.getProjectInfo()
     const jsonText = JSON.stringify(projectInfo.schemas, null, 2)
     return (
       <div class="flex items-stretch min-h-[calc(100vh-52px)]">
         {/** 左メニュー */}
-        <SideMenuSchema name={name} />
+        <SideMenuSchema />
 
         {/** コンテンツ部分 */}
         <div class="flex-auto">
@@ -49,9 +48,9 @@ export default class SchemasJsonEdit extends MJPage {
   private async saveJson(event: SubmitEvent) {
     event.preventDefault()
     const text = this.jsonTextarea.value?.value ?? ''
-    const parsed = this.tryParseSchemas(text)
+    const parsed = this.tryParse(text)
     if (parsed.ok) {
-      await preferences.replaceSchemas(parsed.value)
+      await preferences.replace({ schemas: parsed.value })
       ToastMessage.instance.open('success', 'JSON を保存しました。')
       MJRouter.instance.reload()
     } else {
@@ -62,7 +61,7 @@ export default class SchemasJsonEdit extends MJPage {
   /**
    * テキストを DataObject[] としてパース&ざっくり形式チェック。
    */
-  private tryParseSchemas(text: string): { ok: true; value: DataObject[] } | { ok: false; error: string } {
+  private tryParse(text: string): { ok: true; value: DataObject[] } | { ok: false; error: string } {
     let parsed: unknown
     try {
       parsed = JSON.parse(text)
