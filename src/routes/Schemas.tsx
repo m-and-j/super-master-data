@@ -15,7 +15,10 @@ export default class Schemas extends MJPage {
   createNode() {
     const { name } = this.params
     const projectInfo = preferences.getProjectInfo()
-    this.targetSchema = projectInfo.schemas.find((s) => s.name === name)
+    const targetSchema = projectInfo.schemas.find((s) => s.name === name)
+    if (targetSchema) {
+      this.targetSchema = JSON.parse(JSON.stringify(targetSchema))
+    }
     return (
       <div class="flex items-stretch min-h-[calc(100vh-52px)]">
         {/** 左メニュー */}
@@ -47,7 +50,7 @@ export default class Schemas extends MJPage {
                 </div>
               </Button>
             </div>
-            <DataObjectTable columns={this.targetSchema?.columns} className="mt-2" ref={this.dataObjectTable} />
+            <DataObjectTable schemaName={name} columns={this.targetSchema?.columns} className="mt-2" ref={this.dataObjectTable} />
           </form>
         </div>
       </div>

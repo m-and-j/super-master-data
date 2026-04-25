@@ -37,6 +37,7 @@ export default class SchemasJsonEdit extends MJPage {
             <textarea
               ref={this.jsonTextarea}
               class="flex-auto w-full bg-zinc-800 border border-zinc-500 rounded-md p-2 font-mono text-sm leading-5 resize-none outline-none min-h-[70vh]"
+              style={{ scrollbarColor: '#888 transparent', scrollbarWidth: 'thin' }}
             >
               {jsonText}
             </textarea>

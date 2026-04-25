@@ -4,6 +4,7 @@ import { DataObjectColumn } from '@/systems/types'
 import { formatCSS, MJ, MJCustomElement, Reference } from '@mj/jsx'
 
 interface Props {
+  schemaName: string
   columns?: DataObjectColumn[]
   className?: MJ.ClassProp
   ref?: Reference<DataObjectTable>
@@ -25,7 +26,7 @@ export default class DataObjectTable extends MJCustomElement<Props>()(HTMLDivEle
     ref?.set(this)
   }
 
-  createNode() {
+  createNode({ schemaName }: Props) {
     return (
       <>
         <div class="flex gap-[1px]">
@@ -34,12 +35,12 @@ export default class DataObjectTable extends MJCustomElement<Props>()(HTMLDivEle
           </CellHeader>
           <CellHeader className="flex-[0_0_300px]">項目名</CellHeader>
           <CellHeader className="flex-[0_0_200px]">ラベル</CellHeader>
-          <CellHeader className="flex-[0_0_578px]">データ型</CellHeader>
+          <CellHeader className="flex-[0_0_543.5px]">データ型</CellHeader>
           <CellHeader className="flex-auto">説明</CellHeader>
           <CellHeader className="flex-[0_0_50px]">操作</CellHeader>
         </div>
         {this.columns.map((column, index) => (
-          <DataObjectRow index={index} column={column} deleteRow={(idx) => this.deleteRow(idx)} onmousedown={(e, row) => this.mouseDown(e, row)} />
+          <DataObjectRow schemaName={schemaName} index={index} column={column} deleteRow={(idx) => this.deleteRow(idx)} onmousedown={(e, row) => this.mouseDown(e, row)} />
         ))}
       </>
     )

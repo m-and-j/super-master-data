@@ -17,7 +17,7 @@ export default class EnumerationRow extends MJComponent<Props> {
     return (
       <div class="flex gap-[1px]">
         <CellText className="flex-[0_0_300px]" name={ColumnParams.Names} value={item?.label} />
-        <CellText className="flex-[0_0_578px]" name={ColumnParams.Values} value={item?.value} type="number" />
+        <CellText className="flex-[0_0_100px]" name={ColumnParams.Values} value={item?.value} type="number" />
         <CellText className="flex-auto" name={ColumnParams.Descriptions} value={item?.description} />
         <Button className="flex-[0_0_50px]" variant="danger" size="none" onclick={() => this.deleteRow()}>
           <span class="icon-[ic--baseline-delete-forever] text-2xl"></span>

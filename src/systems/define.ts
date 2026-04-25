@@ -1,10 +1,21 @@
 export const DataClassification = {
   Scalar: 'scalar',
+  ID: 'id',
+  RelationID: 'relationId',
   Schema: 'schema',
   Enumeration: 'enum',
 } as const
 export type DataClassificationType = (typeof DataClassification)[keyof typeof DataClassification]
 export const DataClassificationValues = Object.entries(DataClassification)
+
+export const DataClassificationLabels = {
+  [DataClassification.Scalar]: '値型',
+  [DataClassification.ID]: 'ID',
+  [DataClassification.RelationID]: 'ID参照',
+  [DataClassification.Schema]: 'スキーマ',
+  [DataClassification.Enumeration]: '列挙型',
+} as const
+export const DataClassificationLabelValues = Object.entries(DataClassificationLabels)
 
 /**
  * データ型

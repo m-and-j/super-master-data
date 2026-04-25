@@ -25,7 +25,7 @@ export default class EnumerationTable extends MJComponent<Props> {
       <div class={['flex flex-col gap-[1px] bg-zinc-500 p-[1px]', className]} ref={this.tableDiv}>
         <div class="flex gap-[1px]">
           <CellHeader className="flex-[0_0_300px]">項目名</CellHeader>
-          <CellHeader className="flex-[0_0_578px]">値</CellHeader>
+          <CellHeader className="flex-[0_0_100px]">値</CellHeader>
           <CellHeader className="flex-auto">説明</CellHeader>
           <CellHeader className="flex-[0_0_50px]">操作</CellHeader>
         </div>
