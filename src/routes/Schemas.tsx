@@ -26,7 +26,7 @@ export default class Schemas extends MJPage {
 
         <div class="flex-auto">
           <form onsubmit={(e) => this.register(e)}>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 mx-3">
               <div class="flex-[0_0_100px] text-right">スキーマ名</div>
               <div class="flex-[0_0_400px]">
                 <InputText name="name" placeholder="スキーマ名" value={this.targetSchema?.name} />

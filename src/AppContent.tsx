@@ -10,6 +10,7 @@ import MasterData from '@/routes/MasterData'
 import Schemas from '@/routes/Schemas'
 import SchemasJsonEdit from '@/routes/SchemasJsonEdit'
 import Tables from '@/routes/Tables'
+import TablesJsonEdit from '@/routes/TablesJsonEdit'
 import { MJComponent } from '@mj/jsx'
 import { MJRouter } from '@mj/router'
 
@@ -39,6 +40,7 @@ export default class AppContent extends MJComponent {
           routes={[
             { path: '/', Page: Home },
             { path: '/tables', Page: Tables },
+            { path: '/tables-edit-json', Page: TablesJsonEdit },
             { path: '/schemas', Page: Schemas },
             { path: '/schemas/{name}', Page: Schemas },
             { path: '/schemas-edit-json', Page: SchemasJsonEdit },

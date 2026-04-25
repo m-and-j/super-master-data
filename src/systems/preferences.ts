@@ -18,7 +18,7 @@ class Preferences {
 
   /**
    * 前回使用したファイルパスを localStorage から読み出し、
-   * 存在すればそのファイルからプロジェクトを読み込む。
+   * 存在すればそのファイルからプロジェクトを読み込む
    */
   async load() {
     if (!this.loadingPromise) {
@@ -43,7 +43,7 @@ class Preferences {
   }
 
   /**
-   * 現在の保存先ファイルパス(未設定なら undefined)。
+   * 現在の保存先ファイルパス(未設定なら undefined)
    */
   getFilePath() {
     return this.filePath
@@ -54,7 +54,8 @@ class Preferences {
   }
 
   /**
-   * 既存のプロジェクトファイルを開く。
+   * 既存のプロジェクトファイルを開く
+   * @param path
    */
   async openProject(path: string) {
     await this.readProjectFrom(path)
@@ -62,7 +63,8 @@ class Preferences {
   }
 
   /**
-   * 指定パスに空のプロジェクトを新規作成する。
+   * 指定パスに空のプロジェクトを新規作成
+   * @param path
    */
   async createNewProject(path: string) {
     this.projectInfo = createEmptyProject()
@@ -71,7 +73,9 @@ class Preferences {
   }
 
   /**
-   * 現在のプロジェクトを別のパスに保存する(以後の保存先も切り替わる)。
+   * 現在のプロジェクトを別のパスに保存
+   * 以後の保存先も切り替わる
+   * @param path
    */
   async saveAs(path: string) {
     this.setFilePath(path)
@@ -79,7 +83,9 @@ class Preferences {
   }
 
   /**
-   * プロジェクトのメタ情報(名前・説明)を更新して保存する。
+   * プロジェクトのメタ情報(名前・説明)を更新して保存
+   * @param name
+   * @param description
    */
   async updateProjectMeta(name: string, description: string) {
     this.projectInfo.name = name
@@ -87,30 +93,76 @@ class Preferences {
     await this.save()
   }
 
+  /**
+   * テーブルデータ追加
+   * @param schema
+   */
+  async addTable(table: DataObject) {
+    this.projectInfo.tables.push(table)
+    this.projectInfo.tables.sort((a, b) => a.name.localeCompare(b.name))
+    await this.save()
+  }
+
+  /**
+   * テーブルデータ更新
+   * @param name
+   * @param schema
+   */
+  async updateTable(name: string, table: DataObject) {
+    this.projectInfo.tables = this.projectInfo.tables.map((t) => (t.name === name ? table : t))
+    await this.save()
+  }
+
+  /**
+   * スキーマ追加
+   * @param schema
+   */
   async addSchema(schema: DataObject) {
     this.projectInfo.schemas.push(schema)
     this.projectInfo.schemas.sort((a, b) => a.name.localeCompare(b.name))
     await this.save()
   }
 
+  /**
+   * スキーマ更新
+   * @param name
+   * @param schema
+   */
   async updateSchema(name: string, schema: DataObject) {
     this.projectInfo.schemas = this.projectInfo.schemas.map((s) => (s.name === name ? schema : s))
     await this.save()
   }
 
+  /**
+   * 列挙型追加
+   * @param enumeration
+   */
   async addEnumeration(enumeration: EnumerationObject) {
     this.projectInfo.enumerations.push(enumeration)
     this.projectInfo.enumerations.sort((a, b) => a.name.localeCompare(b.name))
     await this.save()
   }
 
+  /**
+   * 列挙型更新
+   * @param name
+   * @param enumeration
+   */
   async updateEnumeration(name: string, enumeration: EnumerationObject) {
     this.projectInfo.enumerations = this.projectInfo.enumerations.map((e) => (e.name === name ? enumeration : e))
     await this.save()
   }
 
   /**
-   * スキーマリストを丸ごと置換する(JSON 直接編集用)。
+   * テーブルリストを丸ごと置換する(JSON 直接編集用)
+   */
+  async replaceTables(tables: DataObject[]) {
+    this.projectInfo.tables = tables.sort((a, b) => a.name.localeCompare(b.name))
+    await this.save()
+  }
+
+  /**
+   * スキーマリストを丸ごと置換する(JSON 直接編集用)
    */
   async replaceSchemas(schemas: DataObject[]) {
     this.projectInfo.schemas = schemas.sort((a, b) => a.name.localeCompare(b.name))
@@ -118,7 +170,7 @@ class Preferences {
   }
 
   /**
-   * 列挙型リストを丸ごと置換する(JSON 直接編集用)。
+   * 列挙型リストを丸ごと置換する(JSON 直接編集用)
    */
   async replaceEnumerations(enumerations: EnumerationObject[]) {
     this.projectInfo.enumerations = enumerations.sort((a, b) => a.name.localeCompare(b.name))
