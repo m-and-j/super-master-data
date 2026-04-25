@@ -1,5 +1,4 @@
 import Button from '@/components/inputs/Button'
-import ShotMessage from '@/components/notifications/ShotMessage'
 import ToastMessage from '@/components/notifications/ToastMessage'
 import SideMenuEnumeration from '@/components/wayFinders/SideMenuEnumeration'
 import preferences from '@/systems/preferences'
@@ -50,7 +49,7 @@ export default class EnumerationsJsonEdit extends MJPage {
     const parsed = this.tryParseEnumerations(text)
     if (parsed.ok) {
       await preferences.replaceEnumerations(parsed.value)
-      ShotMessage.instance.open('success', 'JSON を保存しました。')
+      ToastMessage.instance.open('success', 'JSON を保存しました。')
       MJRouter.instance.reload()
     } else {
       ToastMessage.instance.open('danger', `JSON の保存に失敗しました。\n${parsed.error}`)

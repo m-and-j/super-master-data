@@ -1,6 +1,7 @@
 import Button from '@/components/inputs/Button'
 import EnumerationTable from '@/components/inputs/EnumerationTable'
 import InputText from '@/components/inputs/InputText'
+import ToastMessage from '@/components/notifications/ToastMessage'
 import SideMenuEnumeration from '@/components/wayFinders/SideMenuEnumeration'
 import { ColumnParams } from '@/systems/define'
 import preferences from '@/systems/preferences'
@@ -78,5 +79,6 @@ export default class Enumerations extends MJPage {
       preferences.addEnumeration({ name, description, items })
     }
     MJRouter.instance.reload()
+    ToastMessage.instance.open('success', '保存しました。')
   }
 }

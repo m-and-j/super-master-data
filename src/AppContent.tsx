@@ -40,6 +40,7 @@ export default class AppContent extends MJComponent {
           routes={[
             { path: '/', Page: Home },
             { path: '/tables', Page: Tables },
+            { path: '/tables/{name}', Page: Tables },
             { path: '/tables-edit-json', Page: TablesJsonEdit },
             { path: '/schemas', Page: Schemas },
             { path: '/schemas/{name}', Page: Schemas },

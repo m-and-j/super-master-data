@@ -1,5 +1,4 @@
 import Button from '@/components/inputs/Button'
-import ShotMessage from '@/components/notifications/ShotMessage'
 import ToastMessage from '@/components/notifications/ToastMessage'
 import SideMenuSchema from '@/components/wayFinders/SideMenuSchema'
 import { DataClassification, DataClassificationType } from '@/systems/define'
@@ -53,7 +52,7 @@ export default class SchemasJsonEdit extends MJPage {
     const parsed = this.tryParseSchemas(text)
     if (parsed.ok) {
       await preferences.replaceSchemas(parsed.value)
-      ShotMessage.instance.open('success', 'JSON を保存しました。')
+      ToastMessage.instance.open('success', 'JSON を保存しました。')
       MJRouter.instance.reload()
     } else {
       ToastMessage.instance.open('danger', `JSON の保存に失敗しました。\n${parsed.error}`)

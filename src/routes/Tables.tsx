@@ -1,6 +1,7 @@
 import Button from '@/components/inputs/Button'
 import DataObjectTable from '@/components/inputs/DataObjectTable'
 import InputText from '@/components/inputs/InputText'
+import ToastMessage from '@/components/notifications/ToastMessage'
 import SideMenuTable from '@/components/wayFinders/SideMenuTable'
 import preferences from '@/systems/preferences'
 import { DataObject } from '@/systems/types'
@@ -69,5 +70,6 @@ export default class Tables extends MJPage {
       preferences.addTable({ name, description, columns })
     }
     MJRouter.instance.reload()
+    ToastMessage.instance.open('success', '保存しました。')
   }
 }
