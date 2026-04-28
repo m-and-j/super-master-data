@@ -56,5 +56,6 @@ export interface OutputProject {
 
 export interface OutputItem {
   path: string
-  template: string
+  fileNameTemplate: string
+  sourceCodeTemplate: string
 }

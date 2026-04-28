@@ -53,7 +53,7 @@ export default class Outputs extends MJPage {
             </div>
 
             {/** 各ソースコード出力セクション */}
-            {this.renderSourceCodeSection('Entity', 'entity', this.targetOutput?.entity)}
+            {this.renderSourceCodeSection('エンティティ', 'entity', this.targetOutput?.entity)}
             {this.renderSourceCodeSection('スキーマ', 'schema', this.targetOutput?.schema)}
             {this.renderSourceCodeSection('列挙型', 'enumeration', this.targetOutput?.enumeration)}
 
@@ -94,14 +94,21 @@ export default class Outputs extends MJPage {
             <InputText name={`${fieldPrefix}Path`} placeholder="出力先ディレクトリ" value={item?.path} />
           </div>
         </div>
+        <div class="flex items-center gap-2 mb-2">
+          <div class="flex-[0_0_170px] text-right text-sm">ファイル名テンプレート</div>
+          <div class="flex-[0_0_200px]">
+            <InputText name={`${fieldPrefix}FileNameTemplate`} value={item?.fileNameTemplate ?? '{{filename}}'} />
+          </div>
+          <div class="flex-auto text-xs text-zinc-400">{'例) {{filename}}Entity, {{filename}}Schema など'}</div>
+        </div>
         <div class="flex items-start gap-2">
-          <div class="flex-[0_0_170px] text-right text-sm pt-2">テンプレート (EJS)</div>
+          <div class="flex-[0_0_170px] text-right text-sm pt-2">ソースコードテンプレート (EJS)</div>
           <div class="flex-auto">
             <textarea
-              name={`${fieldPrefix}Template`}
+              name={`${fieldPrefix}SourceCodeTemplate`}
               class="w-full bg-zinc-800 border border-zinc-500 rounded-md p-2 font-mono text-sm leading-5 resize-y outline-none min-h-[10rem] scrollbar"
             >
-              {item?.template ?? ''}
+              {item?.sourceCodeTemplate ?? ''}
             </textarea>
           </div>
         </div>
@@ -118,15 +125,18 @@ export default class Outputs extends MJPage {
     const codeExtension = formData.getString('codeExtension', '')
     const entity: OutputItem = {
       path: formData.getString('entityPath', ''),
-      template: formData.getString('entityTemplate', ''),
+      fileNameTemplate: formData.getString('entityFileNameTemplate', ''),
+      sourceCodeTemplate: formData.getString('entitySourceCodeTemplate', ''),
     }
     const schema: OutputItem = {
       path: formData.getString('schemaPath', ''),
-      template: formData.getString('schemaTemplate', ''),
+      fileNameTemplate: formData.getString('schemaFileNameTemplate', ''),
+      sourceCodeTemplate: formData.getString('schemaSourceCodeTemplate', ''),
     }
     const enumeration: OutputItem = {
       path: formData.getString('enumerationPath', ''),
-      template: formData.getString('enumerationTemplate', ''),
+      fileNameTemplate: formData.getString('enumerationFileNameTemplate', ''),
+      sourceCodeTemplate: formData.getString('enumerationSourceCodeTemplate', ''),
     }
     try {
       if (this.targetOutput) {
