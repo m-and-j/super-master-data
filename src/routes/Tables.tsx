@@ -22,11 +22,11 @@ export default class Tables extends MJPage {
       this.targetTable = JSON.parse(JSON.stringify(targetTable))
     }
     return (
-      <div class="flex items-stretch min-h-[calc(100vh-52px)]">
+      <div class="flex items-stretch h-[calc(100vh-52px)]">
         {/** 左メニュー */}
         <SideMenuTable uuid={uuid} />
 
-        <div class="flex-auto">
+        <div class="flex-auto overflow-y-scroll scrollbar">
           <form onsubmit={(e) => this.register(e)}>
             <div class="flex items-center gap-2 mx-3">
               <div class="flex-[0_0_100px] text-right">テーブル名</div>
@@ -79,8 +79,8 @@ export default class Tables extends MJPage {
         await preferences.updateTable(this.targetTable.uuid, name, description, columns)
         MJRouter.instance.reload()
       } else {
-        await preferences.addTable(name, description, columns)
-        MJRouter.instance.push(`/tables/${name}`)
+        const uuid = await preferences.addTable(name, description, columns)
+        MJRouter.instance.push(`/tables/${uuid}`)
       }
       ToastMessage.instance.open('success', '保存しました。')
     } catch (e) {

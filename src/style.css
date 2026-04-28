@@ -123,4 +123,9 @@
   .message-area-warning {
     @apply text-amber-900 bg-amber-300 border-amber-700 dark:text-amber-300 dark:bg-amber-900 dark:border-amber-700;
   }
+
+  .scrollbar {
+    scrollbar-color: #888 transparent;
+    scrollbar-width: thin;
+  }
 }

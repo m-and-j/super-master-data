@@ -25,7 +25,7 @@ export default class ScrollArea extends MJComponent<Props> {
       vectorCss = 'overflow-hidden overflow-y-scroll'
     }
     return (
-      <div class={[scrollable && vectorCss, className]} style={{ width, height, scrollbarColor: '#888 transparent', scrollbarWidth: 'thin' }} ref={ref}>
+      <div class={[scrollable && vectorCss, className, 'scrollbar']} style={{ width, height }} ref={ref}>
         {children}
       </div>
     )

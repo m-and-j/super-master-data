@@ -20,12 +20,12 @@ export default class Enumerations extends MJPage {
     const projectInfo = preferences.getProjectInfo()
     this.targetEnumeration = projectInfo.enumerations.find((e) => e.uuid === uuid)
     return (
-      <div class="flex items-stretch min-h-[calc(100vh-52px)]">
+      <div class="flex items-stretch h-[calc(100vh-52px)]">
         {/** 左メニュー */}
         <SideMenuEnumeration uuid={uuid} />
 
         {/** コンテンツ部分 */}
-        <div class="flex-auto">
+        <div class="flex-auto overflow-y-scroll scrollbar">
           <form onsubmit={(e) => this.register(e)}>
             <div class="flex items-center gap-2 mx-3">
               <div class="flex-[0_0_100px] text-right">列挙型名</div>
@@ -88,8 +88,8 @@ export default class Enumerations extends MJPage {
         await preferences.updateEnumeration(this.targetEnumeration.uuid, name, description, items)
         MJRouter.instance.reload()
       } else {
-        await preferences.addEnumeration(name, description, items)
-        MJRouter.instance.push(`/enumerations/${name}`)
+        const uuid = await preferences.addEnumeration(name, description, items)
+        MJRouter.instance.push(`/enumerations/${uuid}`)
       }
       ToastMessage.instance.open('success', '保存しました。')
     } catch (e) {

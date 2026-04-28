@@ -20,7 +20,7 @@ export default class SideMenuSchema extends MJComponent<Props> {
           新規スキーマ
         </MJLink>
         <hr class="my-3 border-zinc-500" />
-        <div class="flex flex-col h-[calc(100vh-170px)] overflow-y-scroll" style={{ scrollbarColor: '#888 transparent', scrollbarWidth: 'thin' }}>
+        <div class="flex flex-col h-[calc(100vh-170px)] overflow-y-scroll scrollbar">
           {projectInfo.schemas.map((e) => (
             <MJLink to={`/schemas/${e.uuid}`} className={['text-blue-500 px-1', e.uuid === uuid ? 'bg-zinc-700' : '']}>
               {e.name}

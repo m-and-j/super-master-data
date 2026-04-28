@@ -103,9 +103,11 @@ class Preferences {
     if (this.projectInfo.tables.some((t) => t.name === name)) {
       throw new Error('すでに同名のテーブルが存在します。')
     } else {
-      this.projectInfo.tables.push({ uuid: crypto.randomUUID(), name, description, columns })
+      const uuid = crypto.randomUUID()
+      this.projectInfo.tables.push({ uuid, name, description, columns })
       this.projectInfo.tables.sort((a, b) => a.name.localeCompare(b.name))
       await this.save()
+      return uuid
     }
   }
 
@@ -145,9 +147,11 @@ class Preferences {
     if (this.projectInfo.schemas.some((s) => s.name === name)) {
       throw new Error('すでに同名のスキーマが存在します。')
     } else {
-      this.projectInfo.schemas.push({ uuid: crypto.randomUUID(), name, description, columns })
+      const uuid = crypto.randomUUID()
+      this.projectInfo.schemas.push({ uuid, name, description, columns })
       this.projectInfo.schemas.sort((a, b) => a.name.localeCompare(b.name))
       await this.save()
+      return uuid
     }
   }
 
@@ -187,9 +191,11 @@ class Preferences {
     if (this.projectInfo.enumerations.some((e) => e.name === name)) {
       throw new Error('すでに同名の列挙型が存在します。')
     } else {
-      this.projectInfo.enumerations.push({ uuid: crypto.randomUUID(), name, description, items })
+      const uuid = crypto.randomUUID()
+      this.projectInfo.enumerations.push({ uuid, name, description, items })
       this.projectInfo.enumerations.sort((a, b) => a.name.localeCompare(b.name))
       await this.save()
+      return uuid
     }
   }
 
@@ -233,9 +239,11 @@ class Preferences {
     if (this.projectInfo.outputs.some((e) => e.name === name)) {
       throw new Error('すでに同名の出力設定が存在します。')
     } else {
-      this.projectInfo.outputs.push({ uuid: crypto.randomUUID(), name, description, dataPath, codeExtension, entity, schema, enumeration })
+      const uuid = crypto.randomUUID()
+      this.projectInfo.outputs.push({ uuid, name, description, dataPath, codeExtension, entity, schema, enumeration })
       this.projectInfo.outputs.sort((a, b) => a.name.localeCompare(b.name))
       await this.save()
+      return uuid
     }
   }
 

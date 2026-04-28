@@ -20,7 +20,7 @@ export default class SideMenuOutput extends MJComponent<Props> {
           新規出力設定
         </MJLink>
         <hr class="my-3 border-zinc-500" />
-        <div class="flex flex-col h-[calc(100vh-170px)] overflow-y-scroll" style={{ scrollbarColor: '#888 transparent', scrollbarWidth: 'thin' }}>
+        <div class="flex flex-col h-[calc(100vh-170px)] overflow-y-scroll scrollbar">
           {projectInfo.outputs.map((e) => (
             <MJLink to={`/outputs/${e.uuid}`} className={['text-blue-500 px-1', e.uuid === uuid ? 'bg-zinc-700' : '']}>
               {e.name}

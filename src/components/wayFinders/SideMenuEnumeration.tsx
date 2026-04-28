@@ -20,7 +20,7 @@ export default class SideMenuEnumeration extends MJComponent<Props> {
           新規列挙型
         </MJLink>
         <hr class="my-3 border-zinc-500" />
-        <div class="flex flex-col h-[calc(100vh-170px)] overflow-y-scroll" style={{ scrollbarColor: '#888 transparent', scrollbarWidth: 'thin' }}>
+        <div class="flex flex-col h-[calc(100vh-170px)] overflow-y-scroll scrollbar">
           {projectInfo.enumerations.map((e) => (
             <MJLink to={`/enumerations/${e.uuid}`} className={['text-blue-500 px-1', e.uuid === uuid ? 'bg-zinc-700' : '']}>
               {e.name}

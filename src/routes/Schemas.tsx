@@ -22,11 +22,11 @@ export default class Schemas extends MJPage {
       this.targetSchema = JSON.parse(JSON.stringify(targetSchema))
     }
     return (
-      <div class="flex items-stretch min-h-[calc(100vh-52px)]">
+      <div class="flex items-stretch h-[calc(100vh-52px)]">
         {/** 左メニュー */}
         <SideMenuSchema uuid={uuid} />
 
-        <div class="flex-auto">
+        <div class="flex-auto overflow-y-scroll scrollbar">
           <form onsubmit={(e) => this.register(e)}>
             <div class="flex items-center gap-2 mx-3">
               <div class="flex-[0_0_100px] text-right">スキーマ名</div>
@@ -79,8 +79,8 @@ export default class Schemas extends MJPage {
         await preferences.updateSchema(this.targetSchema.uuid, name, description, columns)
         MJRouter.instance.reload()
       } else {
-        await preferences.addSchema(name, description, columns)
-        MJRouter.instance.push(`/schemas/${name}`)
+        const uuid = await preferences.addSchema(name, description, columns)
+        MJRouter.instance.push(`/schemas/${uuid}`)
       }
       ToastMessage.instance.open('success', '保存しました。')
     } catch (e) {
