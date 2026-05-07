@@ -1,4 +1,5 @@
 import ConfirmModal from '@/components/modals/ConfirmModal'
+import ScalarArrayModal from '@/components/modals/ScalarArrayModal'
 import LoadingMessage from '@/components/notifications/LoadingMessage'
 import ShotMessage from '@/components/notifications/ShotMessage'
 import ToastMessage from '@/components/notifications/ToastMessage'
@@ -12,8 +13,7 @@ import OUtputsJsonEdit from '@/routes/OutputsJsonEdit'
 import Schemas from '@/routes/Schemas'
 import SchemasJsonEdit from '@/routes/SchemasJsonEdit'
 import Tables from '@/routes/Tables'
-import TablesJsonEdit from '@/routes/TablesJsonEdit'
-import { LocalStorageKeys } from '@/utilities/defines'
+import { LocalStorageKeys } from '@/systems/define'
 import { MJComponent } from '@mj/jsx'
 import { MJRouter } from '@mj/router'
 
@@ -44,22 +44,23 @@ export default class AppContent extends MJComponent {
           routes={[
             { path: '/', Page: Home },
             { path: '/enumerations', Page: Enumerations },
-            { path: '/enumerations/{uuid}', Page: Enumerations },
+            { path: '/enumerations/{name}', Page: Enumerations },
             { path: '/enumerations-edit-json', Page: EnumerationsJsonEdit },
             { path: '/master-data', Page: MasterData },
+            { path: '/master-data/{name}', Page: MasterData },
             { path: '/outputs', Page: Outputs },
-            { path: '/outputs/{uuid}', Page: Outputs },
+            { path: '/outputs/{name}', Page: Outputs },
             { path: '/outputs-edit-json', Page: OUtputsJsonEdit },
             { path: '/schemas', Page: Schemas },
-            { path: '/schemas/{uuid}', Page: Schemas },
+            { path: '/schemas/{name}', Page: Schemas },
             { path: '/schemas-edit-json', Page: SchemasJsonEdit },
             { path: '/tables', Page: Tables },
-            { path: '/tables/{uuid}', Page: Tables },
-            { path: '/tables-edit-json', Page: TablesJsonEdit },
+            { path: '/tables/{name}', Page: Tables },
           ]}
           debug
         />
         <ConfirmModal />
+        <ScalarArrayModal />
         <LoadingMessage />
         <ShotMessage />
         <ToastMessage />

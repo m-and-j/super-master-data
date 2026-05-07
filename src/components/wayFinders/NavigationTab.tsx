@@ -56,29 +56,29 @@ export default class NavigationTab extends MJCustomElement<Props>()(HTMLDivEleme
   }
 
   createNode() {
-    const destinations = Array.from(this.destinations.values()).filter((d) => d.always || preferences.existsFile())
+    const destinations = Array.from(this.destinations.values()).filter((d) => d.always || preferences.existsProject())
     return (
       <ScrollArea x className="flex-auto">
-        <div class="flex items-end flex-nowrap">
-          <nav class="flex items-end flex-nowrap">
+        <div class="flex flex-nowrap items-end">
+          <nav class="flex flex-nowrap items-end">
             {destinations.map(({ path, group, title, icon, defaultActive }) => (
-              <label class="bg-zinc-500 rounded-t-md flex max-w-52" onmousedown={(e) => this.closeTab(e, path)}>
+              <label class="flex max-w-52 rounded-t-md bg-zinc-500" onmousedown={(e) => this.closeTab(e, path)}>
                 <input
                   type="radio"
                   name="tab"
-                  class="hidden peer"
+                  class="peer hidden"
                   checked={defaultActive ?? this.getRegex(path, group).test(location.pathname)}
                   onclick={() => MJRouter.instance.push(path)}
                 />
                 <div
                   class={[
-                    'bg-zinc-800 rounded-t-md mb-[1px] p-[1px_1px_0_1px] w-max-full truncate',
+                    'w-max-full mb-[1px] truncate rounded-t-md bg-zinc-800 p-[1px_1px_0_1px]',
                     'peer-checked:m-[1px_1px_0_1px] peer-checked:p-[0_0_1px_0]',
                     'peer-checked:[&>div]:text-blue-500',
                   ]}
                 >
-                  <div class="'flex max-w-full focus:outline-hidden leading-[1.875rem]'">
-                    <div class="mx-4 my-2 truncate flex">
+                  <div class="'flex leading-[1.875rem]' max-w-full focus:outline-hidden">
+                    <div class="mx-4 my-2 flex truncate">
                       <div class="flex items-center gap-1">
                         {icon && <span class={icon}></span>}
                         {title}

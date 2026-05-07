@@ -39,14 +39,14 @@
       "vite",
       "webm",
     ],
+    // prettier
+    "prettier.configPath": ".settings/.prettierrc",
+    "prettier.ignorePath": ".settings/.prettierignore",
+
+    // tailwind
     "files.associations": {
       "*.css": "tailwindcss"
     },
-    "prettier.printWidth": 180,
-    "prettier.semi": false,
-    "prettier.singleQuote": true,
-    "prettier.tabWidth": 2,
-    "prettier.trailingComma": "all",
     "tailwindCSS.classAttributes": [
       "class",
       ".*ClassName(s)?",

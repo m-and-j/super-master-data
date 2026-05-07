@@ -30,7 +30,7 @@ export default class DataObjectTable extends MJCustomElement<Props>()(HTMLDivEle
     return (
       <>
         <div class="flex gap-[1px]">
-          <CellHeader className="flex-[0_0_50px] flex justify-center items-center">
+          <CellHeader className="flex flex-[0_0_50px] items-center justify-center">
             <span class="icon-[ic--baseline-sort] text-2xl"></span>
           </CellHeader>
           <CellHeader className="flex-[0_0_300px]">項目名</CellHeader>

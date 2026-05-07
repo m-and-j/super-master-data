@@ -4,31 +4,31 @@ import InputText from '@/components/inputs/InputText'
 import ConfirmModal from '@/components/modals/ConfirmModal'
 import ToastMessage from '@/components/notifications/ToastMessage'
 import SideMenuTable from '@/components/wayFinders/SideMenuTable'
-import preferences from '@/systems/preferences'
-import { DataObject } from '@/systems/types'
+import masterData from '@/systems/master-data'
+import { Table } from '@/systems/types'
 import { FormDataEx } from '@/utilities/helper-frontend'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
 
 export default class Tables extends MJPage {
-  private targetTable?: DataObject
+  private targetTable?: Table
   private dataObjectTable: Reference<DataObjectTable> = ref()
 
-  createNode() {
-    const { uuid } = this.params
-    const projectInfo = preferences.getProjectInfo()
-    const targetTable = projectInfo.tables.find((t) => t.uuid === uuid)
-    if (targetTable) {
-      this.targetTable = JSON.parse(JSON.stringify(targetTable))
-    }
-    return (
-      <div class="flex items-stretch h-[calc(100vh-52px)]">
-        {/** 左メニュー */}
-        <SideMenuTable uuid={uuid} />
+  async beforeRender() {
+    const { name } = this.params
+    this.targetTable = await masterData.read(name)
+  }
 
-        <div class="flex-auto overflow-y-scroll scrollbar">
+  createNode() {
+    const { name } = this.params
+    return (
+      <div class="flex h-[calc(100vh-52px)] items-stretch">
+        {/** 左メニュー */}
+        <SideMenuTable currentName={name} />
+
+        <div class="scrollbar flex-auto overflow-y-scroll">
           <form onsubmit={(e) => this.register(e)}>
-            <div class="flex items-center gap-2 mx-3">
+            <div class="mx-3 flex items-center gap-2">
               <div class="flex-[0_0_100px] text-right">テーブル名</div>
               <div class="flex-[0_0_400px]">
                 <InputText name="name" placeholder="テーブル名" value={this.targetTable?.name} />
@@ -38,7 +38,7 @@ export default class Tables extends MJPage {
                 <InputText name="description" placeholder="内容" value={this.targetTable?.description} />
               </div>
             </div>
-            <div class="mt-6 mx-2 flex gap-2">
+            <div class="mx-2 mt-6 flex gap-2">
               <Button variant="success" size="sm" onclick={() => this.dataObjectTable.value?.addRow()}>
                 <div class="flex items-center justify-center gap-1">
                   <span class="icon-[ic--baseline-add] text-lg"></span>
@@ -76,11 +76,12 @@ export default class Tables extends MJPage {
     const columns = this.dataObjectTable.value?.getColumns() ?? []
     try {
       if (this.targetTable) {
-        await preferences.updateTable(this.targetTable.uuid, name, description, columns)
+        await masterData.rename(this.targetTable.name, name)
+        await masterData.write({ name, description, columns, data: this.targetTable.data })
         MJRouter.instance.reload()
       } else {
-        const uuid = await preferences.addTable(name, description, columns)
-        MJRouter.instance.push(`/tables/${uuid}`)
+        await masterData.write({ name, description, columns, data: [] })
+        MJRouter.instance.push(`/tables/${name}`)
       }
       ToastMessage.instance.open('success', '保存しました。')
     } catch (e) {
@@ -92,14 +93,14 @@ export default class Tables extends MJPage {
 
   private confirmDelete() {
     if (this.targetTable) {
-      const { uuid, name } = this.targetTable
+      const { name } = this.targetTable
       ConfirmModal.instance?.open(`「${name}」を削除します。よろしいですか?`, {
         headerTitle: '削除確認',
         positive: {
           label: '削除',
           variant: 'danger',
           callback: async () => {
-            await preferences.deleteTable(uuid)
+            await masterData.remove(name)
             MJRouter.instance.push('/tables')
             ToastMessage.instance.open('success', `「${name}」を削除しました。`)
           },

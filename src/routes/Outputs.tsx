@@ -12,21 +12,18 @@ export default class Outputs extends MJPage {
   private targetOutput?: OutputProject
 
   createNode() {
-    const { uuid } = this.params
+    const { name } = this.params
     const projectInfo = preferences.getProjectInfo()
-    const targetOutput = projectInfo.outputs.find((s) => s.uuid === uuid)
-    if (targetOutput) {
-      this.targetOutput = JSON.parse(JSON.stringify(targetOutput))
-    }
+    this.targetOutput = projectInfo.outputs.find((s) => s.name === name)
     return (
-      <div class="flex items-stretch h-[calc(100vh-52px)]">
+      <div class="flex h-[calc(100vh-52px)] items-stretch">
         {/** 左メニュー */}
-        <SideMenuOutput uuid={uuid} />
+        <SideMenuOutput currentName={name} />
 
-        <div class="flex-auto overflow-y-scroll scrollbar">
+        <div class="scrollbar flex-auto overflow-y-scroll">
           <form class="p-2" onsubmit={(e) => this.register(e)}>
             {/** 基本情報 */}
-            <div class="flex items-center gap-2 mx-1 mb-2">
+            <div class="mx-1 mb-2 flex items-center gap-2">
               <div class="flex-[0_0_180px] text-right text-sm">出力名</div>
               <div class="flex-[0_0_400px]">
                 <InputText name="name" placeholder="例: クライアント用 / サーバー用" value={this.targetOutput?.name} />
@@ -37,14 +34,14 @@ export default class Outputs extends MJPage {
               </div>
             </div>
 
-            <div class="flex items-center gap-2 mx-1 mb-2">
+            <div class="mx-1 mb-2 flex items-center gap-2">
               <div class="flex-[0_0_180px] text-right text-sm">マスターデータ出力先</div>
               <div class="flex-auto">
                 <InputText name="dataPath" placeholder="例: ../Client/Assets/MasterData" value={this.targetOutput?.dataPath} />
               </div>
             </div>
 
-            <div class="flex items-center gap-2 mx-1 mb-4">
+            <div class="mx-1 mb-4 flex items-center gap-2">
               <div class="flex-[0_0_180px] text-right text-sm">コード拡張子</div>
               <div class="flex-[0_0_120px]">
                 <InputText name="codeExtension" placeholder=".cs" value={this.targetOutput?.codeExtension} />
@@ -58,7 +55,7 @@ export default class Outputs extends MJPage {
             {this.renderSourceCodeSection('列挙型', 'enumeration', this.targetOutput?.enumeration)}
 
             {/** 保存 / 削除ボタン */}
-            <div class="mt-6 mx-1 flex gap-2">
+            <div class="mx-1 mt-6 flex gap-2">
               <div class="flex-auto" />
               <Button type="submit" variant="primary" size="sm">
                 <div class="flex items-center justify-center gap-1">
@@ -86,15 +83,15 @@ export default class Outputs extends MJPage {
    */
   private renderSourceCodeSection(label: string, fieldPrefix: string, item?: OutputItem) {
     return (
-      <fieldset class="border border-zinc-600 rounded-md p-3 mt-3 mx-1">
+      <fieldset class="mx-1 mt-3 rounded-md border border-zinc-600 p-3">
         <legend class="px-2 text-sm font-semibold">{label}</legend>
-        <div class="flex items-center gap-2 mb-2">
+        <div class="mb-2 flex items-center gap-2">
           <div class="flex-[0_0_170px] text-right text-sm">出力先パス</div>
           <div class="flex-auto">
             <InputText name={`${fieldPrefix}Path`} placeholder="出力先ディレクトリ" value={item?.path} />
           </div>
         </div>
-        <div class="flex items-center gap-2 mb-2">
+        <div class="mb-2 flex items-center gap-2">
           <div class="flex-[0_0_170px] text-right text-sm">ファイル名テンプレート</div>
           <div class="flex-[0_0_200px]">
             <InputText name={`${fieldPrefix}FileNameTemplate`} value={item?.fileNameTemplate ?? '{{filename}}'} />
@@ -102,11 +99,11 @@ export default class Outputs extends MJPage {
           <div class="flex-auto text-xs text-zinc-400">{'例) {{filename}}Entity, {{filename}}Schema など'}</div>
         </div>
         <div class="flex items-start gap-2">
-          <div class="flex-[0_0_170px] text-right text-sm pt-2">ソースコードテンプレート (EJS)</div>
+          <div class="flex-[0_0_170px] pt-2 text-right text-sm">ソースコードテンプレート (EJS)</div>
           <div class="flex-auto">
             <textarea
               name={`${fieldPrefix}SourceCodeTemplate`}
-              class="w-full bg-zinc-800 border border-zinc-500 rounded-md p-2 font-mono text-sm leading-5 resize-y outline-none min-h-[10rem] scrollbar"
+              class="scrollbar min-h-[10rem] w-full resize-y rounded-md border border-zinc-500 bg-zinc-800 p-2 font-mono text-sm leading-5 outline-none"
             >
               {item?.sourceCodeTemplate ?? ''}
             </textarea>
@@ -140,11 +137,11 @@ export default class Outputs extends MJPage {
     }
     try {
       if (this.targetOutput) {
-        await preferences.updateOutput(this.targetOutput.uuid, name, description, dataPath, codeExtension, entity, schema, enumeration)
+        await preferences.updateOutput(name, description, dataPath, codeExtension, entity, schema, enumeration)
         MJRouter.instance.reload()
       } else {
-        const uuid = await preferences.addOutput(name, description, dataPath, codeExtension, entity, schema, enumeration)
-        MJRouter.instance.push(`/outputs/${uuid}`)
+        await preferences.addOutput(name, description, dataPath, codeExtension, entity, schema, enumeration)
+        MJRouter.instance.push(`/outputs/${name}`)
       }
       ToastMessage.instance.open('success', '保存しました。')
     } catch (e) {
@@ -156,14 +153,14 @@ export default class Outputs extends MJPage {
 
   private confirmDelete() {
     if (this.targetOutput) {
-      const { uuid, name } = this.targetOutput
+      const { name } = this.targetOutput
       ConfirmModal.instance?.open(`「${name}」を削除します。よろしいですか?`, {
         headerTitle: '削除確認',
         positive: {
           label: '削除',
           variant: 'danger',
           callback: async () => {
-            await preferences.deleteOutput(uuid)
+            await preferences.deleteOutput(name)
             MJRouter.instance.push('/outputs')
             ToastMessage.instance.open('success', `「${name}」を削除しました。`)
           },

@@ -13,13 +13,13 @@ export default class OUtputsJsonEdit extends MJPage {
     const projectInfo = preferences.getProjectInfo()
     const jsonText = JSON.stringify(projectInfo.outputs, null, 2)
     return (
-      <div class="flex items-stretch min-h-[calc(100vh-52px)]">
+      <div class="flex min-h-[calc(100vh-52px)] items-stretch">
         {/** 左メニュー */}
         <SideMenuOutput />
 
         {/** コンテンツ部分 */}
         <div class="flex-auto">
-          <form class="flex flex-col p-2 gap-2 min-h-[calc(100vh-52px)]" onsubmit={(e) => this.saveJson(e)}>
+          <form class="flex min-h-[calc(100vh-52px)] flex-col gap-2 p-2" onsubmit={(e) => this.saveJson(e)}>
             <div class="flex items-center justify-between">
               <div class="text-sm text-zinc-400">出力JSONを直接編集します。</div>
               <Button type="submit" variant="primary" size="sm">
@@ -31,7 +31,7 @@ export default class OUtputsJsonEdit extends MJPage {
             </div>
             <textarea
               ref={this.jsonTextarea}
-              class="flex-auto w-full bg-zinc-800 border border-zinc-500 rounded-md p-2 font-mono text-sm leading-5 resize-none outline-none min-h-[70vh] scrollbar"
+              class="scrollbar min-h-[70vh] w-full flex-auto resize-none rounded-md border border-zinc-500 bg-zinc-800 p-2 font-mono text-sm leading-5 outline-none"
             >
               {jsonText}
             </textarea>

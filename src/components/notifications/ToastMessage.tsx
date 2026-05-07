@@ -1,4 +1,4 @@
-import { VariantIconClassName, VariantIconClassNames, VariantMessageAreaClassNames, VariantType } from '@/utilities/defines'
+import { VariantIconClassName, VariantIconClassNames, VariantMessageAreaClassNames, VariantType } from '@/systems/define'
 import { MJComponent, ref, Reference } from '@mj/jsx'
 
 export default class ToastMessage extends MJComponent {

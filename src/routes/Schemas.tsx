@@ -15,20 +15,20 @@ export default class Schemas extends MJPage {
   private dataObjectTable: Reference<DataObjectTable> = ref()
 
   createNode() {
-    const { uuid } = this.params
+    const { name } = this.params
     const projectInfo = preferences.getProjectInfo()
-    const targetSchema = projectInfo.schemas.find((s) => s.uuid === uuid)
+    const targetSchema = projectInfo.schemas.find((s) => s.name === name)
     if (targetSchema) {
       this.targetSchema = JSON.parse(JSON.stringify(targetSchema))
     }
     return (
-      <div class="flex items-stretch h-[calc(100vh-52px)]">
+      <div class="flex h-[calc(100vh-52px)] items-stretch">
         {/** 左メニュー */}
-        <SideMenuSchema uuid={uuid} />
+        <SideMenuSchema currentName={name} />
 
-        <div class="flex-auto overflow-y-scroll scrollbar">
+        <div class="scrollbar flex-auto overflow-y-scroll">
           <form onsubmit={(e) => this.register(e)}>
-            <div class="flex items-center gap-2 mx-3">
+            <div class="mx-3 flex items-center gap-2">
               <div class="flex-[0_0_100px] text-right">スキーマ名</div>
               <div class="flex-[0_0_400px]">
                 <InputText name="name" placeholder="スキーマ名" value={this.targetSchema?.name} />
@@ -38,7 +38,7 @@ export default class Schemas extends MJPage {
                 <InputText name="description" placeholder="内容" value={this.targetSchema?.description} />
               </div>
             </div>
-            <div class="mt-6 mx-2 flex gap-2">
+            <div class="mx-2 mt-6 flex gap-2">
               <Button variant="success" size="sm" onclick={() => this.dataObjectTable.value?.addRow()}>
                 <div class="flex items-center justify-center gap-1">
                   <span class="icon-[ic--baseline-add] text-lg"></span>
@@ -76,11 +76,11 @@ export default class Schemas extends MJPage {
     const columns = this.dataObjectTable.value?.getColumns() ?? []
     try {
       if (this.targetSchema) {
-        await preferences.updateSchema(this.targetSchema.uuid, name, description, columns)
+        await preferences.updateSchema(name, description, columns)
         MJRouter.instance.reload()
       } else {
-        const uuid = await preferences.addSchema(name, description, columns)
-        MJRouter.instance.push(`/schemas/${uuid}`)
+        await preferences.addSchema(name, description, columns)
+        MJRouter.instance.push(`/schemas/${name}`)
       }
       ToastMessage.instance.open('success', '保存しました。')
     } catch (e) {
@@ -92,14 +92,14 @@ export default class Schemas extends MJPage {
 
   private confirmDelete() {
     if (this.targetSchema) {
-      const { uuid, name } = this.targetSchema
+      const { name } = this.targetSchema
       ConfirmModal.instance?.open(`「${name}」を削除します。よろしいですか?`, {
         headerTitle: '削除確認',
         positive: {
           label: '削除',
           variant: 'danger',
           callback: async () => {
-            await preferences.deleteSchema(uuid)
+            await preferences.deleteSchema(name)
             MJRouter.instance.push('/schemas')
             ToastMessage.instance.open('success', `「${name}」を削除しました。`)
           },

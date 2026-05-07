@@ -22,7 +22,7 @@ export default class InputText extends MJComponent<Props> {
         value={value}
         placeholder={placeholder}
         tabindex={tabindex}
-        class={['w-full bg-zinc-800 border-zinc-500 border rounded-md px-2 py-1.75', className]}
+        class={['w-full rounded-md border border-zinc-500 bg-zinc-800 px-2 py-1.75', className]}
         oncontextmenu={oncontextmenu}
       />
     )

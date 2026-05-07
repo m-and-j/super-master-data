@@ -14,8 +14,8 @@ interface Props {
 export default class CellText extends MJComponent<Props> {
   createNode({ name, type = 'text', value, className, onchange }: Props) {
     return (
-      <div class={['px-2 py-1 bg-zinc-800 border border-transparent', 'has-[input:focus]:border-blue-500', className]}>
-        <input type={type} name={name} value={value} class="w-full h-full outline-hidden" onchange={onchange} />
+      <div class={['border border-transparent bg-zinc-800 px-2 py-1', 'has-[input:focus]:border-blue-500', className]}>
+        <input type={type} name={name} value={value} class="h-full w-full outline-hidden" onchange={onchange} />
       </div>
     )
   }

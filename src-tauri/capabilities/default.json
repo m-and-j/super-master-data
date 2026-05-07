@@ -11,6 +11,7 @@
     "fs:allow-rename",
     "fs:allow-mkdir",
     "fs:allow-exists",
+    "fs:allow-remove",
     "fs:allow-watch",
     "fs:read-dirs",
     { "identifier": "fs:scope", "allow": ["**/*"] },

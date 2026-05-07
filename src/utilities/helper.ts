@@ -1,3 +1,5 @@
+import { readFile, writeFile } from '@tauri-apps/plugin-fs'
+
 /**
  * パスからファイル名を取得する
  * @param path
@@ -68,6 +70,28 @@ export function tryParseJSON<T>(value?: string | null): T | undefined {
   } else {
     return undefined
   }
+}
+
+/**
+ * JSONファイルを読み込んでオブジェクトを出力する
+ * @param value
+ * @returns
+ */
+export async function readJsonFile<T>(path: string): Promise<T> {
+  const contents = await readFile(path)
+  const dataString = new TextDecoder().decode(contents)
+  return JSON.parse(dataString) as T
+}
+
+/**
+ * JSONファイルを読み込んでオブジェクトを出力する
+ * @param value
+ * @returns
+ */
+export async function writeJsonFile(data: object, path: string) {
+  const jsonString = JSON.stringify(data, null, 2)
+  const dataString = new TextEncoder().encode(jsonString)
+  await writeFile(path, dataString)
 }
 
 /**

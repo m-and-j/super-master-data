@@ -3,27 +3,27 @@ import { MJComponent } from '@mj/jsx'
 import { MJLink } from '@mj/router'
 
 interface Props {
-  uuid?: string
+  currentName?: string
 }
 
 /**
  * サイドメニュー(スキーマ)
  */
 export default class SideMenuSchema extends MJComponent<Props> {
-  createNode({ uuid }: Props) {
+  createNode({ currentName }: Props) {
     const projectInfo = preferences.getProjectInfo()
-    const newMode = !uuid && location.pathname !== '/schemas-edit-json'
+    const newMode = !currentName && location.pathname !== '/schemas-edit-json'
     const jsonMode = location.pathname === '/schemas-edit-json'
     return (
-      <div class="flex-[0_0_300px] border-r-3 border-zinc-500 flex flex-col p-2">
+      <div class="flex flex-[0_0_300px] flex-col border-r-3 border-zinc-500 p-2">
         <MJLink to="/schemas" className={['px-1 text-blue-500', newMode ? 'bg-zinc-700' : '']}>
           新規スキーマ
         </MJLink>
         <hr class="my-3 border-zinc-500" />
-        <div class="flex flex-col h-[calc(100vh-170px)] overflow-y-scroll scrollbar">
-          {projectInfo.schemas.map((e) => (
-            <MJLink to={`/schemas/${e.uuid}`} className={['text-blue-500 px-1', e.uuid === uuid ? 'bg-zinc-700' : '']}>
-              {e.name}
+        <div class="scrollbar flex h-[calc(100vh-170px)] flex-col overflow-y-scroll">
+          {projectInfo.schemas.map((s) => (
+            <MJLink to={`/schemas/${s.name}`} className={['px-1 text-blue-500', s.name === currentName ? 'bg-zinc-700' : '']}>
+              {s.name}
             </MJLink>
           ))}
           <div class="flex-auto" />

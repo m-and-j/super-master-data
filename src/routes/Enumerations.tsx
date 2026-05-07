@@ -16,18 +16,18 @@ export default class Enumerations extends MJPage {
   private dataObjectTable: Reference<EnumerationTable> = ref()
 
   createNode() {
-    const { uuid } = this.params
+    const { name } = this.params
     const projectInfo = preferences.getProjectInfo()
-    this.targetEnumeration = projectInfo.enumerations.find((e) => e.uuid === uuid)
+    this.targetEnumeration = projectInfo.enumerations.find((e) => e.name === name)
     return (
-      <div class="flex items-stretch h-[calc(100vh-52px)]">
+      <div class="flex h-[calc(100vh-52px)] items-stretch">
         {/** 左メニュー */}
-        <SideMenuEnumeration uuid={uuid} />
+        <SideMenuEnumeration currentName={name} />
 
         {/** コンテンツ部分 */}
-        <div class="flex-auto overflow-y-scroll scrollbar">
+        <div class="scrollbar flex-auto overflow-y-scroll">
           <form onsubmit={(e) => this.register(e)}>
-            <div class="flex items-center gap-2 mx-3">
+            <div class="mx-3 flex items-center gap-2">
               <div class="flex-[0_0_100px] text-right">列挙型名</div>
               <div class="flex-[0_0_400px]">
                 <InputText name="name" placeholder="列挙型名" value={this.targetEnumeration?.name} />
@@ -37,7 +37,7 @@ export default class Enumerations extends MJPage {
                 <InputText name="description" placeholder="内容" value={this.targetEnumeration?.description} />
               </div>
             </div>
-            <div class="mt-6 mx-2 flex gap-2">
+            <div class="mx-2 mt-6 flex gap-2">
               <Button variant="success" size="sm" onclick={() => this.dataObjectTable.value?.addRow()}>
                 <div class="flex items-center justify-center gap-1">
                   <span class="icon-[ic--baseline-add] text-lg"></span>
@@ -85,11 +85,11 @@ export default class Enumerations extends MJPage {
     }
     try {
       if (this.targetEnumeration) {
-        await preferences.updateEnumeration(this.targetEnumeration.uuid, name, description, items)
+        await preferences.updateEnumeration(name, description, items)
         MJRouter.instance.reload()
       } else {
-        const uuid = await preferences.addEnumeration(name, description, items)
-        MJRouter.instance.push(`/enumerations/${uuid}`)
+        await preferences.addEnumeration(name, description, items)
+        MJRouter.instance.push(`/enumerations/${name}`)
       }
       ToastMessage.instance.open('success', '保存しました。')
     } catch (e) {
@@ -101,14 +101,14 @@ export default class Enumerations extends MJPage {
 
   private confirmDelete() {
     if (this.targetEnumeration) {
-      const { uuid, name } = this.targetEnumeration
+      const { name } = this.targetEnumeration
       ConfirmModal.instance?.open(`「${name}」を削除します。よろしいですか?`, {
         headerTitle: '削除確認',
         positive: {
           label: '削除',
           variant: 'danger',
           callback: async () => {
-            await preferences.deleteEnumeration(uuid)
+            await preferences.deleteEnumeration(name)
             MJRouter.instance.push('/enumerations')
             ToastMessage.instance.open('success', `「${name}」を削除しました。`)
           },

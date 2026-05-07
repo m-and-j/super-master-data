@@ -3,14 +3,21 @@ import { DataClassificationType } from '@/systems/define'
 export interface ProjectInfo {
   name: string
   description: string
-  tables: DataObject[]
   schemas: DataObject[]
   enumerations: EnumerationObject[]
   outputs: OutputProject[]
 }
 
+export interface Table {
+  name: string
+  description: string
+  columns: DataObjectColumn[]
+  data: MasterRecord[]
+}
+
+export type MasterRecord = { [columnName: string]: any }
+
 export interface DataObject {
-  uuid: string
   name: string
   description: string
   columns: DataObjectColumn[]
@@ -31,7 +38,6 @@ export interface DataObjectColumnType {
 }
 
 export interface EnumerationObject {
-  uuid: string
   name: string
   description: string
   items: EnumerationItem[]
@@ -44,7 +50,6 @@ export interface EnumerationItem {
 }
 
 export interface OutputProject {
-  uuid: string
   name: string
   description: string
   dataPath: string
