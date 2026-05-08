@@ -23,14 +23,14 @@ export const DataClassificationLabelValues = Object.entries(DataClassificationLa
  * データ型
  */
 export const DataKind = {
-  int: 'int',
-  float: 'float',
-  double: 'double',
-  string: 'string',
-  bool: 'bool',
-  datetime: 'datetime',
-  date: 'date',
-  time: 'time',
+  Int: 'int',
+  Float: 'float',
+  Double: 'double',
+  String: 'string',
+  Bool: 'bool',
+  Datetime: 'datetime',
+  Date: 'date',
+  Time: 'time',
 } as const
 export type DataKindType = (typeof DataKind)[keyof typeof DataKind]
 export const DataKindValues = Object.entries(DataKind)
@@ -39,8 +39,8 @@ export const DataKindValues = Object.entries(DataKind)
  * データ型(ID用)
  */
 export const DataKindForId = {
-  int: 'int',
-  string: 'string',
+  Int: 'int',
+  String: 'string',
 } as const
 export type DataKindForIdType = (typeof DataKindForId)[keyof typeof DataKindForId]
 export const DataKindForIdValues = Object.entries(DataKindForId)
@@ -49,7 +49,7 @@ export const DataKindForIdValues = Object.entries(DataKindForId)
  * データ型(ラベル用)
  */
 export const DataKindForLabel = {
-  string: 'string',
+  String: 'string',
 } as const
 export type DataKindForLabelType = (typeof DataKindForLabel)[keyof typeof DataKindForLabel]
 export const DataKindForLabelValues = Object.entries(DataKindForLabel)

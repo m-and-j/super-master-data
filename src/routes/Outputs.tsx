@@ -3,13 +3,27 @@ import InputText from '@/components/inputs/InputText'
 import ConfirmModal from '@/components/modals/ConfirmModal'
 import ToastMessage from '@/components/notifications/ToastMessage'
 import SideMenuOutput from '@/components/wayFinders/SideMenuOutput'
+import TabItemButton from '@/components/wayFinders/TabItemButton'
+import TabPanel from '@/components/wayFinders/TabPanel'
 import preferences from '@/systems/preferences'
 import { OutputItem, OutputProject } from '@/systems/types'
 import { FormDataEx } from '@/utilities/helper-frontend'
+import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
+
+const Mode = {
+  Entity: 'entity',
+  Schema: 'schema',
+  Enumeration: 'enumeration',
+} as const
+type ModeType = (typeof Mode)[keyof typeof Mode]
 
 export default class Outputs extends MJPage {
   private targetOutput?: OutputProject
+  private mode: ModeType = Mode.Entity
+  private entityFieldset: Reference<HTMLFieldSetElement> = ref()
+  private schemaFieldset: Reference<HTMLFieldSetElement> = ref()
+  private enumerationFieldset: Reference<HTMLFieldSetElement> = ref()
 
   createNode() {
     const { name } = this.params
@@ -50,9 +64,20 @@ export default class Outputs extends MJPage {
             </div>
 
             {/** 各ソースコード出力セクション */}
-            {this.renderSourceCodeSection('エンティティ', 'entity', this.targetOutput?.entity)}
-            {this.renderSourceCodeSection('スキーマ', 'schema', this.targetOutput?.schema)}
-            {this.renderSourceCodeSection('列挙型', 'enumeration', this.targetOutput?.enumeration)}
+            <TabPanel>
+              <TabItemButton name={Mode.Entity} onchange={() => this.changeTab(Mode.Entity)} defaultActive={this.mode === Mode.Entity}>
+                エンティティ
+              </TabItemButton>
+              <TabItemButton name={Mode.Schema} onchange={() => this.changeTab(Mode.Schema)} defaultActive={this.mode === Mode.Schema}>
+                スキーマ
+              </TabItemButton>
+              <TabItemButton name={Mode.Enumeration} onchange={() => this.changeTab(Mode.Enumeration)} defaultActive={this.mode === Mode.Enumeration}>
+                列挙型
+              </TabItemButton>
+            </TabPanel>
+            {this.renderSourceCodeSection(Mode.Entity)}
+            {this.renderSourceCodeSection(Mode.Schema)}
+            {this.renderSourceCodeSection(Mode.Enumeration)}
 
             {/** 保存 / 削除ボタン */}
             <div class="mx-1 mt-6 flex gap-2">
@@ -79,38 +104,74 @@ export default class Outputs extends MJPage {
   }
 
   /**
-   * Entity / スキーマ / 列挙型 のソースコード出力セクション (出力先パス + EJS テンプレート)
+   * ソースコード出力セクション (出力先パス + EJS テンプレート)
    */
-  private renderSourceCodeSection(label: string, fieldPrefix: string, item?: OutputItem) {
+  private renderSourceCodeSection(mode: ModeType) {
+    const outputPathName = `${mode}Path`
+    const fileNameTemplateName = `${mode}FileNameTemplate`
+    const sourceCodeTemplateName = `${mode}SourceCodeTemplate`
+    let outputItem
+    let fileNameTemplateHint
+    let ref
+    switch (mode) {
+      case Mode.Entity: {
+        outputItem = this.targetOutput?.entity
+        fileNameTemplateHint = '例) {{filename}}Entity など'
+        ref = this.entityFieldset
+        break
+      }
+      case Mode.Schema: {
+        outputItem = this.targetOutput?.schema
+        fileNameTemplateHint = '例) {{filename}}Schema など'
+        ref = this.schemaFieldset
+        break
+      }
+      case Mode.Enumeration: {
+        outputItem = this.targetOutput?.enumeration
+        fileNameTemplateHint = '例) {{filename}}Enum など'
+        ref = this.enumerationFieldset
+        break
+      }
+    }
     return (
-      <fieldset class="mx-1 mt-3 rounded-md border border-zinc-600 p-3">
-        <legend class="px-2 text-sm font-semibold">{label}</legend>
+      <fieldset class={['rounded-b-md border-x border-b border-zinc-500 p-3', this.mode !== mode && 'hidden']} ref={ref}>
         <div class="mb-2 flex items-center gap-2">
-          <div class="flex-[0_0_170px] text-right text-sm">出力先パス</div>
+          <div class="flex-[0_0_180px] text-right text-sm">出力先パス</div>
           <div class="flex-auto">
-            <InputText name={`${fieldPrefix}Path`} placeholder="出力先ディレクトリ" value={item?.path} />
+            <InputText name={outputPathName} placeholder="出力先ディレクトリ" value={outputItem?.path} />
           </div>
         </div>
         <div class="mb-2 flex items-center gap-2">
-          <div class="flex-[0_0_170px] text-right text-sm">ファイル名テンプレート</div>
-          <div class="flex-[0_0_200px]">
-            <InputText name={`${fieldPrefix}FileNameTemplate`} value={item?.fileNameTemplate ?? '{{filename}}'} />
+          <div class="flex-[0_0_180px] text-right text-sm">ファイル名テンプレート</div>
+          <div class="flex-[0_0_250px]">
+            <InputText name={fileNameTemplateName} value={outputItem?.fileNameTemplate ?? '{{filename}}'} />
           </div>
-          <div class="flex-auto text-xs text-zinc-400">{'例) {{filename}}Entity, {{filename}}Schema など'}</div>
+          <div class="flex-auto text-xs text-zinc-400">{fileNameTemplateHint}</div>
         </div>
         <div class="flex items-start gap-2">
-          <div class="flex-[0_0_170px] pt-2 text-right text-sm">ソースコードテンプレート (EJS)</div>
+          <div class="flex-[0_0_180px] pt-2 text-right text-sm">
+            ソースコードテンプレート
+            <br />
+            (EJS)
+          </div>
           <div class="flex-auto">
             <textarea
-              name={`${fieldPrefix}SourceCodeTemplate`}
-              class="scrollbar min-h-[10rem] w-full resize-y rounded-md border border-zinc-500 bg-zinc-800 p-2 font-mono text-sm leading-5 outline-none"
+              name={sourceCodeTemplateName}
+              class="scrollbar min-h-[30rem] w-full resize-y rounded-md border border-zinc-500 bg-zinc-800 p-2 font-mono text-sm leading-5 outline-none"
             >
-              {item?.sourceCodeTemplate ?? ''}
+              {outputItem?.sourceCodeTemplate ?? ''}
             </textarea>
           </div>
         </div>
       </fieldset>
     )
+  }
+
+  private changeTab(mode: ModeType) {
+    this.mode = mode
+    this.entityFieldset.value?.classList.toggle('hidden', this.mode !== Mode.Entity)
+    this.schemaFieldset.value?.classList.toggle('hidden', this.mode !== Mode.Schema)
+    this.enumerationFieldset.value?.classList.toggle('hidden', this.mode !== Mode.Enumeration)
   }
 
   private async register(event: SubmitEvent) {

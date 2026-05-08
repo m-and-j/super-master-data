@@ -16,15 +16,15 @@ export function getColumnWidthCSS(column: DataObjectColumn): string {
   } else if (classification === DataClassification.RelationID) {
     return 'flex-[0_0_220px]'
   } else if (classification === DataClassification.Scalar) {
-    if (typeName === DataKind.bool) {
+    if (typeName === DataKind.Bool) {
       return 'flex-[0_0_80px]'
-    } else if (typeName === DataKind.int || typeName === DataKind.float || typeName === DataKind.double) {
+    } else if (typeName === DataKind.Int || typeName === DataKind.Float || typeName === DataKind.Double) {
       return 'flex-[0_0_140px]'
-    } else if (typeName === DataKind.date) {
+    } else if (typeName === DataKind.Date) {
       return 'flex-[0_0_160px]'
-    } else if (typeName === DataKind.time) {
+    } else if (typeName === DataKind.Time) {
       return 'flex-[0_0_140px]'
-    } else if (typeName === DataKind.datetime) {
+    } else if (typeName === DataKind.Datetime) {
       return 'flex-[0_0_220px]'
     } else {
       return 'flex-[0_0_220px]'
@@ -44,12 +44,12 @@ export function defaultValueFor(column: DataObjectColumn): any {
     switch (column.type.classification) {
       case DataClassification.Scalar: {
         switch (column.type.typeName) {
-          case DataKind.bool: {
+          case DataKind.Bool: {
             return false
           }
-          case DataKind.int:
-          case DataKind.float:
-          case DataKind.double: {
+          case DataKind.Int:
+          case DataKind.Float:
+          case DataKind.Double: {
             return 0
           }
           default: {

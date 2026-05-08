@@ -82,15 +82,15 @@ export default class MasterDataCell extends MJComponent<Props> {
     } else {
       const { typeName } = column.type
       switch (typeName) {
-        case DataKind.bool:
+        case DataKind.Bool:
           return (
             <div class={['flex items-center justify-center border border-transparent bg-zinc-800 px-2 py-1', widthClass, className]}>
               <input type="checkbox" checked={Boolean(value)} onchange={(e) => (value = (e.target as HTMLInputElement).checked)} />
             </div>
           )
-        case DataKind.int:
-        case DataKind.float:
-        case DataKind.double:
+        case DataKind.Int:
+        case DataKind.Float:
+        case DataKind.Double:
           return (
             <CellText
               type="number"
@@ -102,26 +102,26 @@ export default class MasterDataCell extends MJComponent<Props> {
               }}
             />
           )
-        case DataKind.date:
+        case DataKind.Date:
           return (
             <div class={['border border-transparent bg-zinc-800 px-2 py-1 has-[input:focus]:border-blue-500', widthClass, className]}>
               <input type="date" value={value} class="h-full w-full bg-transparent outline-hidden" onchange={(e) => (value = (e.target as HTMLInputElement).value)} />
             </div>
           )
-        case DataKind.time:
+        case DataKind.Time:
           return (
             <div class={['border border-transparent bg-zinc-800 px-2 py-1 has-[input:focus]:border-blue-500', widthClass, className]}>
               <input type="time" value={value} class="h-full w-full bg-transparent outline-hidden" onchange={(e) => (value = (e.target as HTMLInputElement).value)} />
             </div>
           )
-        case DataKind.datetime: {
+        case DataKind.Datetime: {
           return (
             <div class={['border border-transparent bg-zinc-800 px-2 py-1 has-[input:focus]:border-blue-500', className]}>
               <input type="datetime-local" value={value} class="h-full w-full bg-transparent outline-hidden" onchange={(e) => (value = (e.target as HTMLInputElement).value)} />
             </div>
           )
         }
-        case DataKind.string:
+        case DataKind.String:
         default:
           return <CellText className={[widthClass, className]} value={value} onchange={(e) => (value = (e.target as HTMLInputElement).value)} />
       }

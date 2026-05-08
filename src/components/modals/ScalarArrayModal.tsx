@@ -126,7 +126,7 @@ export default class ScalarArrayModal extends MJCustomElement<Props>()(ModalBase
 
     // scalar
     const typeName = column.type.typeName
-    if (typeName === DataKind.bool) {
+    if (typeName === DataKind.Bool) {
       return (
         <input
           type="checkbox"
@@ -137,7 +137,7 @@ export default class ScalarArrayModal extends MJCustomElement<Props>()(ModalBase
         />
       )
     }
-    if (typeName === DataKind.int || typeName === DataKind.float || typeName === DataKind.double) {
+    if (typeName === DataKind.Int || typeName === DataKind.Float || typeName === DataKind.Double) {
       return (
         <input
           type="number"
@@ -150,8 +150,8 @@ export default class ScalarArrayModal extends MJCustomElement<Props>()(ModalBase
         />
       )
     }
-    if (typeName === DataKind.date || typeName === DataKind.time || typeName === DataKind.datetime) {
-      const inputType = typeName === DataKind.datetime ? 'datetime-local' : typeName
+    if (typeName === DataKind.Date || typeName === DataKind.Time || typeName === DataKind.Datetime) {
+      const inputType = typeName === DataKind.Datetime ? 'datetime-local' : typeName
       return (
         <input
           type={inputType}
@@ -222,11 +222,11 @@ export default class ScalarArrayModal extends MJCustomElement<Props>()(ModalBase
       return ''
     }
     switch (column.type.typeName) {
-      case DataKind.bool:
+      case DataKind.Bool:
         return false
-      case DataKind.int:
-      case DataKind.float:
-      case DataKind.double:
+      case DataKind.Int:
+      case DataKind.Float:
+      case DataKind.Double:
         return 0
       default:
         return ''
