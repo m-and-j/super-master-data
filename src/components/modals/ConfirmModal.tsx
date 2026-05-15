@@ -8,7 +8,7 @@ interface ButtonInfo {
   callback: () => void
   variant?: InputVariantType
 }
-type Props = MJ.CEProps<ConfirmModal>
+interface Props extends MJ.CEProps<ConfirmModal> {}
 
 /**
  * 確認モーダル

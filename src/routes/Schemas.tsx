@@ -1,5 +1,5 @@
+import DataObjectTable from '@/components/data-grid/DataObjectTable'
 import Button from '@/components/inputs/Button'
-import DataObjectTable from '@/components/inputs/DataObjectTable'
 import InputText from '@/components/inputs/InputText'
 import ConfirmModal from '@/components/modals/ConfirmModal'
 import ToastMessage from '@/components/notifications/ToastMessage'

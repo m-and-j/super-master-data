@@ -1,5 +1,5 @@
+import CellText from '@/components/data-grid/CellText'
 import Button from '@/components/inputs/Button'
-import CellText from '@/components/inputs/CellText'
 import { ColumnParams } from '@/systems/define'
 import { EnumerationItem } from '@/systems/types'
 import { MJComponent, Reference } from '@mj/jsx'

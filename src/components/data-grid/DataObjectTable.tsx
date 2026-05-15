@@ -1,5 +1,5 @@
-import CellHeader from '@/components/inputs/CellHeader'
-import DataObjectRow from '@/components/inputs/DataObjectRow'
+import CellHeader from '@/components/data-grid/CellHeader'
+import DataObjectRow from '@/components/data-grid/DataObjectRow'
 import { DataObjectColumn } from '@/systems/types'
 import { formatCSS, MJ, MJCustomElement, Reference } from '@mj/jsx'
 

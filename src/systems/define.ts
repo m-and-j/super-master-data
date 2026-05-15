@@ -77,14 +77,6 @@ export const MouseButtonCode = {
 } as const
 
 /**
- * ローカルストレージ用キー定義
- */
-export const LocalStorageKeys = {
-  Theme: 'super-master-data.theme',
-  ProjectPath: 'super-master-data.project-path',
-} as const
-
-/**
  * プロジェクトフォルダ定義
  */
 export const ProjectFolder = {

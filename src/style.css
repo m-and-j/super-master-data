@@ -128,4 +128,12 @@
     scrollbar-color: #888 transparent;
     scrollbar-width: thin;
   }
+
+  /** データグリッド */
+  .data-grid-header {
+    @apply border-t border-l border-zinc-500;
+  }
+  .data-grid-cell {
+    @apply border-b border-r border-zinc-500;
+  }
 }

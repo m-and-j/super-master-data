@@ -1,5 +1,5 @@
-import CellHeader from '@/components/inputs/CellHeader'
-import EnumerationRow from '@/components/inputs/EnumerationRow'
+import CellHeader from '@/components/data-grid/CellHeader'
+import EnumerationRow from '@/components/data-grid/EnumerationRow'
 import { EnumerationItem } from '@/systems/types'
 import { MJ, MJComponent, ref, Reference } from '@mj/jsx'
 

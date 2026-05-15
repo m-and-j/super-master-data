@@ -1,5 +1,4 @@
 import ConfirmModal from '@/components/modals/ConfirmModal'
-import ScalarArrayModal from '@/components/modals/ScalarArrayModal'
 import LoadingMessage from '@/components/notifications/LoadingMessage'
 import ShotMessage from '@/components/notifications/ShotMessage'
 import ToastMessage from '@/components/notifications/ToastMessage'
@@ -13,7 +12,7 @@ import OUtputsJsonEdit from '@/routes/OutputsJsonEdit'
 import Schemas from '@/routes/Schemas'
 import SchemasJsonEdit from '@/routes/SchemasJsonEdit'
 import Tables from '@/routes/Tables'
-import { LocalStorageKeys } from '@/systems/define'
+import cacheStore from '@/systems/cache-store'
 import { MJComponent } from '@mj/jsx'
 import { MJRouter } from '@mj/router'
 
@@ -60,7 +59,6 @@ export default class AppContent extends MJComponent {
           debug
         />
         <ConfirmModal />
-        <ScalarArrayModal />
         <LoadingMessage />
         <ShotMessage />
         <ToastMessage />
@@ -70,7 +68,7 @@ export default class AppContent extends MJComponent {
 
   async afterRender() {
     const pcDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const theme = localStorage.getItem(LocalStorageKeys.Theme) ?? (pcDark ? 'dark' : 'light')
+    const theme = cacheStore.theme.getValue() ?? (pcDark ? 'dark' : 'light')
     document.documentElement.dataset.theme = theme
   }
 }

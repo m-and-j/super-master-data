@@ -1,4 +1,4 @@
-import { LocalStorageKeys } from '@/systems/define'
+import cacheStore from '@/systems/cache-store'
 import masterData from '@/systems/master-data'
 import { DataObject, DataObjectColumn, EnumerationItem, EnumerationObject, OutputItem, OutputProject, ProjectInfo } from '@/systems/types'
 import { readJsonFile, writeJsonFile } from '@/utilities/helper'
@@ -14,12 +14,12 @@ class Preferences {
   private folderPath: string | undefined
 
   /**
-   * 前回使用したファイルパスを localStorage から読み出し、存在すればそのファイルからプロジェクトを読み込む
+   * キャッシュに前回使用したファイルパスが存在すればそのファイルからプロジェクトを読み込む
    */
   async load() {
     if (!this.loadingPromise) {
       this.loadingPromise = new Promise<boolean>(async (resolve) => {
-        const savedPath = localStorage.getItem(LocalStorageKeys.ProjectPath) ?? undefined
+        const savedPath = cacheStore.projectPath.getValue()
         let result = false
         if (savedPath) {
           try {
@@ -34,7 +34,7 @@ class Preferences {
             result = true
           } catch (e) {
             console.error('前回のプロジェクトファイルの読み込みに失敗しました:', e)
-            localStorage.removeItem(LocalStorageKeys.ProjectPath)
+            cacheStore.projectPath.remove()
           }
         }
         resolve(result)
@@ -71,7 +71,7 @@ class Preferences {
    */
   async openProject(path: string) {
     this.folderPath = path
-    localStorage.setItem(LocalStorageKeys.ProjectPath, path)
+    cacheStore.projectPath.setValue(path)
     const filePath = this.toProjectFilePath(path)
     if (await exists(filePath)) {
       const projectInfo = await readJsonFile<ProjectInfo>(filePath)

@@ -1,5 +1,5 @@
+import EnumerationTable from '@/components/data-grid/EnumerationTable'
 import Button from '@/components/inputs/Button'
-import EnumerationTable from '@/components/inputs/EnumerationTable'
 import InputText from '@/components/inputs/InputText'
 import ConfirmModal from '@/components/modals/ConfirmModal'
 import ToastMessage from '@/components/notifications/ToastMessage'
@@ -22,7 +22,7 @@ export default class Enumerations extends MJPage {
     return (
       <div class="flex h-[calc(100vh-52px)] items-stretch">
         {/** 左メニュー */}
-        <SideMenuEnumeration currentName={name} />
+        <SideMenuEnumeration currentName={name} className="flex-[0_0_300px]" />
 
         {/** コンテンツ部分 */}
         <div class="scrollbar flex-auto overflow-y-scroll">
