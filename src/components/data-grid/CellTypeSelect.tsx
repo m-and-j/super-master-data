@@ -19,7 +19,7 @@ export default class CellTypeSelect extends MJCustomElement<Props>()(HTMLDivElem
   private selectBox: Reference<HTMLSelectElement> = ref()
 
   async initialize({ className }: Props) {
-    this.className = formatCSS(['px-1 bg-zinc-800 flex gap-2 border border-transparent', 'has-[select:focus]:border-blue-500', className])
+    this.className = formatCSS(['data-grid-cell px-1 bg-zinc-800 flex gap-2', className])
   }
 
   createNode({ name, items, onchange }: Props) {

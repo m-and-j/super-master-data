@@ -30,10 +30,11 @@ export default class Outputs extends MJPage {
     const projectInfo = preferences.getProjectInfo()
     this.targetOutput = projectInfo.outputs.find((s) => s.name === name)
     return (
-      <div class="flex h-[calc(100vh-52px)] items-stretch">
+      <div class="flex h-[calc(100vh-52px)] items-stretch text-sm">
         {/** 左メニュー */}
         <SideMenuOutput currentName={name} />
 
+        {/** コンテンツ */}
         <div class="scrollbar flex-auto overflow-y-scroll">
           <form class="p-2" onsubmit={(e) => this.register(e)}>
             {/** 基本情報 */}

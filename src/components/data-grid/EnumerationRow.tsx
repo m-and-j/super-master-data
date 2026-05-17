@@ -2,32 +2,40 @@ import CellText from '@/components/data-grid/CellText'
 import Button from '@/components/inputs/Button'
 import { ColumnParams } from '@/systems/define'
 import { EnumerationItem } from '@/systems/types'
-import { MJComponent, Reference } from '@mj/jsx'
+import { MJComponent } from '@mj/jsx'
 
 interface Props {
   item?: EnumerationItem
-  tableDiv: Reference<HTMLDivElement>
+  index: number
+  moveUp: (index: number) => void
+  moveDown: (index: number) => void
+  deleteRow: (index: number) => void
 }
 
 /**
  * 列挙型テーブル行
  */
 export default class EnumerationRow extends MJComponent<Props> {
-  createNode({ item }: Props) {
+  createNode({ item, index, moveUp, moveDown, deleteRow }: Props) {
     return (
-      <div class="flex gap-[1px]">
-        <CellText className="flex-[0_0_300px]" name={ColumnParams.Names} value={item?.label} />
-        <CellText className="flex-[0_0_100px]" name={ColumnParams.Values} value={item?.value} type="number" />
-        <CellText className="flex-auto" name={ColumnParams.Descriptions} value={item?.description} />
-        <Button className="flex-[0_0_50px]" variant="danger" size="none" onclick={() => this.deleteRow()}>
-          <span class="icon-[ic--baseline-delete-forever] text-2xl"></span>
-        </Button>
-      </div>
+      <>
+        <CellText name={ColumnParams.Names} value={item?.label} />
+        <CellText name={ColumnParams.Values} value={item?.value} type="number" />
+        <CellText name={ColumnParams.Descriptions} value={item?.description} />
+        <div class="data-grid-cell">
+          <div class="m-1 flex justify-between">
+            <Button variant="success" size="none" className="flex-[0_0_40px]" onclick={() => moveUp(index)}>
+              <span class="icon-[ic--baseline-arrow-upward] text-2xl"></span>
+            </Button>
+            <Button variant="success" size="none" className="flex-[0_0_40px]" onclick={() => moveDown(index)}>
+              <span class="icon-[ic--baseline-arrow-downward] text-2xl"></span>
+            </Button>
+            <Button variant="danger" size="none" className="flex-[0_0_40px]" onclick={() => deleteRow(index)}>
+              <span class="icon-[ic--baseline-delete-forever] text-2xl"></span>
+            </Button>
+          </div>
+        </div>
+      </>
     )
-  }
-
-  deleteRow() {
-    const { tableDiv } = this.props
-    tableDiv.value?.removeChild(this.node as Node)
   }
 }

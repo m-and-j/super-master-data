@@ -20,50 +20,48 @@ export default class Enumerations extends MJPage {
     const projectInfo = preferences.getProjectInfo()
     this.targetEnumeration = projectInfo.enumerations.find((e) => e.name === name)
     return (
-      <div class="flex h-[calc(100vh-52px)] items-stretch">
+      <form class="grid h-[calc(100vh-52px)] grid-cols-[300px_1fr] grid-rows-[90px_1fr] text-sm" onsubmit={(e) => this.register(e)}>
         {/** 左メニュー */}
-        <SideMenuEnumeration currentName={name} className="flex-[0_0_300px]" />
+        <SideMenuEnumeration currentName={name} className="row-span-2" />
 
-        {/** コンテンツ部分 */}
-        <div class="scrollbar flex-auto overflow-y-scroll">
-          <form onsubmit={(e) => this.register(e)}>
-            <div class="mx-3 flex items-center gap-2">
-              <div class="flex-[0_0_100px] text-right">列挙型名</div>
-              <div class="flex-[0_0_400px]">
-                <InputText name="name" placeholder="列挙型名" value={this.targetEnumeration?.name} />
-              </div>
-              <div class="flex-[0_0_50px] text-right">説明</div>
-              <div class="flex-auto">
-                <InputText name="description" placeholder="内容" value={this.targetEnumeration?.description} />
-              </div>
+        {/** コンテンツ */}
+        <div class="flex flex-col justify-center">
+          <div class="mx-3 flex items-center gap-2">
+            <div class="flex-[0_0_100px] text-right">列挙型名</div>
+            <div class="flex-[0_0_400px]">
+              <InputText name="name" placeholder="列挙型名" value={this.targetEnumeration?.name} />
             </div>
-            <div class="mx-2 mt-6 flex gap-2">
-              <Button variant="success" size="sm" onclick={() => this.dataObjectTable.value?.addRow()}>
+            <div class="flex-[0_0_50px] text-right">説明</div>
+            <div class="flex-auto">
+              <InputText name="description" placeholder="内容" value={this.targetEnumeration?.description} />
+            </div>
+          </div>
+          <div class="mx-2 mt-3 flex gap-2">
+            <Button variant="success" size="sm" onclick={() => this.dataObjectTable.value?.addRow()}>
+              <div class="flex items-center justify-center gap-1">
+                <span class="icon-[ic--baseline-add] text-lg"></span>
+                項目追加
+              </div>
+            </Button>
+            <div class="flex-auto"></div>
+            <Button type="submit" variant="primary" size="sm">
+              <div class="flex items-center justify-center gap-1">
+                <span class="icon-[ic--baseline-save] text-lg"></span>
+                保存
+              </div>
+            </Button>
+            {this.targetEnumeration && (
+              <Button type="button" variant="danger" size="sm" onclick={() => this.confirmDelete()}>
                 <div class="flex items-center justify-center gap-1">
-                  <span class="icon-[ic--baseline-add] text-lg"></span>
-                  項目追加
+                  <span class="icon-[ic--baseline-delete] text-lg"></span>
+                  削除
                 </div>
               </Button>
-              <div class="flex-auto"></div>
-              <Button type="submit" variant="primary" size="sm">
-                <div class="flex items-center justify-center gap-1">
-                  <span class="icon-[ic--baseline-save] text-lg"></span>
-                  保存
-                </div>
-              </Button>
-              {this.targetEnumeration && (
-                <Button type="button" variant="danger" size="sm" onclick={() => this.confirmDelete()}>
-                  <div class="flex items-center justify-center gap-1">
-                    <span class="icon-[ic--baseline-delete] text-lg"></span>
-                    削除
-                  </div>
-                </Button>
-              )}
-            </div>
-            <EnumerationTable items={this.targetEnumeration?.items} className="mt-2" ref={this.dataObjectTable} />
-          </form>
+            )}
+          </div>
         </div>
-      </div>
+        <EnumerationTable items={this.targetEnumeration?.items} ref={this.dataObjectTable} />
+      </form>
     )
   }
 

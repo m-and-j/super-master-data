@@ -1,43 +1,66 @@
 import CellHeader from '@/components/data-grid/CellHeader'
 import EnumerationRow from '@/components/data-grid/EnumerationRow'
 import { EnumerationItem } from '@/systems/types'
-import { MJ, MJComponent, ref, Reference } from '@mj/jsx'
+import { formatCSS, MJ, MJCustomElement } from '@mj/jsx'
 
-interface Props {
+interface Props extends MJ.CEProps<EnumerationTable> {
   items?: EnumerationItem[]
-  className?: MJ.ClassProp
-  ref?: Reference<EnumerationTable>
 }
 
 /**
  * 列挙型テーブル
  */
-export default class EnumerationTable extends MJComponent<Props> {
-  private tableDiv: Reference<HTMLDivElement> = ref()
+export default class EnumerationTable extends MJCustomElement<Props>()(HTMLDivElement) {
+  private items: EnumerationItem[] = []
 
-  constructor(props: Props) {
-    super(props)
-    props.ref?.set(this)
+  connectedCallback() {
+    const { className } = this.props
+    this.className = formatCSS(['scrollbar overflow-scroll', className])
   }
 
-  createNode({ items, className }: Props) {
+  async initialize({ items }: Props) {
+    this.items = items ?? []
+  }
+
+  createNode() {
     return (
-      <div class={['flex flex-col gap-[1px] bg-zinc-500 p-[1px]', className]} ref={this.tableDiv}>
-        <div class="flex gap-[1px]">
-          <CellHeader className="flex-[0_0_300px]">項目名</CellHeader>
-          <CellHeader className="flex-[0_0_100px]">値</CellHeader>
-          <CellHeader className="flex-auto">説明</CellHeader>
-          <CellHeader className="flex-[0_0_50px]">操作</CellHeader>
-        </div>
-        {items?.map((item) => (
-          <EnumerationRow item={item} tableDiv={this.tableDiv} />
+      <div class="grid grid-cols-[auto_auto_auto_140px]">
+        <CellHeader>項目名</CellHeader>
+        <CellHeader>値</CellHeader>
+        <CellHeader>説明</CellHeader>
+        <CellHeader>操作</CellHeader>
+        {this.items?.map((item, index) => (
+          <EnumerationRow item={item} index={index} moveUp={(idx) => this.moveUp(idx)} moveDown={(idx) => this.moveDown(idx)} deleteRow={(idx) => this.deleteRow(idx)} />
         ))}
       </div>
     )
   }
 
   async addRow() {
-    const row = new EnumerationRow({ tableDiv: this.tableDiv })
-    this.tableDiv.value?.appendChild(await row.render())
+    this.items.push({ label: '', value: 0, description: '' })
+    await this.render()
+  }
+
+  async deleteRow(index: number) {
+    this.items.splice(index, 1)
+    await this.render()
+  }
+
+  async moveUp(index: number) {
+    if (index > 0) {
+      const tmp = this.items[index]
+      this.items[index] = this.items[index - 1]
+      this.items[index - 1] = tmp
+    }
+    await this.render()
+  }
+
+  async moveDown(index: number) {
+    if (index < this.items.length - 1) {
+      const tmp = this.items[index]
+      this.items[index] = this.items[index + 1]
+      this.items[index + 1] = tmp
+    }
+    await this.render()
   }
 }

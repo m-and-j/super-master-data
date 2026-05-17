@@ -1,13 +1,11 @@
 import CellHeader from '@/components/data-grid/CellHeader'
 import DataObjectRow from '@/components/data-grid/DataObjectRow'
 import { DataObjectColumn } from '@/systems/types'
-import { formatCSS, MJ, MJCustomElement, Reference } from '@mj/jsx'
+import { formatCSS, MJ, MJCustomElement } from '@mj/jsx'
 
-interface Props {
+interface Props extends MJ.CEProps<DataObjectTable> {
   schemaName?: string
   columns?: DataObjectColumn[]
-  className?: MJ.ClassProp
-  ref?: Reference<DataObjectTable>
 }
 
 /**
@@ -18,31 +16,33 @@ export default class DataObjectTable extends MJCustomElement<Props>()(HTMLDivEle
 
   connectedCallback() {
     const { className } = this.props
-    this.className = formatCSS(['flex flex-col gap-[1px] bg-zinc-500 p-[1px]', className])
+    this.className = formatCSS(['scrollbar overflow-scroll', className])
   }
 
-  async initialize({ columns, ref }: Props) {
-    this.columns = Array.from(columns ?? [])
-    ref?.set(this)
+  async initialize({ columns }: Props) {
+    this.columns = columns ?? []
   }
 
   createNode({ schemaName }: Props) {
     return (
-      <>
-        <div class="flex gap-[1px]">
-          <CellHeader className="flex flex-[0_0_50px] items-center justify-center">
-            <span class="icon-[ic--baseline-sort] text-2xl"></span>
-          </CellHeader>
-          <CellHeader className="flex-[0_0_300px]">項目名</CellHeader>
-          <CellHeader className="flex-[0_0_200px]">ラベル</CellHeader>
-          <CellHeader className="flex-[0_0_543.5px]">データ型</CellHeader>
-          <CellHeader className="flex-auto">説明</CellHeader>
-          <CellHeader className="flex-[0_0_50px]">操作</CellHeader>
-        </div>
+      <div class="grid grid-cols-[50px_auto_auto_auto_auto_auto_auto_auto_140px]">
+        <CellHeader className="flex items-center justify-center">#</CellHeader>
+        <CellHeader>項目名</CellHeader>
+        <CellHeader>ラベル</CellHeader>
+        <CellHeader className="col-span-4">データ型</CellHeader>
+        <CellHeader>説明</CellHeader>
+        <CellHeader>操作</CellHeader>
         {this.columns.map((column, index) => (
-          <DataObjectRow schemaName={schemaName} index={index} column={column} deleteRow={(idx) => this.deleteRow(idx)} onmousedown={(e, row) => this.mouseDown(e, row)} />
+          <DataObjectRow
+            schemaName={schemaName}
+            index={index}
+            column={column}
+            moveUp={(idx) => this.moveUp(idx)}
+            moveDown={(idx) => this.moveDown(idx)}
+            deleteRow={(idx) => this.deleteRow(idx)}
+          />
         ))}
-      </>
+      </div>
     )
   }
 
@@ -60,39 +60,21 @@ export default class DataObjectTable extends MJCustomElement<Props>()(HTMLDivEle
     await this.render()
   }
 
-  mouseDown(e: MouseEvent, row: HTMLDivElement) {
-    e.preventDefault()
-    const original = e.currentTarget as HTMLElement
-    original.classList.remove('cursor-grab')
-    const ghost = row.cloneNode(true) as HTMLElement
-    ghost.style.position = 'absolute'
-    ghost.style.top = `${row.offsetTop}px`
-    ghost.style.left = `${row.offsetLeft}px`
-    ghost.style.width = `${row.offsetWidth}px`
-    ghost.style.height = `${row.offsetHeight}px`
-    row.classList.add('invisible')
-    document.body.appendChild(ghost)
-    document.body.style.cursor = 'grabbing'
-    document.body.classList.add('select-none')
-
-    const mouseMove = (e: MouseEvent) => {
-      if (this.offsetTop + ghost.offsetHeight < e.clientY && this.offsetTop + this.offsetHeight > e.clientY) {
-        ghost.style.top = `${e.clientY - ghost.offsetHeight / 2}px`
-      }
+  async moveUp(index: number) {
+    if (index > 0) {
+      const tmp = this.columns[index]
+      this.columns[index] = this.columns[index - 1]
+      this.columns[index - 1] = tmp
     }
-    document.body.addEventListener('mousemove', mouseMove)
-    document.body.addEventListener(
-      'mouseup',
-      (e) => {
-        e.preventDefault()
-        original.classList.add('cursor-grab')
-        row.classList.remove('invisible')
-        document.body.removeEventListener('mousemove', mouseMove)
-        document.body.style.cursor = 'default'
-        document.body.classList.remove('select-none')
-        document.body.removeChild(ghost)
-      },
-      { once: true },
-    )
+    await this.render()
+  }
+
+  async moveDown(index: number) {
+    if (index < this.columns.length - 1) {
+      const tmp = this.columns[index]
+      this.columns[index] = this.columns[index + 1]
+      this.columns[index + 1] = tmp
+    }
+    await this.render()
   }
 }

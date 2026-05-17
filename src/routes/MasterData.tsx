@@ -26,14 +26,16 @@ export default class MasterData extends MJPage {
     const gridRef: Reference<MasterDataGrid> = ref()
     const schemaPanelRef: Reference<SchemaPanel> = ref()
     return (
-      <div class="grid h-[calc(100vh-52px)] grid-cols-[300px_1fr_600px] grid-rows-[52px_1fr] text-sm">
+      <div class="grid h-[calc(100vh-52px)] grid-cols-[300px_1fr_600px] grid-rows-[45px_1fr] text-sm">
+        {/** 左メニュー */}
         <SideMenuMasterData currentName={name} className="row-span-2" />
 
+        {/** コンテンツ */}
         {(this.table && (
           <>
             {(this.idColumnCount === 1 && (
               <>
-                <div class="col-span-2 flex items-center gap-2 border-b border-zinc-700 px-4 py-2">
+                <div class="col-span-2 flex items-center gap-2 px-4">
                   <div class="font-semibold">{this.table?.name}</div>
                   <div class="text-sm text-zinc-400">{formatNumber(this.table?.data.length ?? 0)} 件</div>
                   <div class="flex-auto"></div>
@@ -46,8 +48,6 @@ export default class MasterData extends MJPage {
                     保存
                   </Button>
                 </div>
-
-                {/** 主グリッド */}
                 <MasterDataGrid columns={this.table.columns} data={this.table.data} className="col-span-2" ref={gridRef} schemaPanelRef={schemaPanelRef} />
               </>
             )) || (

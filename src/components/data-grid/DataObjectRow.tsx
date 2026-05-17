@@ -12,15 +12,15 @@ interface Props {
   schemaName?: string
   index: number
   column: DataObjectColumn
+  moveUp: (index: number) => void
+  moveDown: (index: number) => void
   deleteRow: (index: number) => void
-  onmousedown: (event: MouseEvent, row: HTMLDivElement) => void
 }
 
 /**
  * データオブジェクトテーブル行
  */
 export default class DataObjectRow extends MJComponent<Props> {
-  private row: Reference<HTMLDivElement> = ref()
   private dataKindSelect: Reference<CellTypeSelect> = ref()
   private dataKindForIdSelect: Reference<CellTypeSelect> = ref()
   private dataKindForLabelSelect: Reference<CellTypeSelect> = ref()
@@ -28,7 +28,7 @@ export default class DataObjectRow extends MJComponent<Props> {
   private schemaSelect: Reference<CellTypeSelect> = ref()
   private enumerationSelect: Reference<CellTypeSelect> = ref()
 
-  createNode({ schemaName, index, column, deleteRow, onmousedown }: Props) {
+  createNode({ schemaName, index, column, moveUp, moveDown, deleteRow }: Props) {
     const { name, label, type, description } = column
     const { typeName, classification, array, nullable } = type
     const dataClassificationItems = DataClassificationLabelValues.map(([value, label]) => ({ label, value, selected: classification === value }))
@@ -40,26 +40,34 @@ export default class DataObjectRow extends MJComponent<Props> {
     const schemas = projectInfo.schemas.filter(({ name }) => name !== schemaName).map(({ name }) => ({ label: name, value: name, selected: typeName === name }))
     const enumerations = projectInfo.enumerations.map(({ name, description }) => ({ label: `${name}【${description}】`, value: name, selected: typeName === name }))
     return (
-      <div class="flex gap-[1px]" ref={this.row}>
-        <div class="flex flex-[0_0_50px] cursor-grab items-center justify-center bg-zinc-600" onmousedown={(e) => onmousedown(e, this.row.value!)}>
-          {index + 1}
-        </div>
-        <CellText className="flex-[0_0_300px]" value={name} onchange={this.changeName} />
-        <CellText className="flex-[0_0_200px]" value={label} onchange={(e) => this.changeLabel(e)} />
+      <>
+        <div class="flex items-center justify-center bg-zinc-600">{index + 1}</div>
+        <CellText value={name} onchange={(e) => this.changeName(e)} />
+        <CellText value={label} onchange={(e) => this.changeLabel(e)} />
         <CellTypeSelect items={dataClassificationItems} onchange={(e) => this.changeClassification(e)} />
-        <CellTypeSelect className="flex-[0_0_250px]" items={dataKindItems} onchange={(e) => this.changeKind(e)} ref={this.dataKindSelect} />
-        <CellTypeSelect className="flex-[0_0_250px]" items={dataKindForIdItems} onchange={(e) => this.changeKind(e)} ref={this.dataKindForIdSelect} />
-        <CellTypeSelect className="flex-[0_0_250px]" items={dataKindForLabelItems} onchange={(e) => this.changeKind(e)} ref={this.dataKindForLabelSelect} />
-        <CellTypeSelect className="flex-[0_0_250px]" items={tables} onchange={(e) => this.changeKind(e)} ref={this.tableSelect} />
-        <CellTypeSelect className="flex-[0_0_250px]" items={schemas} onchange={(e) => this.changeKind(e)} ref={this.schemaSelect} />
-        <CellTypeSelect className="flex-[0_0_250px]" items={enumerations} onchange={(e) => this.changeKind(e)} ref={this.enumerationSelect} />
+        <CellTypeSelect items={dataKindItems} onchange={(e) => this.changeKind(e)} ref={this.dataKindSelect} />
+        <CellTypeSelect items={dataKindForIdItems} onchange={(e) => this.changeKind(e)} ref={this.dataKindForIdSelect} />
+        <CellTypeSelect items={dataKindForLabelItems} onchange={(e) => this.changeKind(e)} ref={this.dataKindForLabelSelect} />
+        <CellTypeSelect items={tables} onchange={(e) => this.changeKind(e)} ref={this.tableSelect} />
+        <CellTypeSelect items={schemas} onchange={(e) => this.changeKind(e)} ref={this.schemaSelect} />
+        <CellTypeSelect items={enumerations} onchange={(e) => this.changeKind(e)} ref={this.enumerationSelect} />
         <CellTypeCheckBox label="Array" checked={array} onchange={(val) => this.changeArray(val)} />
         <CellTypeCheckBox label="Nullable" checked={nullable} onchange={(val) => this.changeNullable(val)} />
-        <CellText className="flex-2" value={description} onchange={(e) => this.changeDescription(e)} />
-        <Button className="flex-[0_0_50px]" variant="danger" size="none" onclick={() => deleteRow(index)}>
-          <span class="icon-[ic--baseline-delete-forever] text-2xl"></span>
-        </Button>
-      </div>
+        <CellText value={description} onchange={(e) => this.changeDescription(e)} />
+        <div class="data-grid-cell">
+          <div class="m-1 flex justify-between">
+            <Button variant="success" size="none" className="flex-[0_0_40px]" onclick={() => moveUp(index)}>
+              <span class="icon-[ic--baseline-arrow-upward] text-2xl"></span>
+            </Button>
+            <Button variant="success" size="none" className="flex-[0_0_40px]" onclick={() => moveDown(index)}>
+              <span class="icon-[ic--baseline-arrow-downward] text-2xl"></span>
+            </Button>
+            <Button variant="danger" size="none" className="flex-[0_0_40px]" onclick={() => deleteRow(index)}>
+              <span class="icon-[ic--baseline-delete-forever] text-2xl"></span>
+            </Button>
+          </div>
+        </div>
+      </>
     )
   }
 

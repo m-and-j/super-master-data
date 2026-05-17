@@ -16,7 +16,7 @@ export default class CellTypeCheckBox extends MJComponent<Props> {
 
   createNode({ label, checked = false, className }: Props) {
     return (
-      <div class={['flex gap-2 border border-transparent bg-zinc-800 px-2 py-1', 'has-[label:focus]:border-blue-500', className]}>
+      <div class={['data-grid-cell flex gap-2 bg-zinc-800 px-2 py-1', className]}>
         <label class="flex items-center gap-1 outline-hidden select-none" onclick={() => this.toggle()} tabindex={0}>
           <input type="hidden" value={checked ? '1' : '0'} ref={this.input} />
           <span class={['text-xl', checked ? 'icon-[ic--baseline-check-box]' : 'icon-[ic--baseline-check-box-outline-blank]']} ref={this.span}></span>
