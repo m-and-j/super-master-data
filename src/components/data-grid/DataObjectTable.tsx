@@ -1,5 +1,6 @@
 import CellHeader from '@/components/data-grid/CellHeader'
 import DataObjectRow from '@/components/data-grid/DataObjectRow'
+import { DataKindExtension } from '@/systems/define'
 import { DataObjectColumn } from '@/systems/types'
 import { formatCSS, MJ, MJCustomElement } from '@mj/jsx'
 
@@ -25,11 +26,11 @@ export default class DataObjectTable extends MJCustomElement<Props>()(HTMLDivEle
 
   createNode({ schemaName }: Props) {
     return (
-      <div class="grid grid-cols-[50px_auto_auto_auto_auto_auto_auto_auto_140px]">
+      <div class="grid grid-cols-[50px_auto_auto_auto_auto_auto_auto_140px]">
         <CellHeader className="flex items-center justify-center">#</CellHeader>
         <CellHeader>項目名</CellHeader>
         <CellHeader>ラベル</CellHeader>
-        <CellHeader className="col-span-4">データ型</CellHeader>
+        <CellHeader className="col-span-3">データ型</CellHeader>
         <CellHeader>説明</CellHeader>
         <CellHeader>操作</CellHeader>
         {this.columns.map((column, index) => (
@@ -51,7 +52,7 @@ export default class DataObjectTable extends MJCustomElement<Props>()(HTMLDivEle
   }
 
   async addRow() {
-    this.columns.push({ name: '', label: '', type: { classification: 'scalar', typeName: 'int', array: false, nullable: false }, description: '' })
+    this.columns.push({ name: '', label: '', type: { classification: 'scalar', typeName: 'int', extension: DataKindExtension.Empty }, description: '' })
     await this.render()
   }
 

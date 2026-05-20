@@ -1,8 +1,11 @@
 import Button from '@/components/inputs/Button'
 import InputText from '@/components/inputs/InputText'
+import LoadingMessage from '@/components/notifications/LoadingMessage'
 import ToastMessage from '@/components/notifications/ToastMessage'
 import TabPanel from '@/components/wayFinders/NavigationTab'
+import { OutputDistributor } from '@/systems/output-distributor'
 import preferences from '@/systems/preferences'
+import { OutputProject } from '@/systems/types'
 import { FormDataEx } from '@/utilities/helper-frontend'
 import { MJPage, MJRouter } from '@mj/router'
 import { open } from '@tauri-apps/plugin-dialog'
@@ -13,10 +16,9 @@ export default class Home extends MJPage {
   createNode() {
     const projectInfo = preferences.getProjectInfo()
     const filePath = preferences.getFolderPath()
-
     return (
-      <div class="mx-auto mt-10 flex max-w-3xl flex-col gap-6 p-4">
-        {/** プロジェクトファイル */}
+      <div class="mx-auto mt-10 flex max-w-4xl flex-col gap-6 p-4">
+        {/** プロジェクトフォルダ */}
         <section class="flex flex-col gap-3 rounded-md border border-zinc-600 p-4">
           <h2 class="font-semibold">プロジェクトフォルダ</h2>
           <div class="flex items-center gap-2">
@@ -59,6 +61,24 @@ export default class Home extends MJPage {
             </form>
           </section>
         )}
+
+        {/** データ出力 */}
+        <section class="rounded-md border border-zinc-600 p-4">
+          <h2 class="mb-3 font-semibold">データ出力</h2>
+          <div class="flex justify-center gap-3">
+            <Button variant="success" size="md" onclick={() => this.onClickOutputAll()}>
+              <span class="icon-[ic--baseline-sim-card-download] text-xl"></span>
+              すべて出力
+            </Button>
+            <div class="flex-auto"></div>
+            {projectInfo.outputs.map((output) => (
+              <Button variant="secondary" size="md" onclick={() => this.onClickOutput(output)}>
+                <span class="icon-[ic--baseline-sim-card-download] text-xl"></span>
+                {output.name}
+              </Button>
+            ))}
+          </div>
+        </section>
       </div>
     )
   }
@@ -90,5 +110,32 @@ export default class Home extends MJPage {
     await preferences.updateProjectMeta(name, description)
     ToastMessage.instance.open('success', 'プロジェクト情報を保存しました。')
     MJRouter.instance.reload()
+  }
+
+  private async onClickOutputAll() {
+    try {
+      LoadingMessage.instance?.attach()
+      const outputs = preferences.getProjectInfo().outputs
+      for (const output of outputs) {
+        const distributor = new OutputDistributor(output)
+        await distributor.exec()
+      }
+      LoadingMessage.instance?.detach()
+      ToastMessage.instance.open('success', 'データを出力しました')
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  private async onClickOutput(output: OutputProject) {
+    try {
+      LoadingMessage.instance?.attach()
+      const distributor = new OutputDistributor(output)
+      await distributor.exec()
+      LoadingMessage.instance?.detach()
+      ToastMessage.instance.open('success', `「${output.name}」データを出力しました`)
+    } catch (e) {
+      console.error(e)
+    }
   }
 }

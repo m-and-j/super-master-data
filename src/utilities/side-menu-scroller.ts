@@ -3,6 +3,9 @@ import { ref, Reference } from '@mj/jsx'
 
 type Mode = 'table' | 'schema' | 'enum' | 'master-data' | 'output'
 
+/**
+ * 左メニューのスクロールを保持する
+ */
 class SideMenuScroller {
   private mode: Mode
   private ref: Reference<HTMLDivElement> = ref()
@@ -22,7 +25,7 @@ class SideMenuScroller {
   }
 
   register() {
-    requestAnimationFrame(() => this.ref.value?.scroll({ top: cacheStore.sideMenuScrollTop.getValue() ?? 0 }))
+    requestAnimationFrame(() => this.moveScrollTop(cacheStore.sideMenuScrollTop.getValue() ?? 0))
     let timerId = 0
     this.ref.value?.addEventListener('scroll', () => {
       clearTimeout(timerId)
@@ -31,6 +34,13 @@ class SideMenuScroller {
         cacheStore.sideMenuScrollTop.setValue(this.ref.value?.scrollTop ?? 0)
       }, 100)
     })
+  }
+
+  private moveScrollTop(top: number) {
+    this.ref.value?.scroll({ top })
+    if (this.ref.value?.scrollTop !== top) {
+      requestAnimationFrame(() => this.moveScrollTop(top))
+    }
   }
 }
 

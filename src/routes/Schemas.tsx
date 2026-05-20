@@ -75,8 +75,8 @@ export default class Schemas extends MJPage {
     const columns = this.dataObjectTable.value?.getColumns() ?? []
     try {
       if (this.targetSchema) {
-        await preferences.updateSchema(name, description, columns)
-        MJRouter.instance.reload()
+        await preferences.updateSchema(this.targetSchema.name, name, description, columns)
+        MJRouter.instance.push(`/schemas/${name}`)
       } else {
         await preferences.addSchema(name, description, columns)
         MJRouter.instance.push(`/schemas/${name}`)

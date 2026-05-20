@@ -77,7 +77,7 @@ export default class Tables extends MJPage {
       if (this.targetTable) {
         await masterData.rename(this.targetTable.name, name)
         await masterData.write({ name, description, columns, data: this.targetTable.data })
-        MJRouter.instance.reload()
+        MJRouter.instance.push(`/tables/${name}`)
       } else {
         await masterData.write({ name, description, columns, data: [] })
         MJRouter.instance.push(`/tables/${name}`)

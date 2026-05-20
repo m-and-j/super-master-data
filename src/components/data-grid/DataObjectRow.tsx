@@ -1,8 +1,16 @@
 import CellText from '@/components/data-grid/CellText'
-import CellTypeCheckBox from '@/components/data-grid/CellTypeCheckBox'
 import CellTypeSelect from '@/components/data-grid/CellTypeSelect'
 import Button from '@/components/inputs/Button'
-import { DataClassification, DataClassificationLabelValues, DataClassificationType, DataKindForIdValues, DataKindForLabelValues, DataKindValues } from '@/systems/define'
+import {
+  DataClassification,
+  DataClassificationLabelValues,
+  DataClassificationType,
+  DataKindExtensionLabelValues,
+  DataKindExtensionType,
+  DataKindForIdValues,
+  DataKindForLabelValues,
+  DataKindValues,
+} from '@/systems/define'
 import masterData from '@/systems/master-data'
 import preferences from '@/systems/preferences'
 import { DataObjectColumn } from '@/systems/types'
@@ -30,11 +38,12 @@ export default class DataObjectRow extends MJComponent<Props> {
 
   createNode({ schemaName, index, column, moveUp, moveDown, deleteRow }: Props) {
     const { name, label, type, description } = column
-    const { typeName, classification, array, nullable } = type
+    const { typeName, classification, extension } = type
     const dataClassificationItems = DataClassificationLabelValues.map(([value, label]) => ({ label, value, selected: classification === value }))
     const dataKindItems = DataKindValues.map(([label, value]) => ({ label, value, selected: typeName === value }))
     const dataKindForIdItems = DataKindForIdValues.map(([label, value]) => ({ label, value, selected: typeName === value }))
     const dataKindForLabelItems = DataKindForLabelValues.map(([label, value]) => ({ label, value, selected: typeName === value }))
+    const dataKindOptionItems = DataKindExtensionLabelValues.map(([value, label]) => ({ label, value, selected: extension === value }))
     const tables = masterData.getNames().map((name) => ({ label: name, value: name, selected: column.type.typeName === name }))
     const projectInfo = preferences.getProjectInfo()
     const schemas = projectInfo.schemas.filter(({ name }) => name !== schemaName).map(({ name }) => ({ label: name, value: name, selected: typeName === name }))
@@ -51,8 +60,7 @@ export default class DataObjectRow extends MJComponent<Props> {
         <CellTypeSelect items={tables} onchange={(e) => this.changeKind(e)} ref={this.tableSelect} />
         <CellTypeSelect items={schemas} onchange={(e) => this.changeKind(e)} ref={this.schemaSelect} />
         <CellTypeSelect items={enumerations} onchange={(e) => this.changeKind(e)} ref={this.enumerationSelect} />
-        <CellTypeCheckBox label="Array" checked={array} onchange={(val) => this.changeArray(val)} />
-        <CellTypeCheckBox label="Nullable" checked={nullable} onchange={(val) => this.changeNullable(val)} />
+        <CellTypeSelect items={dataKindOptionItems} onchange={(e) => this.changeKindExtension(e)} />
         <CellText value={description} onchange={(e) => this.changeDescription(e)} />
         <div class="data-grid-cell">
           <div class="m-1 flex justify-between">
@@ -122,14 +130,9 @@ export default class DataObjectRow extends MJComponent<Props> {
     column.type.typeName = (e.target as HTMLSelectElement).value
   }
 
-  private changeArray(val: boolean) {
+  private changeKindExtension(e: Event) {
     const { column } = this.props
-    column.type.array = val
-  }
-
-  private changeNullable(val: boolean) {
-    const { column } = this.props
-    column.type.nullable = val
+    column.type.extension = (e.target as HTMLSelectElement).value as DataKindExtensionType
   }
 
   private changeDescription(e: Event) {

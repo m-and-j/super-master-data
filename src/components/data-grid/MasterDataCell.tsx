@@ -1,5 +1,5 @@
 import SchemaPanel from '@/components/data-grid/SubEditorPanel'
-import { DataClassification, DataKind } from '@/systems/define'
+import { DataClassification, DataKind, DataKindExtension } from '@/systems/define'
 import masterData from '@/systems/master-data'
 import preferences from '@/systems/preferences'
 import { DataObjectColumn, Table } from '@/systems/types'
@@ -29,13 +29,13 @@ export default class MasterDataCell extends MJComponent<Props> {
     const { type } = column
     const baseCss = 'data-grid-cell flex items-center px-2 py-1'
     if (type.classification === DataClassification.Schema) {
-      const summary = type.array ? `${(value as unknown[] | undefined)?.length ?? 0}件` : value ? '詳細' : '未設定'
+      const summary = type.extension === DataKindExtension.Array ? `${(value as unknown[] | undefined)?.length ?? 0}件` : value ? '詳細' : '未設定'
       return (
         <div class={['cursor-pointer hover:bg-zinc-700', baseCss, className]} onclick={() => schemaPanelRef?.value?.open(column, value)}>
           <span class="truncate text-sm text-blue-400">{summary}</span>
         </div>
       )
-    } else if (type.array) {
+    } else if (type.extension === DataKindExtension.Array) {
       const summary = `${(value as unknown[] | undefined)?.length ?? 0}件`
       return (
         <div class={['cursor-pointer hover:bg-zinc-700', baseCss, className]} onclick={() => schemaPanelRef?.value?.open(column, value)}>
@@ -62,7 +62,7 @@ export default class MasterDataCell extends MJComponent<Props> {
         const item = this.relationTable.data.find((row) => `${row[idColumn?.name ?? ''] ?? ''}` === value)
         if (item) {
           label = item[labelColumn?.name ?? ''] ?? item[idColumn?.name ?? '']
-        } else if (type.nullable) {
+        } else if (type.extension === DataKindExtension.Optional) {
           label = '(未指定)'
           color = 'text-zinc-400'
         }

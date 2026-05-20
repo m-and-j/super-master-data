@@ -88,7 +88,7 @@ class Preferences {
   }
 
   /**
-   * プロジェクトのメタ情報(名前・説明)を更新して保存
+   * プロジェクトの情報(名前・説明)を更新して保存
    * @param name
    * @param description
    */
@@ -116,14 +116,15 @@ class Preferences {
 
   /**
    * スキーマ更新
-   * @param name
+   * @param beforeName
+   * @param afterName
    * @param description
    * @param columns
    */
-  async updateSchema(name: string, description: string, columns: DataObjectColumn[]) {
-    const schema = this.schemas.find((s) => s.name === name)
+  async updateSchema(beforeName: string, afterName: string, description: string, columns: DataObjectColumn[]) {
+    const schema = this.schemas.find((s) => s.name === beforeName)
     if (schema) {
-      schema.name = name
+      schema.name = afterName
       schema.description = description
       schema.columns = columns
       await this.save()
@@ -157,14 +158,15 @@ class Preferences {
 
   /**
    * 列挙型更新
-   * @param name
+   * @param beforeName
+   * @param afterName
    * @param description
    * @param items
    */
-  async updateEnumeration(name: string, description: string, items: EnumerationItem[]) {
-    const enumeration = this.enumerations.find((e) => e.name === name)
+  async updateEnumeration(beforeName: string, afterName: string, description: string, items: EnumerationItem[]) {
+    const enumeration = this.enumerations.find((e) => e.name === beforeName)
     if (enumeration) {
-      enumeration.name = name
+      enumeration.name = afterName
       enumeration.description = description
       enumeration.items = items
       await this.save()
@@ -185,16 +187,26 @@ class Preferences {
    * @param name
    * @param description
    * @param dataPath
+   * @param targetMasterData
    * @param codeExtension
    * @param entity
    * @param schema
    * @param enumeration
    */
-  async addOutput(name: string, description: string, dataPath: string, codeExtension: string, entity: OutputItem, schema: OutputItem, enumeration: OutputItem) {
+  async addOutput(
+    name: string,
+    description: string,
+    dataPath: string,
+    targetMasterData: string[],
+    codeExtension: string,
+    entity: OutputItem,
+    schema: OutputItem,
+    enumeration: OutputItem,
+  ) {
     if (this.outputs.some((e) => e.name === name)) {
       throw new Error('すでに同名の出力設定が存在します。')
     } else {
-      this.outputs.push({ name, description, dataPath, codeExtension, entity, schema, enumeration })
+      this.outputs.push({ name, description, dataPath, targetMasterData, codeExtension, entity, schema, enumeration })
       this.outputs.sort((a, b) => a.name.localeCompare(b.name))
       await this.save()
     }
@@ -205,17 +217,28 @@ class Preferences {
    * @param name
    * @param description
    * @param dataPath
+   * @param targetMasterData
    * @param codeExtension
    * @param entity
    * @param schema
    * @param enumeration
    */
-  async updateOutput(name: string, description: string, dataPath: string, codeExtension: string, entity: OutputItem, schema: OutputItem, enumeration: OutputItem) {
+  async updateOutput(
+    name: string,
+    description: string,
+    dataPath: string,
+    targetMasterData: string[],
+    codeExtension: string,
+    entity: OutputItem,
+    schema: OutputItem,
+    enumeration: OutputItem,
+  ) {
     const output = this.outputs.find((e) => e.name === name)
     if (output) {
       output.name = name
       output.description = description
       output.dataPath = dataPath
+      output.targetMasterData = targetMasterData
       output.codeExtension = codeExtension
       output.entity = entity
       output.schema = schema
@@ -251,8 +274,8 @@ class Preferences {
     }
     if (outputs) {
       this.outputs = []
-      for (const { name, description, dataPath, codeExtension, entity, schema, enumeration } of outputs.sort((a, b) => a.name.localeCompare(b.name))) {
-        this.outputs.push({ name, description, dataPath, codeExtension, entity, schema, enumeration })
+      for (const { name, description, dataPath, targetMasterData, codeExtension, entity, schema, enumeration } of outputs.sort((a, b) => a.name.localeCompare(b.name))) {
+        this.outputs.push({ name, description, dataPath, targetMasterData, codeExtension, entity, schema, enumeration })
       }
     }
     await this.save()

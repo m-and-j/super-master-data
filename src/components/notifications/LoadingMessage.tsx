@@ -35,7 +35,7 @@ export default class LoadingMessage extends MJComponent {
         >
           <div class="my-3 flex items-center justify-center gap-3">
             <span class="icon-[svg-spinners--180-ring] text-3xl"></span>
-            <h4 class="text-lg">通信中...</h4>
+            <h4 class="text-lg">処理中...</h4>
           </div>
         </div>
       </div>

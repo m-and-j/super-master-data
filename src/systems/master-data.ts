@@ -1,6 +1,6 @@
 import { ProjectFolder } from '@/systems/define'
 import preferences from '@/systems/preferences'
-import { Table } from '@/systems/types'
+import { DataObjectColumn, Table } from '@/systems/types'
 import { readJsonFile, writeJsonFile } from '@/utilities/helper'
 import { path } from '@tauri-apps/api'
 import { exists, readDir, remove, rename } from '@tauri-apps/plugin-fs'
@@ -26,11 +26,13 @@ class MasterData {
     if (folderPath) {
       const targetDir = await path.join(folderPath, ProjectFolder.Tables)
       const files = await readDir(targetDir)
+      this.names = []
       for (const file of files) {
         if (file.isFile && file.name.endsWith('.json')) {
           this.names.push(file.name.replace('.json', ''))
         }
       }
+      this.names.sort()
     }
   }
 
@@ -43,7 +45,14 @@ class MasterData {
     if (folderPath) {
       try {
         const target = await path.join(folderPath, ProjectFolder.Tables, `${table.name}.json`)
-        await writeJsonFile(table, target)
+        const columns: DataObjectColumn[] = []
+        for (const { name, label, type, description } of table.columns) {
+          const { classification, typeName, extension } = type
+          columns.push({ name, label, type: { classification, typeName, extension }, description })
+        }
+        const { name, description, data } = table
+        await writeJsonFile({ name, description, columns, data }, target)
+        await this.readFiles()
       } catch (e) {
         console.error(`MasterData[${table.name}]の書き込みに失敗:`, e)
       }
@@ -57,6 +66,7 @@ class MasterData {
         const target = await path.join(folderPath, ProjectFolder.Tables, `${name}.json`)
         if (await exists(target)) {
           await remove(target)
+          await this.readFiles()
         }
       } catch (e) {
         console.error(`MasterData[${name}]の削除に失敗:`, e)

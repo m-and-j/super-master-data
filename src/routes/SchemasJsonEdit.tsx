@@ -105,12 +105,6 @@ export default class SchemasJsonEdit extends MJPage {
         if (typeof type.classification !== 'string' || !VALID_CLASSIFICATIONS.includes(type.classification as DataClassificationType)) {
           return { ok: false, error: `[${i}].columns[${j}].type.classification は ${VALID_CLASSIFICATIONS.join(' / ')} のいずれかである必要があります。` }
         }
-        if (typeof type.array !== 'boolean') {
-          return { ok: false, error: `[${i}].columns[${j}].type.array が boolean ではありません。` }
-        }
-        if (typeof type.nullable !== 'boolean') {
-          return { ok: false, error: `[${i}].columns[${j}].type.nullable が boolean ではありません。` }
-        }
         if (typeof type.typeName !== 'string') {
           return { ok: false, error: `[${i}].columns[${j}].type.typeName が string ではありません。` }
         }

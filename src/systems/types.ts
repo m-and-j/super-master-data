@@ -1,4 +1,4 @@
-import { DataClassificationType } from '@/systems/define'
+import { DataClassificationType, DataKindExtensionType } from '@/systems/define'
 
 export interface ProjectInfo {
   name: string
@@ -32,8 +32,7 @@ export interface DataObjectColumn {
 
 export interface DataObjectColumnType {
   classification: DataClassificationType
-  array: boolean
-  nullable: boolean
+  extension: DataKindExtensionType
   typeName: string
 }
 
@@ -53,6 +52,7 @@ export interface OutputProject {
   name: string
   description: string
   dataPath: string
+  targetMasterData: string[]
   codeExtension: string
   entity: OutputItem
   schema: OutputItem

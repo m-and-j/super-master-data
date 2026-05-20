@@ -55,6 +55,24 @@ export type DataKindForLabelType = (typeof DataKindForLabel)[keyof typeof DataKi
 export const DataKindForLabelValues = Object.entries(DataKindForLabel)
 
 /**
+ * データ型拡張
+ */
+export const DataKindExtension = {
+  Empty: '',
+  Array: 'array',
+  Optional: 'optional',
+} as const
+export type DataKindExtensionType = (typeof DataKindExtension)[keyof typeof DataKindExtension]
+export const DataKindExtensionValues = Object.entries(DataKindExtension)
+
+export const DataKindExtensionLabels = {
+  [DataKindExtension.Empty]: '-',
+  [DataKindExtension.Array]: '配列',
+  [DataKindExtension.Optional]: '未指定可',
+} as const
+export const DataKindExtensionLabelValues = Object.entries(DataKindExtensionLabels)
+
+/**
  * カラムパラメータ
  */
 export const ColumnParams = {
