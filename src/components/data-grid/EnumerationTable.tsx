@@ -1,7 +1,7 @@
 import CellHeader from '@/components/data-grid/CellHeader'
 import EnumerationRow from '@/components/data-grid/EnumerationRow'
 import { EnumerationItem } from '@/systems/types'
-import { formatCSS, MJ, MJCustomElement } from '@mj/jsx'
+import { MJ, MJCustomElement } from '@mj/jsx'
 
 interface Props extends MJ.CEProps<EnumerationTable> {
   items?: EnumerationItem[]
@@ -14,8 +14,7 @@ export default class EnumerationTable extends MJCustomElement<Props>()(HTMLDivEl
   private items: EnumerationItem[] = []
 
   connectedCallback() {
-    const { className } = this.props
-    this.className = formatCSS(['scrollbar overflow-scroll', className])
+    this.addClassName('scrollbar overflow-scroll')
   }
 
   async initialize({ items }: Props) {

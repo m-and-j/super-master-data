@@ -2,7 +2,7 @@ import CellHeader from '@/components/data-grid/CellHeader'
 import DataObjectRow from '@/components/data-grid/DataObjectRow'
 import { DataKindExtension } from '@/systems/define'
 import { DataObjectColumn } from '@/systems/types'
-import { formatCSS, MJ, MJCustomElement } from '@mj/jsx'
+import { MJ, MJCustomElement } from '@mj/jsx'
 
 interface Props extends MJ.CEProps<DataObjectTable> {
   schemaName?: string
@@ -16,8 +16,7 @@ export default class DataObjectTable extends MJCustomElement<Props>()(HTMLDivEle
   private columns: DataObjectColumn[] = []
 
   connectedCallback() {
-    const { className } = this.props
-    this.className = formatCSS(['scrollbar overflow-scroll', className])
+    this.addClassName('scrollbar overflow-scroll')
   }
 
   async initialize({ columns }: Props) {

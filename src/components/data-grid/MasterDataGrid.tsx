@@ -4,7 +4,7 @@ import SchemaPanel from '@/components/data-grid/SubEditorPanel'
 import Button from '@/components/inputs/Button'
 import { DataObjectColumn, MasterRecord } from '@/systems/types'
 import { defaultValueFor } from '@/utilities/data-grid'
-import { formatCSS, MJ, MJCustomElement, Reference } from '@mj/jsx'
+import { MJ, MJCustomElement, Reference } from '@mj/jsx'
 
 interface Props extends MJ.CEProps<MasterDataGrid> {
   columns: DataObjectColumn[]
@@ -23,8 +23,7 @@ export default class MasterDataGrid extends MJCustomElement<Props>()(HTMLDivElem
   }
 
   connectedCallback() {
-    const { className } = this.props
-    this.className = formatCSS(['scrollbar overflow-scroll', className])
+    this.addClassName('scrollbar overflow-scroll')
   }
 
   createNode({ columns, schemaPanelRef }: Props) {

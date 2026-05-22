@@ -1,4 +1,4 @@
-import { formatCSS, MJ, MJCustomElement, ref, Reference } from '@mj/jsx'
+import { MJ, MJCustomElement, ref, Reference } from '@mj/jsx'
 
 export interface SelectItem {
   value: string
@@ -18,8 +18,8 @@ interface Props extends MJ.CEProps<CellTypeSelect> {
 export default class CellTypeSelect extends MJCustomElement<Props>()(HTMLDivElement) {
   private selectBox: Reference<HTMLSelectElement> = ref()
 
-  async initialize({ className }: Props) {
-    this.className = formatCSS(['data-grid-cell px-1 bg-zinc-800 flex gap-2', className])
+  connectedCallback() {
+    this.addClassName('data-grid-cell px-1 bg-zinc-800 flex gap-2')
   }
 
   createNode({ name, items, onchange }: Props) {

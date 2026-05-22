@@ -3,7 +3,7 @@ import Button from '@/components/inputs/Button'
 import { DataClassification } from '@/systems/define'
 import preferences from '@/systems/preferences'
 import { DataObjectColumn, MasterRecord } from '@/systems/types'
-import { formatCSS, MJ, MJCustomElement, ref, Reference } from '@mj/jsx'
+import { MJ, MJCustomElement, ref, Reference } from '@mj/jsx'
 
 interface Props extends MJ.CEProps<SubEditorPanel> {
   openCallback?: () => void
@@ -19,8 +19,7 @@ export default class SubEditorPanel extends MJCustomElement<Props>()(HTMLDivElem
   private grid: Reference<MasterDataGrid> = ref()
 
   connectedCallback() {
-    const { className } = this.props
-    this.className = formatCSS(['flex h-full flex-col border-l border-zinc-500 bg-zinc-900', className])
+    this.addClassName('flex h-full flex-col border-l border-zinc-500 bg-zinc-900')
   }
 
   createNode() {

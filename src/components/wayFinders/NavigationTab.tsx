@@ -2,7 +2,7 @@ import ScrollArea from '@/components/viewers/ScrollArea'
 import { MouseButtonCode } from '@/systems/define'
 import preferences from '@/systems/preferences'
 import { regulationEscape } from '@/utilities/helper-text'
-import { formatCSS, MJ, MJCustomElement } from '@mj/jsx'
+import { MJ, MJCustomElement } from '@mj/jsx'
 import { MJRouter } from '@mj/router'
 
 type NavigationTabDestination = {
@@ -52,7 +52,7 @@ export default class NavigationTab extends MJCustomElement<Props>()(HTMLDivEleme
   }
 
   connectedCallback() {
-    this.className = formatCSS('flex')
+    this.addClassName('flex')
   }
 
   createNode() {
