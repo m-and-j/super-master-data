@@ -1,5 +1,5 @@
 import { ProjectFolder } from '@/systems/define'
-import preferences from '@/systems/preferences'
+import { preferences } from '@/systems/preferences'
 import { DataObjectColumn, Table } from '@/systems/types'
 import { readJsonFile, writeJsonFile } from '@/utilities/helper'
 import { path } from '@tauri-apps/api'
@@ -92,5 +92,4 @@ class MasterData {
   }
 }
 
-const masterData = new MasterData()
-export default masterData
+export const masterData = new MasterData()

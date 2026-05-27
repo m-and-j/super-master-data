@@ -1,6 +1,6 @@
 import { DataClassification, DataKind, DataKindExtension } from '@/systems/define'
-import masterData from '@/systems/master-data'
-import preferences from '@/systems/preferences'
+import { masterData } from '@/systems/master-data'
+import { preferences } from '@/systems/preferences'
 import { DataObjectColumnType, OutputItem, OutputProject } from '@/systems/types'
 import { writeJsonFile } from '@/utilities/helper'
 import { camelToKebabCase } from '@/utilities/helper-text'
@@ -189,13 +189,15 @@ export class OutputDistributor {
         switch (typeName) {
           case DataKind.Date:
           case DataKind.Datetime: {
-            return 'DateTime'
+            //return 'System.DateTime'
+            return 'string'
           }
           case DataKind.Time: {
-            return 'TimeSpan'
+            //return 'System.TimeSpan'
+            return 'string'
           }
           default: {
-            return typeName
+            return classification === DataClassification.RelationID ? 'string' : typeName
           }
         }
       default:

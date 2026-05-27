@@ -1,4 +1,4 @@
-import cacheStore from '@/systems/cache-store'
+import { cacheStore } from '@/systems/cache-store'
 import { ref, Reference } from '@mj/jsx'
 
 type Mode = 'table' | 'schema' | 'enum' | 'master-data' | 'output'
@@ -6,7 +6,7 @@ type Mode = 'table' | 'schema' | 'enum' | 'master-data' | 'output'
 /**
  * 左メニューのスクロールを保持する
  */
-class SideMenuScroller {
+export class SideMenuScroller {
   private mode: Mode
   private ref: Reference<HTMLDivElement> = ref()
 
@@ -43,5 +43,3 @@ class SideMenuScroller {
     }
   }
 }
-
-export default SideMenuScroller

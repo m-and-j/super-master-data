@@ -1,5 +1,5 @@
 import { DataClassification, DataKind, DataKindExtension } from '@/systems/define'
-import preferences from '@/systems/preferences'
+import { preferences } from '@/systems/preferences'
 import { DataObjectColumn } from '@/systems/types'
 
 /**

@@ -1,16 +1,16 @@
-import MasterDataGrid from '@/components/data-grid/MasterDataGrid'
-import { default as SchemaPanel, default as SubEditorPanel } from '@/components/data-grid/SubEditorPanel'
-import Button from '@/components/inputs/Button'
-import ToastMessage from '@/components/notifications/ToastMessage'
-import SideMenuMasterData from '@/components/wayFinders/SideMenuMasterData'
+import { MasterDataGrid } from '@/components/data-grid/MasterDataGrid'
+import { SubEditorPanel } from '@/components/data-grid/SubEditorPanel'
+import { Button } from '@/components/inputs/Button'
+import { ToastMessage } from '@/components/notifications/ToastMessage'
+import { SideMenuMasterData } from '@/components/wayFinders/SideMenuMasterData'
 import { DataClassification } from '@/systems/define'
-import masterData from '@/systems/master-data'
+import { masterData } from '@/systems/master-data'
 import { Table } from '@/systems/types'
 import { formatNumber } from '@/utilities/helper-text'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage } from '@mj/router'
 
-export default class MasterData extends MJPage {
+export class MasterData extends MJPage {
   private table?: Table
   private idColumnCount = 0
 
@@ -24,7 +24,7 @@ export default class MasterData extends MJPage {
   createNode() {
     const { name } = this.params
     const gridRef: Reference<MasterDataGrid> = ref()
-    const schemaPanelRef: Reference<SchemaPanel> = ref()
+    const schemaPanelRef: Reference<SubEditorPanel> = ref()
     return (
       <div class="grid h-[calc(100vh-52px)] grid-cols-[300px_1fr_600px] grid-rows-[45px_1fr] text-sm">
         {/** 左メニュー */}

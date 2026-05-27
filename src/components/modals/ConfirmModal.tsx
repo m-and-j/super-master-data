@@ -1,5 +1,5 @@
-import Button from '@/components/inputs/Button'
-import ModalBase from '@/components/modals/ModalBase'
+import { Button } from '@/components/inputs/Button'
+import { ModalBase } from '@/components/modals/ModalBase'
 import { InputVariantType } from '@/systems/define'
 import { MJ, MJCustomElement } from '@mj/jsx'
 
@@ -13,7 +13,7 @@ interface Props extends MJ.CEProps<ConfirmModal> {}
 /**
  * 確認モーダル
  */
-export default class ConfirmModal extends MJCustomElement<Props>()(ModalBase, 'div') {
+export class ConfirmModal extends MJCustomElement<Props>()(ModalBase, 'div') {
   static get instance() {
     return document.querySelector<ConfirmModal>(ConfirmModal.domName)
   }

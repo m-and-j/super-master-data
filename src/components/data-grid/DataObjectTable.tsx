@@ -1,29 +1,23 @@
-import CellHeader from '@/components/data-grid/CellHeader'
-import DataObjectRow from '@/components/data-grid/DataObjectRow'
+import { CellHeader } from '@/components/data-grid/CellHeader'
+import { DataObjectRow } from '@/components/data-grid/DataObjectRow'
 import { DataKindExtension } from '@/systems/define'
 import { DataObjectColumn } from '@/systems/types'
 import { MJ, MJCustomElement } from '@mj/jsx'
 
 interface Props extends MJ.CEProps<DataObjectTable> {
-  schemaName?: string
-  columns?: DataObjectColumn[]
+  schemaName: string
+  columns: DataObjectColumn[]
 }
 
 /**
  * データオブジェクトテーブル
  */
-export default class DataObjectTable extends MJCustomElement<Props>()(HTMLDivElement) {
-  private columns: DataObjectColumn[] = []
-
+export class DataObjectTable extends MJCustomElement<Props>()(HTMLDivElement) {
   connectedCallback() {
     this.addClassName('scrollbar overflow-scroll')
   }
 
-  async initialize({ columns }: Props) {
-    this.columns = columns ?? []
-  }
-
-  createNode({ schemaName }: Props) {
+  createNode({ schemaName, columns }: Props) {
     return (
       <div class="grid grid-cols-[50px_auto_auto_auto_auto_auto_auto_140px]">
         <CellHeader className="flex items-center justify-center">#</CellHeader>
@@ -32,48 +26,41 @@ export default class DataObjectTable extends MJCustomElement<Props>()(HTMLDivEle
         <CellHeader className="col-span-3">データ型</CellHeader>
         <CellHeader>説明</CellHeader>
         <CellHeader>操作</CellHeader>
-        {this.columns.map((column, index) => (
-          <DataObjectRow
-            schemaName={schemaName}
-            index={index}
-            column={column}
-            moveUp={(idx) => this.moveUp(idx)}
-            moveDown={(idx) => this.moveDown(idx)}
-            deleteRow={(idx) => this.deleteRow(idx)}
-          />
+        {columns.map((column, index) => (
+          <DataObjectRow schemaName={schemaName} index={index} column={column} deleteRow={(idx) => this.deleteRow(idx)} />
         ))}
       </div>
     )
   }
 
-  getColumns() {
-    return this.columns
-  }
-
   async addRow() {
-    this.columns.push({ name: '', label: '', type: { classification: 'scalar', typeName: 'int', extension: DataKindExtension.Empty }, description: '' })
+    const { columns } = this.props
+    columns.push({ name: '', label: '', type: { classification: 'scalar', typeName: 'int', extension: DataKindExtension.Empty }, description: '' })
     await this.render()
   }
 
   async deleteRow(index: number) {
-    this.columns.splice(index, 1)
+    const { columns } = this.props
+    columns.splice(index, 1)
     await this.render()
   }
 
   async moveUp(index: number) {
     if (index > 0) {
-      const tmp = this.columns[index]
-      this.columns[index] = this.columns[index - 1]
-      this.columns[index - 1] = tmp
+      const { columns } = this.props
+      const tmp = columns[index]
+      columns[index] = columns[index - 1]
+      columns[index - 1] = tmp
     }
     await this.render()
   }
 
   async moveDown(index: number) {
-    if (index < this.columns.length - 1) {
-      const tmp = this.columns[index]
-      this.columns[index] = this.columns[index + 1]
-      this.columns[index + 1] = tmp
+    const { columns } = this.props
+    if (index < columns.length - 1) {
+      const tmp = columns[index]
+      columns[index] = columns[index + 1]
+      columns[index + 1] = tmp
     }
     await this.render()
   }

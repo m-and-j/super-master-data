@@ -18,7 +18,7 @@ interface Props {
 /**
  * ボタン
  */
-export default class Button extends MJComponent<Props> {
+export class Button extends MJComponent<Props> {
   createNode({ type = 'button', value, variant, size = 'md', rounded, className, id, form, disabled, onclick, children }: Props) {
     const baseCss = []
     let denied = false

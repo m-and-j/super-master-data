@@ -15,7 +15,7 @@ export interface Table {
   data: MasterRecord[]
 }
 
-export type MasterRecord = { [columnName: string]: any }
+export type MasterRecord = any[]
 
 export interface DataObject {
   name: string
@@ -35,6 +35,8 @@ export interface DataObjectColumnType {
   extension: DataKindExtensionType
   typeName: string
 }
+
+export type DataObjectColumnLabel = 'name' | 'label' | 'typeClassification' | 'typeName' | 'typeExtension' | 'description'
 
 export interface EnumerationObject {
   name: string

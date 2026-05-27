@@ -1,7 +1,7 @@
-import CellHeader from '@/components/data-grid/CellHeader'
-import MasterDataCell from '@/components/data-grid/MasterDataCell'
-import SchemaPanel from '@/components/data-grid/SubEditorPanel'
-import Button from '@/components/inputs/Button'
+import { CellHeader } from '@/components/data-grid/CellHeader'
+import { MasterDataCell } from '@/components/data-grid/MasterDataCell'
+import { SubEditorPanel } from '@/components/data-grid/SubEditorPanel'
+import { Button } from '@/components/inputs/Button'
 import { DataObjectColumn, MasterRecord } from '@/systems/types'
 import { defaultValueFor } from '@/utilities/data-grid'
 import { MJ, MJCustomElement, Reference } from '@mj/jsx'
@@ -9,13 +9,13 @@ import { MJ, MJCustomElement, Reference } from '@mj/jsx'
 interface Props extends MJ.CEProps<MasterDataGrid> {
   columns: DataObjectColumn[]
   data: MasterRecord[]
-  schemaPanelRef?: Reference<SchemaPanel>
+  schemaPanelRef?: Reference<SubEditorPanel>
 }
 
 /**
  * マスターデータ汎用グリッド
  */
-export default class MasterDataGrid extends MJCustomElement<Props>()(HTMLDivElement) {
+export class MasterDataGrid extends MJCustomElement<Props>()(HTMLDivElement) {
   private rows: MasterRecord[] = []
 
   async initialize({ data }: Props) {
@@ -50,8 +50,8 @@ export default class MasterDataGrid extends MJCustomElement<Props>()(HTMLDivElem
                   <span class="icon-[ic--baseline-delete-forever] text-xl"></span>
                 </Button>
               </div>
-              {columns.map((column) => (
-                <MasterDataCell column={column} value={row[column.name]} schemaPanelRef={schemaPanelRef} />
+              {columns.map((column, index) => (
+                <MasterDataCell column={column} value={row[index]} schemaPanelRef={schemaPanelRef} />
               ))}
             </>
           ))
@@ -65,9 +65,10 @@ export default class MasterDataGrid extends MJCustomElement<Props>()(HTMLDivElem
   }
 
   async addRow() {
-    const values: MasterRecord = {}
-    for (const column of this.props.columns) {
-      values[column.name] = defaultValueFor(column)
+    const values: MasterRecord = []
+    const { columns } = this.props
+    for (let i = 0; i < columns.length; i++) {
+      values[i] = defaultValueFor(columns[i])
     }
     this.rows.push(values)
     await this.render()

@@ -1,5 +1,5 @@
-import AppContent from '@/AppContent'
-import preferences from '@/systems/preferences'
+import { AppContent } from '@/AppContent'
+import { preferences } from '@/systems/preferences'
 
 preferences.load().then(async (result) => {
   if (result || location.pathname === '/') {

@@ -1,17 +1,17 @@
-import EnumerationTable from '@/components/data-grid/EnumerationTable'
-import Button from '@/components/inputs/Button'
-import InputText from '@/components/inputs/InputText'
-import ConfirmModal from '@/components/modals/ConfirmModal'
-import ToastMessage from '@/components/notifications/ToastMessage'
-import SideMenuEnumeration from '@/components/wayFinders/SideMenuEnumeration'
+import { EnumerationTable } from '@/components/data-grid/EnumerationTable'
+import { Button } from '@/components/inputs/Button'
+import { InputText } from '@/components/inputs/InputText'
+import { ConfirmModal } from '@/components/modals/ConfirmModal'
+import { ToastMessage } from '@/components/notifications/ToastMessage'
+import { SideMenuEnumeration } from '@/components/wayFinders/SideMenuEnumeration'
 import { ColumnParams } from '@/systems/define'
-import preferences from '@/systems/preferences'
+import { preferences } from '@/systems/preferences'
 import { EnumerationItem, EnumerationObject } from '@/systems/types'
 import { FormDataEx } from '@/utilities/helper-frontend'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
 
-export default class Enumerations extends MJPage {
+export class Enumerations extends MJPage {
   private targetEnumeration?: EnumerationObject
   private dataObjectTable: Reference<EnumerationTable> = ref()
 
@@ -60,7 +60,7 @@ export default class Enumerations extends MJPage {
             )}
           </div>
         </div>
-        <EnumerationTable items={this.targetEnumeration?.items} ref={this.dataObjectTable} />
+        <EnumerationTable items={this.targetEnumeration?.items ?? []} ref={this.dataObjectTable} />
       </form>
     )
   }

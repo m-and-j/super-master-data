@@ -1,5 +1,5 @@
-import preferences from '@/systems/preferences'
-import SideMenuScroller from '@/utilities/side-menu-scroller'
+import { preferences } from '@/systems/preferences'
+import { SideMenuScroller } from '@/utilities/side-menu-scroller'
 import { MJ, MJComponent } from '@mj/jsx'
 import { MJLink } from '@mj/router'
 
@@ -11,7 +11,7 @@ interface Props {
 /**
  * サイドメニュー(スキーマ)
  */
-export default class SideMenuSchema extends MJComponent<Props> {
+export class SideMenuSchema extends MJComponent<Props> {
   private sideMenuScroller = new SideMenuScroller('schema')
 
   async beforeRender() {

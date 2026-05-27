@@ -1,5 +1,5 @@
-import masterData from '@/systems/master-data'
-import SideMenuScroller from '@/utilities/side-menu-scroller'
+import { masterData } from '@/systems/master-data'
+import { SideMenuScroller } from '@/utilities/side-menu-scroller'
 import { MJ, MJComponent } from '@mj/jsx'
 import { MJLink } from '@mj/router'
 
@@ -11,7 +11,7 @@ interface Props {
 /**
  * サイドメニュー(テーブル)
  */
-export default class SideMenuTable extends MJComponent<Props> {
+export class SideMenuTable extends MJComponent<Props> {
   private sideMenuScroller = new SideMenuScroller('table')
 
   async beforeRender() {

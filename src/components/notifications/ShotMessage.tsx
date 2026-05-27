@@ -1,7 +1,7 @@
 import { VariantIconClassName, VariantIconClassNames, VariantMessageAreaClassNames, VariantType } from '@/systems/define'
 import { MJComponent, ref, Reference } from '@mj/jsx'
 
-export default class ShotMessage extends MJComponent {
+export class ShotMessage extends MJComponent {
   private static _instance: ShotMessage
   static get instance() {
     if (this._instance) {

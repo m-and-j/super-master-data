@@ -1,28 +1,29 @@
-import DataObjectTable from '@/components/data-grid/DataObjectTable'
-import Button from '@/components/inputs/Button'
-import InputText from '@/components/inputs/InputText'
-import ConfirmModal from '@/components/modals/ConfirmModal'
-import ToastMessage from '@/components/notifications/ToastMessage'
-import SideMenuSchema from '@/components/wayFinders/SideMenuSchema'
-import preferences from '@/systems/preferences'
+import { DataObjectTable } from '@/components/data-grid/DataObjectTable'
+import { Button } from '@/components/inputs/Button'
+import { InputText } from '@/components/inputs/InputText'
+import { ConfirmModal } from '@/components/modals/ConfirmModal'
+import { ToastMessage } from '@/components/notifications/ToastMessage'
+import { SideMenuSchema } from '@/components/wayFinders/SideMenuSchema'
+import { preferences } from '@/systems/preferences'
 import { DataObject } from '@/systems/types'
-import { FormDataEx } from '@/utilities/helper-frontend'
+import { deepCopy } from '@/utilities/helper'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
 
-export default class Schemas extends MJPage {
-  private targetSchema?: DataObject
+export class Schemas extends MJPage {
+  private originalSchema?: DataObject
+  private editableSchema: DataObject = { name: '', description: '', columns: [] }
   private dataObjectTable: Reference<DataObjectTable> = ref()
 
   createNode() {
     const { name } = this.params
     const projectInfo = preferences.getProjectInfo()
-    const targetSchema = projectInfo.schemas.find((s) => s.name === name)
-    if (targetSchema) {
-      this.targetSchema = JSON.parse(JSON.stringify(targetSchema))
+    this.originalSchema = projectInfo.schemas.find((s) => s.name === name)
+    if (this.originalSchema) {
+      this.editableSchema = deepCopy(this.originalSchema)
     }
     return (
-      <form class="grid h-[calc(100vh-52px)] grid-cols-[300px_1fr] grid-rows-[90px_1fr] text-sm" onsubmit={(e) => this.register(e)}>
+      <div class="grid h-[calc(100vh-52px)] grid-cols-[300px_1fr] grid-rows-[90px_1fr] text-sm">
         {/** 左メニュー */}
         <SideMenuSchema currentName={name} className="row-span-2" />
 
@@ -31,11 +32,11 @@ export default class Schemas extends MJPage {
           <div class="mx-3 flex items-center gap-2">
             <div class="flex-[0_0_100px] text-right">スキーマ名</div>
             <div class="flex-[0_0_400px]">
-              <InputText name="name" placeholder="スキーマ名" value={this.targetSchema?.name} />
+              <InputText placeholder="スキーマ名" value={this.editableSchema.name} onchange={(e) => this.changeName(e)} />
             </div>
             <div class="flex-[0_0_50px] text-right">説明</div>
             <div class="flex-auto">
-              <InputText name="description" placeholder="内容" value={this.targetSchema?.description} />
+              <InputText placeholder="内容" value={this.editableSchema.description} onchange={(e) => this.changeDescription(e)} />
             </div>
           </div>
           <div class="mx-2 mt-3 flex gap-2">
@@ -46,13 +47,13 @@ export default class Schemas extends MJPage {
               </div>
             </Button>
             <div class="flex-auto"></div>
-            <Button type="submit" variant="primary" size="sm">
+            <Button type="button" variant="primary" size="sm" onclick={() => this.register()}>
               <div class="flex items-center justify-center gap-1">
                 <span class="icon-[ic--baseline-save] text-lg"></span>
                 保存
               </div>
             </Button>
-            {this.targetSchema && (
+            {this.originalSchema && (
               <Button type="button" variant="danger" size="sm" onclick={() => this.confirmDelete()}>
                 <div class="flex items-center justify-center gap-1">
                   <span class="icon-[ic--baseline-delete] text-lg"></span>
@@ -62,25 +63,27 @@ export default class Schemas extends MJPage {
             )}
           </div>
         </div>
-        <DataObjectTable schemaName={this.targetSchema?.name} columns={this.targetSchema?.columns} ref={this.dataObjectTable} />
-      </form>
+        <DataObjectTable schemaName={this.editableSchema.name} columns={this.editableSchema.columns} ref={this.dataObjectTable} />
+      </div>
     )
   }
 
-  private async register(event: SubmitEvent) {
-    event.preventDefault()
-    const formData = new FormDataEx(event)
-    const name = formData.getString('name', '')
-    const description = formData.getString('description', '')
-    const columns = this.dataObjectTable.value?.getColumns() ?? []
+  private changeName(e: Event) {
+    this.editableSchema.name = (e.target as HTMLInputElement).value
+  }
+
+  private changeDescription(e: Event) {
+    this.editableSchema.description = (e.target as HTMLInputElement).value
+  }
+
+  private async register() {
     try {
-      if (this.targetSchema) {
-        await preferences.updateSchema(this.targetSchema.name, name, description, columns)
-        MJRouter.instance.push(`/schemas/${name}`)
+      if (this.originalSchema) {
+        await preferences.updateSchema(this.originalSchema.name, this.editableSchema)
       } else {
-        await preferences.addSchema(name, description, columns)
-        MJRouter.instance.push(`/schemas/${name}`)
+        await preferences.addSchema(this.editableSchema)
       }
+      MJRouter.instance.push(`/schemas/${this.editableSchema.name}`)
       ToastMessage.instance.open('success', '保存しました。')
     } catch (e) {
       if (e instanceof Error) {
@@ -90,8 +93,8 @@ export default class Schemas extends MJPage {
   }
 
   private confirmDelete() {
-    if (this.targetSchema) {
-      const { name } = this.targetSchema
+    if (this.originalSchema) {
+      const { name } = this.originalSchema
       ConfirmModal.instance?.open(`「${name}」を削除します。よろしいですか?`, {
         headerTitle: '削除確認',
         positive: {

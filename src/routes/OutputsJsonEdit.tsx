@@ -1,12 +1,12 @@
-import Button from '@/components/inputs/Button'
-import ToastMessage from '@/components/notifications/ToastMessage'
-import SideMenuOutput from '@/components/wayFinders/SideMenuOutput'
-import preferences from '@/systems/preferences'
+import { Button } from '@/components/inputs/Button'
+import { ToastMessage } from '@/components/notifications/ToastMessage'
+import { SideMenuOutput } from '@/components/wayFinders/SideMenuOutput'
+import { preferences } from '@/systems/preferences'
 import { OutputProject } from '@/systems/types'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
 
-export default class OUtputsJsonEdit extends MJPage {
+export class OUtputsJsonEdit extends MJPage {
   private jsonTextarea: Reference<HTMLTextAreaElement> = ref()
 
   createNode() {

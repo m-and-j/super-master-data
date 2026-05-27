@@ -1,6 +1,6 @@
-import ScrollArea from '@/components/viewers/ScrollArea'
+import { ScrollArea } from '@/components/viewers/ScrollArea'
 import { MouseButtonCode } from '@/systems/define'
-import preferences from '@/systems/preferences'
+import { preferences } from '@/systems/preferences'
 import { regulationEscape } from '@/utilities/helper-text'
 import { MJ, MJCustomElement } from '@mj/jsx'
 import { MJRouter } from '@mj/router'
@@ -22,7 +22,7 @@ interface Props extends MJ.CEProps<NavigationTab> {
 /**
  * ナビゲーションタブ
  */
-export default class NavigationTab extends MJCustomElement<Props>()(HTMLDivElement) {
+export class NavigationTab extends MJCustomElement<Props>()(HTMLDivElement) {
   private static _instance: NavigationTab
   static get instance() {
     if (this._instance) {

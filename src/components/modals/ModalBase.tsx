@@ -16,7 +16,7 @@ interface Props {
 /**
  * モーダル基底
  */
-export default class ModalBase extends HTMLDivElement {
+export class ModalBase extends HTMLDivElement {
   connectedCallback() {
     this.className = formatCSS([
       'fixed w-full h-full top-0 left-0 bg-zinc-900/70 z-10 opacity-0 invisible',

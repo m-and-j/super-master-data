@@ -3,7 +3,7 @@ import { MJComponent, ref, Reference } from '@mj/jsx'
 /**
  * 読み込み中メッセージ
  */
-export default class LoadingMessage extends MJComponent {
+export class LoadingMessage extends MJComponent {
   private static _instance: LoadingMessage
   static get instance() {
     if (this._instance) {

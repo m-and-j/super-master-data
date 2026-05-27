@@ -10,7 +10,7 @@ interface Props extends MJ.CEProps<TabItemButton> {
 /**
  * タブバー(ボタン)
  */
-export default class TabItemButton extends MJComponent<Props> {
+export class TabItemButton extends MJComponent<Props> {
   createNode({ name, defaultActive, children, onchange, className }: Props) {
     return (
       <label class={['flex max-w-52 rounded-t-md bg-zinc-500', className]}>

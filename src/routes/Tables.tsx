@@ -1,28 +1,33 @@
-import DataObjectTable from '@/components/data-grid/DataObjectTable'
-import Button from '@/components/inputs/Button'
-import InputText from '@/components/inputs/InputText'
-import ConfirmModal from '@/components/modals/ConfirmModal'
-import ToastMessage from '@/components/notifications/ToastMessage'
-import SideMenuTable from '@/components/wayFinders/SideMenuTable'
-import masterData from '@/systems/master-data'
+import { DataObjectCursor } from '@/components/data-grid/DataObjectCursor'
+import { DataObjectTable } from '@/components/data-grid/DataObjectTable'
+import { Button } from '@/components/inputs/Button'
+import { InputText } from '@/components/inputs/InputText'
+import { ConfirmModal } from '@/components/modals/ConfirmModal'
+import { ToastMessage } from '@/components/notifications/ToastMessage'
+import { SideMenuTable } from '@/components/wayFinders/SideMenuTable'
+import { masterData } from '@/systems/master-data'
 import { Table } from '@/systems/types'
-import { FormDataEx } from '@/utilities/helper-frontend'
+import { deepCopy } from '@/utilities/helper'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
 
-export default class Tables extends MJPage {
-  private targetTable?: Table
+export class Tables extends MJPage {
+  private originalTable?: Table
+  private editableTable: Table = { name: '', description: '', columns: [], data: [] }
   private dataObjectTable: Reference<DataObjectTable> = ref()
 
   async beforeRender() {
     const { name } = this.params
-    this.targetTable = await masterData.read(name)
+    this.originalTable = await masterData.read(name)
+    if (this.originalTable) {
+      this.editableTable = deepCopy(this.originalTable)
+    }
   }
 
   createNode() {
     const { name } = this.params
     return (
-      <form class="grid h-[calc(100vh-52px)] grid-cols-[300px_1fr] grid-rows-[90px_1fr] text-sm" onsubmit={(e) => this.register(e)}>
+      <div class="grid h-[calc(100vh-52px)] grid-cols-[300px_1fr] grid-rows-[90px_1fr] text-sm">
         {/** 左メニュー */}
         <SideMenuTable currentName={name} className="row-span-2" />
 
@@ -31,11 +36,11 @@ export default class Tables extends MJPage {
           <div class="mx-3 flex items-center gap-2">
             <div class="flex-[0_0_100px] text-right">テーブル名</div>
             <div class="flex-[0_0_400px]">
-              <InputText name="name" placeholder="テーブル名" value={this.targetTable?.name} />
+              <InputText placeholder="テーブル名" value={this.editableTable.name} onchange={(e) => this.changeName(e)} />
             </div>
             <div class="flex-[0_0_50px] text-right">説明</div>
             <div class="flex-auto">
-              <InputText name="description" placeholder="内容" value={this.targetTable?.description} />
+              <InputText placeholder="内容" value={this.editableTable.description} onchange={(e) => this.changeDescription(e)} />
             </div>
           </div>
           <div class="mx-2 mt-3 flex gap-2">
@@ -46,13 +51,13 @@ export default class Tables extends MJPage {
               </div>
             </Button>
             <div class="flex-auto"></div>
-            <Button type="submit" variant="primary" size="sm">
+            <Button type="button" variant="primary" size="sm" onclick={() => this.register()}>
               <div class="flex items-center justify-center gap-1">
                 <span class="icon-[ic--baseline-save] text-lg"></span>
                 保存
               </div>
             </Button>
-            {this.targetTable && (
+            {this.originalTable && (
               <Button type="button" variant="danger" size="sm" onclick={() => this.confirmDelete()}>
                 <div class="flex items-center justify-center gap-1">
                   <span class="icon-[ic--baseline-delete] text-lg"></span>
@@ -62,26 +67,27 @@ export default class Tables extends MJPage {
             )}
           </div>
         </div>
-        <DataObjectTable schemaName={this.targetTable?.name} columns={this.targetTable?.columns} ref={this.dataObjectTable} />
-      </form>
+        <DataObjectTable schemaName={this.editableTable.name} columns={this.editableTable.columns} ref={this.dataObjectTable} />
+        <DataObjectCursor dataObjectTable={this.dataObjectTable} />
+      </div>
     )
   }
 
-  private async register(event: SubmitEvent) {
-    event.preventDefault()
-    const formData = new FormDataEx(event)
-    const name = formData.getString('name', '')
-    const description = formData.getString('description', '')
-    const columns = this.dataObjectTable.value?.getColumns() ?? []
+  private changeName(e: Event) {
+    this.editableTable.name = (e.target as HTMLInputElement).value
+  }
+
+  private changeDescription(e: Event) {
+    this.editableTable.description = (e.target as HTMLInputElement).value
+  }
+
+  private async register() {
     try {
-      if (this.targetTable) {
-        await masterData.rename(this.targetTable.name, name)
-        await masterData.write({ name, description, columns, data: this.targetTable.data })
-        MJRouter.instance.push(`/tables/${name}`)
-      } else {
-        await masterData.write({ name, description, columns, data: [] })
-        MJRouter.instance.push(`/tables/${name}`)
+      if (this.originalTable) {
+        await masterData.rename(this.originalTable.name, this.editableTable.name)
       }
+      await masterData.write(this.editableTable)
+      MJRouter.instance.push(`/tables/${this.editableTable.name}`)
       ToastMessage.instance.open('success', '保存しました。')
     } catch (e) {
       if (e instanceof Error) {
@@ -91,8 +97,8 @@ export default class Tables extends MJPage {
   }
 
   private confirmDelete() {
-    if (this.targetTable) {
-      const { name } = this.targetTable
+    if (this.originalTable) {
+      const { name } = this.originalTable
       ConfirmModal.instance?.open(`「${name}」を削除します。よろしいですか?`, {
         headerTitle: '削除確認',
         positive: {

@@ -8,7 +8,7 @@ interface Props {
 /**
  * タブパネル
  */
-export default class TabPanel extends MJComponent<Props> {
+export class TabPanel extends MJComponent<Props> {
   createNode({ className, children }: Props) {
     return (
       <div class={['flex flex-nowrap items-end', className]}>

@@ -1,7 +1,7 @@
 import { VariantIconClassName, VariantIconClassNames, VariantMessageAreaClassNames, VariantType } from '@/systems/define'
 import { MJComponent, ref, Reference } from '@mj/jsx'
 
-export default class ToastMessage extends MJComponent {
+export class ToastMessage extends MJComponent {
   private static _instance: ToastMessage
   static get instance() {
     if (this._instance) {

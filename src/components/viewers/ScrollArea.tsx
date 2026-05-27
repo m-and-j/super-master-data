@@ -14,7 +14,7 @@ interface Props {
 /**
  * スクロールエリア
  */
-export default class ScrollArea extends MJComponent<Props> {
+export class ScrollArea extends MJComponent<Props> {
   createNode({ x, y, minusW, minusH, scrollable = true, className, children, ref }: Props) {
     const width = minusW ? `calc(100vw - ${minusW}px)` : undefined
     const height = minusH ? `calc(100vh - ${minusH}px)` : undefined

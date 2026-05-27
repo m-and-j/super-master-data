@@ -15,7 +15,7 @@ interface Props extends MJ.CEProps<CellTypeSelect> {
 /**
  * セルテーブル: セレクトボックス
  */
-export default class CellTypeSelect extends MJCustomElement<Props>()(HTMLDivElement) {
+export class CellTypeSelect extends MJCustomElement<Props>()(HTMLDivElement) {
   private selectBox: Reference<HTMLSelectElement> = ref()
 
   connectedCallback() {

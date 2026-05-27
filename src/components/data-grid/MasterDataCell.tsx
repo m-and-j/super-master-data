@@ -1,7 +1,7 @@
-import SchemaPanel from '@/components/data-grid/SubEditorPanel'
+import { SubEditorPanel } from '@/components/data-grid/SubEditorPanel'
 import { DataClassification, DataKind, DataKindExtension } from '@/systems/define'
-import masterData from '@/systems/master-data'
-import preferences from '@/systems/preferences'
+import { masterData } from '@/systems/master-data'
+import { preferences } from '@/systems/preferences'
 import { DataObjectColumn, Table } from '@/systems/types'
 import { MJ, MJComponent, Reference } from '@mj/jsx'
 
@@ -9,13 +9,13 @@ interface Props {
   column: DataObjectColumn
   value: any
   className?: MJ.ClassProp
-  schemaPanelRef?: Reference<SchemaPanel>
+  schemaPanelRef?: Reference<SubEditorPanel>
 }
 
 /**
  * カラムセルのエディタ
  */
-export default class MasterDataCell extends MJComponent<Props> {
+export class MasterDataCell extends MJComponent<Props> {
   private relationTable?: Table
 
   async beforeRender({ column }: Props) {
@@ -57,11 +57,11 @@ export default class MasterDataCell extends MJComponent<Props> {
       let label
       let color
       if (this.relationTable) {
-        const idColumn = this.relationTable.columns.find((c) => c.type.classification === DataClassification.ID)
-        const labelColumn = this.relationTable.columns.find((c) => c.type.classification === DataClassification.Label)
-        const item = this.relationTable.data.find((row) => `${row[idColumn?.name ?? ''] ?? ''}` === value)
+        const idColumnIdx = this.relationTable.columns.findIndex((c) => c.type.classification === DataClassification.ID)
+        const labelColumnIdx = this.relationTable.columns.findIndex((c) => c.type.classification === DataClassification.Label)
+        const item = this.relationTable.data.find((row) => `${row[idColumnIdx] ?? ''}` === value)
         if (item) {
-          label = item[labelColumn?.name ?? ''] ?? item[idColumn?.name ?? '']
+          label = item[labelColumnIdx] ?? item[idColumnIdx]
         } else if (type.extension === DataKindExtension.Optional) {
           label = '(未指定)'
           color = 'text-zinc-400'

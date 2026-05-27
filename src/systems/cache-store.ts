@@ -63,5 +63,4 @@ class CacheStore {
   }
 }
 
-const cacheStore = new CacheStore()
-export default cacheStore
+export const cacheStore = new CacheStore()

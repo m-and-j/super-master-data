@@ -15,7 +15,7 @@ interface Props {
 /**
  * チェックボックス
  */
-export default class CheckBox extends MJComponent<Props> {
+export class CheckBox extends MJComponent<Props> {
   createNode({ type = 'checkbox', name, value, labelClassName, checkBoxClassName, checked, disabled, onchange, children }: Props) {
     return (
       <label class={['flex gap-2', labelClassName]}>

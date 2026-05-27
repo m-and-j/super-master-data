@@ -16,7 +16,7 @@ interface Props {
 /**
  * モーダルコンテナ
  */
-export default class ModalContainer extends MJComponent<Props> {
+export class ModalContainer extends MJComponent<Props> {
   private whole: Reference<HTMLDivElement> = ref()
 
   createNode({ modalPosition = 'top', modalClassName, ref, children }: Props) {

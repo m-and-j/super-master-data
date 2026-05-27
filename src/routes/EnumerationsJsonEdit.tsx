@@ -1,12 +1,12 @@
-import Button from '@/components/inputs/Button'
-import ToastMessage from '@/components/notifications/ToastMessage'
-import SideMenuEnumeration from '@/components/wayFinders/SideMenuEnumeration'
-import preferences from '@/systems/preferences'
+import { Button } from '@/components/inputs/Button'
+import { ToastMessage } from '@/components/notifications/ToastMessage'
+import { SideMenuEnumeration } from '@/components/wayFinders/SideMenuEnumeration'
+import { preferences } from '@/systems/preferences'
 import { EnumerationItem, EnumerationObject } from '@/systems/types'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
 
-export default class EnumerationsJsonEdit extends MJPage {
+export class EnumerationsJsonEdit extends MJPage {
   private jsonTextarea: Reference<HTMLTextAreaElement> = ref()
 
   createNode() {

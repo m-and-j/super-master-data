@@ -1,15 +1,15 @@
-import Button from '@/components/inputs/Button'
-import ToastMessage from '@/components/notifications/ToastMessage'
-import SideMenuSchema from '@/components/wayFinders/SideMenuSchema'
+import { Button } from '@/components/inputs/Button'
+import { ToastMessage } from '@/components/notifications/ToastMessage'
+import { SideMenuSchema } from '@/components/wayFinders/SideMenuSchema'
 import { DataClassification, DataClassificationType } from '@/systems/define'
-import preferences from '@/systems/preferences'
+import { preferences } from '@/systems/preferences'
 import { DataObject, DataObjectColumn, DataObjectColumnType } from '@/systems/types'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
 
 const VALID_CLASSIFICATIONS: DataClassificationType[] = Object.values(DataClassification)
 
-export default class SchemasJsonEdit extends MJPage {
+export class SchemasJsonEdit extends MJPage {
   private jsonTextarea: Reference<HTMLTextAreaElement> = ref()
 
   createNode() {

@@ -7,14 +7,15 @@ interface Props {
   placeholder?: string
   tabindex?: number
   className?: MJ.ClassProp
+  onchange?: (event: Event) => void
   oncontextmenu?: (event: MouseEvent) => void
 }
 
 /**
  * テキスト入力フィールド
  */
-export default class InputText extends MJComponent<Props> {
-  createNode({ type = 'text', name, value, placeholder, tabindex, className, oncontextmenu }: Props) {
+export class InputText extends MJComponent<Props> {
+  createNode({ type = 'text', name, value, placeholder, tabindex, className, onchange, oncontextmenu }: Props) {
     return (
       <input
         type={type}
@@ -24,6 +25,7 @@ export default class InputText extends MJComponent<Props> {
         tabindex={tabindex}
         class={['w-full rounded-md border border-zinc-500 bg-zinc-800 px-2 py-1.75', className]}
         oncontextmenu={oncontextmenu}
+        onchange={onchange}
       />
     )
   }

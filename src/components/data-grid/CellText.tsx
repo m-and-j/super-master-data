@@ -11,7 +11,7 @@ interface Props {
 /**
  * テーブルセル: テキスト入力
  */
-export default class CellText extends MJComponent<Props> {
+export class CellText extends MJComponent<Props> {
   createNode({ name, type = 'text', value, className, onchange }: Props) {
     return (
       <div class={['data-grid-cell bg-zinc-800 px-2 py-1', className]}>

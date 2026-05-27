@@ -1,16 +1,16 @@
-import Button from '@/components/inputs/Button'
-import InputText from '@/components/inputs/InputText'
-import LoadingMessage from '@/components/notifications/LoadingMessage'
-import ToastMessage from '@/components/notifications/ToastMessage'
-import TabPanel from '@/components/wayFinders/NavigationTab'
+import { Button } from '@/components/inputs/Button'
+import { InputText } from '@/components/inputs/InputText'
+import { LoadingMessage } from '@/components/notifications/LoadingMessage'
+import { ToastMessage } from '@/components/notifications/ToastMessage'
+import { NavigationTab } from '@/components/wayFinders/NavigationTab'
 import { OutputDistributor } from '@/systems/output-distributor'
-import preferences from '@/systems/preferences'
+import { preferences } from '@/systems/preferences'
 import { OutputProject } from '@/systems/types'
 import { FormDataEx } from '@/utilities/helper-frontend'
 import { MJPage, MJRouter } from '@mj/router'
 import { open } from '@tauri-apps/plugin-dialog'
 
-export default class Home extends MJPage {
+export class Home extends MJPage {
   async beforeRender() {}
 
   createNode() {
@@ -92,7 +92,7 @@ export default class Home extends MJPage {
     if (typeof selected === 'string') {
       try {
         const created = await preferences.openProject(selected)
-        TabPanel.instance.render()
+        NavigationTab.instance.render()
         MJRouter.instance.reload()
         ToastMessage.instance.open('success', created ? 'プロジェクトファイルを作成しました。' : 'プロジェクトファイルを読み込みました。')
       } catch (e) {

@@ -1,13 +1,13 @@
-import Button from '@/components/inputs/Button'
-import CheckBox from '@/components/inputs/CheckBox'
-import InputText from '@/components/inputs/InputText'
-import ConfirmModal from '@/components/modals/ConfirmModal'
-import ToastMessage from '@/components/notifications/ToastMessage'
-import SideMenuOutput from '@/components/wayFinders/SideMenuOutput'
-import TabItemButton from '@/components/wayFinders/TabItemButton'
-import TabPanel from '@/components/wayFinders/TabPanel'
-import masterData from '@/systems/master-data'
-import preferences from '@/systems/preferences'
+import { Button } from '@/components/inputs/Button'
+import { CheckBox } from '@/components/inputs/CheckBox'
+import { InputText } from '@/components/inputs/InputText'
+import { ConfirmModal } from '@/components/modals/ConfirmModal'
+import { ToastMessage } from '@/components/notifications/ToastMessage'
+import { SideMenuOutput } from '@/components/wayFinders/SideMenuOutput'
+import { TabItemButton } from '@/components/wayFinders/TabItemButton'
+import { TabPanel } from '@/components/wayFinders/TabPanel'
+import { masterData } from '@/systems/master-data'
+import { preferences } from '@/systems/preferences'
 import { OutputItem, OutputProject } from '@/systems/types'
 import { FormDataEx } from '@/utilities/helper-frontend'
 import { ref, Reference } from '@mj/jsx'
@@ -21,7 +21,7 @@ const Mode = {
 } as const
 type ModeType = (typeof Mode)[keyof typeof Mode]
 
-export default class Outputs extends MJPage {
+export class Outputs extends MJPage {
   private targetOutput?: OutputProject
   private mode: ModeType = Mode.MasterData
   private masterFieldset: Reference<HTMLFieldSetElement> = ref()

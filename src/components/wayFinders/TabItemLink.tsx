@@ -10,7 +10,7 @@ interface Props extends MJ.CEProps<TabItemLink> {
 /**
  * タブバー(リンク)
  */
-export default class TabItemLink extends MJComponent<Props> {
+export class TabItemLink extends MJComponent<Props> {
   createNode({ to, defaultActive, children, className }: Props) {
     return (
       <MJLink to={to} className={['flex max-w-52 rounded-t-md bg-zinc-500', className]}>

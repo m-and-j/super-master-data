@@ -1,25 +1,25 @@
-import ConfirmModal from '@/components/modals/ConfirmModal'
-import LoadingMessage from '@/components/notifications/LoadingMessage'
-import ShotMessage from '@/components/notifications/ShotMessage'
-import ToastMessage from '@/components/notifications/ToastMessage'
-import NavigationTab from '@/components/wayFinders/NavigationTab'
-import Enumerations from '@/routes/Enumerations'
-import EnumerationsJsonEdit from '@/routes/EnumerationsJsonEdit'
-import Home from '@/routes/Home'
-import MasterData from '@/routes/MasterData'
-import Outputs from '@/routes/Outputs'
-import OUtputsJsonEdit from '@/routes/OutputsJsonEdit'
-import Schemas from '@/routes/Schemas'
-import SchemasJsonEdit from '@/routes/SchemasJsonEdit'
-import Tables from '@/routes/Tables'
-import cacheStore from '@/systems/cache-store'
+import { ConfirmModal } from '@/components/modals/ConfirmModal'
+import { LoadingMessage } from '@/components/notifications/LoadingMessage'
+import { ShotMessage } from '@/components/notifications/ShotMessage'
+import { ToastMessage } from '@/components/notifications/ToastMessage'
+import { NavigationTab } from '@/components/wayFinders/NavigationTab'
+import { Enumerations } from '@/routes/Enumerations'
+import { EnumerationsJsonEdit } from '@/routes/EnumerationsJsonEdit'
+import { Home } from '@/routes/Home'
+import { MasterData } from '@/routes/MasterData'
+import { Outputs } from '@/routes/Outputs'
+import { OUtputsJsonEdit } from '@/routes/OutputsJsonEdit'
+import { Schemas } from '@/routes/Schemas'
+import { SchemasJsonEdit } from '@/routes/SchemasJsonEdit'
+import { Tables } from '@/routes/Tables'
+import { cacheStore } from '@/systems/cache-store'
 import { MJComponent } from '@mj/jsx'
 import { MJRouter } from '@mj/router'
 
 /**
  * アプリコンテンツ
  */
-export default class AppContent extends MJComponent {
+export class AppContent extends MJComponent {
   constructor() {
     super({})
   }

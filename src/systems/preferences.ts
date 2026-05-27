@@ -1,6 +1,6 @@
-import cacheStore from '@/systems/cache-store'
-import masterData from '@/systems/master-data'
-import { DataObject, DataObjectColumn, EnumerationItem, EnumerationObject, OutputItem, OutputProject, ProjectInfo } from '@/systems/types'
+import { cacheStore } from '@/systems/cache-store'
+import { masterData } from '@/systems/master-data'
+import { DataObject, EnumerationItem, EnumerationObject, OutputItem, OutputProject, ProjectInfo } from '@/systems/types'
 import { readJsonFile, writeJsonFile } from '@/utilities/helper'
 import { exists } from '@tauri-apps/plugin-fs'
 
@@ -100,14 +100,13 @@ class Preferences {
 
   /**
    * スキーマ追加
-   * @param name
-   * @param description
-   * @param columns
+   * @param schema
    */
-  async addSchema(name: string, description: string, columns: DataObjectColumn[]) {
-    if (this.schemas.some((s) => s.name === name)) {
+  async addSchema(schema: DataObject) {
+    if (this.schemas.some((s) => s.name === schema.name)) {
       throw new Error('すでに同名のスキーマが存在します。')
     } else {
+      const { name, description, columns } = schema
       this.schemas.push({ name, description, columns })
       this.schemas.sort((a, b) => a.name.localeCompare(b.name))
       await this.save()
@@ -117,14 +116,13 @@ class Preferences {
   /**
    * スキーマ更新
    * @param beforeName
-   * @param afterName
-   * @param description
-   * @param columns
+   * @param newSchema
    */
-  async updateSchema(beforeName: string, afterName: string, description: string, columns: DataObjectColumn[]) {
+  async updateSchema(beforeName: string, newSchema: DataObject) {
     const schema = this.schemas.find((s) => s.name === beforeName)
     if (schema) {
-      schema.name = afterName
+      const { name, description, columns } = newSchema
+      schema.name = name
       schema.description = description
       schema.columns = columns
       await this.save()
@@ -305,5 +303,4 @@ class Preferences {
   }
 }
 
-const preferences = new Preferences()
-export default preferences
+export const preferences = new Preferences()

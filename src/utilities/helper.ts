@@ -56,6 +56,15 @@ export function autoCastOrUndefined<T>(value: string | number | undefined): T | 
 }
 
 /**
+ * オブジェクトのディープコピー
+ * @param obj
+ * @returns
+ */
+export function deepCopy<T>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj)) as T
+}
+
+/**
  * JSON文字列をオブジェクトに変換する
  * @param value
  * @returns
