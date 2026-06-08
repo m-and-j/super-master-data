@@ -6,6 +6,7 @@ import { writeJsonFile } from '@/utilities/helper'
 import { camelToKebabCase } from '@/utilities/helper-text'
 import { path } from '@tauri-apps/api'
 import { exists, mkdir, readDir, remove, writeFile } from '@tauri-apps/plugin-fs'
+import pluralize from '@theothergothamdev/pluralize-ts'
 import { Eta } from 'eta'
 
 export class OutputDistributor {
@@ -14,7 +15,7 @@ export class OutputDistributor {
   async exec() {
     const { dataDir, entityDir, schemaDir, enumerationDir } = await this.getPaths()
     const { targetMasterData, codeExtension, entity, schema, enumeration } = this.outputProject
-    await this.removePreviousFiles(dataDir, '.json')
+    await this.removePreviousFiles(dataDir, 'json')
     await this.removePreviousFiles(entityDir, codeExtension)
     await this.removePreviousFiles(schemaDir, codeExtension)
     await this.removePreviousFiles(enumerationDir, codeExtension)
@@ -66,9 +67,10 @@ export class OutputDistributor {
             }
           }
           const { name, description } = table
+          const singularName = pluralize.singular(name)
           const enumerations = Array.from(enumerationMap.values())
           const schemas = Array.from(schemaMap.values())
-          this.writeSourceCode(entity, entityDir, targetName, { name, description, columns, enumerations, schemas })
+          this.writeSourceCode(entity, entityDir, targetName, { name, singularName, description, columns, enumerations, schemas })
         }
       }
     }
@@ -159,7 +161,7 @@ export class OutputDistributor {
   }
 
   private replaceFileName(fileNameTemplate: string, name: string) {
-    return fileNameTemplate.replace('{{filename}}', name).replace('{{filenameKebab}}', camelToKebabCase(name))
+    return fileNameTemplate.replace('{{filename}}', name).replace('{{filenameSingular}}', pluralize.singular(name)).replace('{{filenameKebab}}', camelToKebabCase(name))
   }
 
   private convertTypeName(columnType: DataObjectColumnType, language: string) {

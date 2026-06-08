@@ -6,7 +6,6 @@ import { DataObjectColumn } from '@/systems/types'
 import { MJComponent } from '@mj/jsx'
 
 interface Props {
-  schemaName: string
   index: number
   column: DataObjectColumn
   deleteRow: (index: number) => void
@@ -16,7 +15,7 @@ interface Props {
  * データオブジェクトテーブル行
  */
 export class DataObjectRow extends MJComponent<Props> {
-  createNode({ schemaName, index, column, deleteRow }: Props) {
+  createNode({ index, column, deleteRow }: Props) {
     const { name, label, type, description } = column
     const { typeName, classification, extension } = type
     const dataClassificationLabel = DataClassificationLabelValues.find(([value]) => classification === value)?.[1] ?? ''
@@ -60,7 +59,7 @@ export class DataObjectRow extends MJComponent<Props> {
         <DataObjectCell column={column} kind="typeExtension" value={dataKindOption} selectable />
         <DataObjectCell column={column} kind="description" value={description} />
         <div class="data-grid-cell">
-          <div class="m-1 flex justify-between">
+          <div class="m-1 flex justify-center">
             <Button variant="danger" size="none" className="flex-[0_0_40px]" onclick={() => deleteRow(index)}>
               <span class="icon-[ic--baseline-delete-forever] text-2xl"></span>
             </Button>

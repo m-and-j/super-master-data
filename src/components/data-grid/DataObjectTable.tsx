@@ -5,7 +5,6 @@ import { DataObjectColumn } from '@/systems/types'
 import { MJ, MJCustomElement } from '@mj/jsx'
 
 interface Props extends MJ.CEProps<DataObjectTable> {
-  schemaName: string
   columns: DataObjectColumn[]
 }
 
@@ -17,9 +16,9 @@ export class DataObjectTable extends MJCustomElement<Props>()(HTMLDivElement) {
     this.addClassName('scrollbar overflow-scroll')
   }
 
-  createNode({ schemaName, columns }: Props) {
+  createNode({ columns }: Props) {
     return (
-      <div class="grid grid-cols-[50px_auto_auto_auto_auto_auto_auto_140px]">
+      <div class="grid grid-cols-[50px_auto_auto_auto_auto_auto_auto_50px]">
         <CellHeader className="flex items-center justify-center">#</CellHeader>
         <CellHeader>項目名</CellHeader>
         <CellHeader>ラベル</CellHeader>
@@ -27,7 +26,7 @@ export class DataObjectTable extends MJCustomElement<Props>()(HTMLDivElement) {
         <CellHeader>説明</CellHeader>
         <CellHeader>操作</CellHeader>
         {columns.map((column, index) => (
-          <DataObjectRow schemaName={schemaName} index={index} column={column} deleteRow={(idx) => this.deleteRow(idx)} />
+          <DataObjectRow index={index} column={column} deleteRow={(idx) => this.deleteRow(idx)} />
         ))}
       </div>
     )

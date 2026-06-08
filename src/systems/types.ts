@@ -15,7 +15,7 @@ export interface Table {
   data: MasterRecord[]
 }
 
-export type MasterRecord = any[]
+export type MasterRecord = Record<string, any>
 
 export interface DataObject {
   name: string

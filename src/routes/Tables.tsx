@@ -67,8 +67,8 @@ export class Tables extends MJPage {
             )}
           </div>
         </div>
-        <DataObjectTable schemaName={this.editableTable.name} columns={this.editableTable.columns} ref={this.dataObjectTable} />
-        <DataObjectCursor dataObjectTable={this.dataObjectTable} />
+        <DataObjectTable columns={this.editableTable.columns} ref={this.dataObjectTable} />
+        <DataObjectCursor schemaName={this.editableTable.name} dataObjectTable={this.dataObjectTable} />
       </div>
     )
   }

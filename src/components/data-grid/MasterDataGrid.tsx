@@ -50,8 +50,8 @@ export class MasterDataGrid extends MJCustomElement<Props>()(HTMLDivElement) {
                   <span class="icon-[ic--baseline-delete-forever] text-xl"></span>
                 </Button>
               </div>
-              {columns.map((column, index) => (
-                <MasterDataCell column={column} value={row[index]} schemaPanelRef={schemaPanelRef} />
+              {columns.map((column) => (
+                <MasterDataCell column={column} value={row[column.name]} schemaPanelRef={schemaPanelRef} />
               ))}
             </>
           ))

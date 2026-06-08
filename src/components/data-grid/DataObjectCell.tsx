@@ -15,7 +15,7 @@ interface Props {
 export class DataObjectCell extends MJComponent<Props> {
   createNode({ column, kind, value, selectable }: Props) {
     return (
-      <div class="data-grid-cell flex items-center justify-between px-2" onclick={() => DataObjectCursor.instance?.select(column, kind)}>
+      <div class="data-grid-cell flex cursor-default items-center justify-between px-2" onclick={(e) => DataObjectCursor.instance?.select(e, column, kind)}>
         <span class="truncate" title={value}>
           {value}
         </span>
