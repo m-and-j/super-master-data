@@ -63,7 +63,7 @@ export class Schemas extends MJPage {
             )}
           </div>
         </div>
-        <DataObjectTable schemaName={this.editableSchema.name} columns={this.editableSchema.columns} ref={this.dataObjectTable} />
+        <DataObjectTable columns={this.editableSchema.columns} ref={this.dataObjectTable} />
       </div>
     )
   }

@@ -51,7 +51,7 @@ export class DataObjectCursor extends MJCustomElement<Props>()(HTMLDivElement) {
 
   createNode({ schemaName }: Props) {
     if (this.column && this.kind) {
-      const { name, label, type, description } = this.column
+      const { type } = this.column
       const { typeName, classification, extension } = type
       const dataClassificationItems = DataClassificationLabelValues.map(([value, label]) => ({ label, value, selected: classification === value }))
       const dataKindItems = DataKindValues.map(([label, value]) => ({ label, value, selected: typeName === value }))
