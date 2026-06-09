@@ -6,12 +6,17 @@ import { NavigationTab } from '@/components/wayFinders/NavigationTab'
 import { OutputDistributor } from '@/systems/output-distributor'
 import { preferences } from '@/systems/preferences'
 import { OutputProject } from '@/systems/types'
+import { checkUpdate, getCurrentVersion } from '@/systems/updater'
 import { FormDataEx } from '@/utilities/helper-frontend'
 import { MJPage, MJRouter } from '@mj/router'
 import { open } from '@tauri-apps/plugin-dialog'
 
 export class Home extends MJPage {
-  async beforeRender() {}
+  private currentVersion: string = ''
+
+  async beforeRender() {
+    this.currentVersion = await getCurrentVersion()
+  }
 
   createNode() {
     const projectInfo = preferences.getProjectInfo()
@@ -79,8 +84,30 @@ export class Home extends MJPage {
             ))}
           </div>
         </section>
+
+        {/** アプリ情報 */}
+        <section class="rounded-md border border-zinc-600 p-4">
+          <h2 class="mb-3 font-semibold">アプリ情報</h2>
+          <div class="flex items-center gap-2">
+            <div class="flex-[0_0_100px] text-right text-sm">バージョン</div>
+            <div class="flex-auto text-sm">v{this.currentVersion}</div>
+            <Button variant="secondary" size="sm" onclick={() => this.onClickCheckUpdate()}>
+              <span class="icon-[ic--baseline-system-update] text-lg"></span>
+              更新を確認
+            </Button>
+          </div>
+        </section>
       </div>
     )
+  }
+
+  private async onClickCheckUpdate() {
+    LoadingMessage.instance?.attach()
+    try {
+      await checkUpdate()
+    } finally {
+      LoadingMessage.instance?.detach()
+    }
   }
 
   private async onClickOpen() {
