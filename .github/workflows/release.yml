@@ -18,8 +18,18 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
+
+      - name: Init private submodule
+        shell: bash
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --recursive
+
+      - name: Verify submodule
+        shell: bash
+        run: |
+          echo "=== mj.js/src ==="
+          ls -la mj.js/src/ || (echo "MJJS SRC MISSING" && exit 1)
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
