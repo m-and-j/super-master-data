@@ -11,38 +11,15 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Setup SSH key file
-        shell: bash
-        env:
-          MJJS_DEPLOY_KEY: ${{ secrets.MJJS_DEPLOY_KEY }}
-        run: |
-          set -ex
-          mkdir -p "$HOME/.ssh"
-          chmod 700 "$HOME/.ssh"
-          printf '%s\n' "$MJJS_DEPLOY_KEY" | tr -d '\r' > "$HOME/.ssh/id_ed25519"
-          chmod 600 "$HOME/.ssh/id_ed25519"
-          ssh-keyscan -t rsa,ed25519 github.com >> "$HOME/.ssh/known_hosts"
-          echo "Key fingerprint:"
-          ssh-keygen -lf "$HOME/.ssh/id_ed25519"
+      - name: Setup SSH for private submodule
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.MJJS_DEPLOY_KEY }}
 
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Init private submodule
-        shell: bash
-        run: |
-          set -ex
-          export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
-          # SSH 接続テスト (git@github.com は exit 1 で返るが、認証成功なら "successfully authenticated" メッセージが出る)
-          ssh -i "$HOME/.ssh/id_ed25519" -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -T git@github.com 2>&1 || true
-          git submodule sync --recursive
-          git submodule update --init --recursive
-
-      - name: Verify submodule
-        shell: bash
-        run: |
-          echo "=== mj.js/src ==="
-          ls -la mj.js/src/ || (echo "MJJS SRC MISSING" && exit 1)
+        with:
+          submodules: recursive
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
