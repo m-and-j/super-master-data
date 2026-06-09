@@ -11,10 +11,16 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Setup SSH for private submodule
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.MJJS_DEPLOY_KEY }}
+      - name: Setup SSH key for private submodule
+        shell: bash
+        env:
+          MJJS_DEPLOY_KEY: ${{ secrets.MJJS_DEPLOY_KEY }}
+        run: |
+          mkdir -p "$HOME/.ssh"
+          chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$MJJS_DEPLOY_KEY" | tr -d '\r' > "$HOME/.ssh/id_ed25519"
+          chmod 600 "$HOME/.ssh/id_ed25519"
+          ssh-keyscan -t rsa,ed25519 github.com >> "$HOME/.ssh/known_hosts"
 
       - name: Checkout
         uses: actions/checkout@v4
