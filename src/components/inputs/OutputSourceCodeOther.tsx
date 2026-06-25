@@ -100,9 +100,7 @@ export class OutputSourceCodeOther extends MJCustomElement<Props>()(HTMLFieldSet
         outputProjectOther.fileNameTemplate = undefined
         break
       }
-      case OutputKind.MultipleTables:
-      case OutputKind.MultipleSchemas:
-      case OutputKind.MultipleEnumerations: {
+      case OutputKind.MultipleTables: {
         outputProjectOther.fileNameTemplate = '{{filename}}'
         break
       }

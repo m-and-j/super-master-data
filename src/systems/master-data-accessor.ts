@@ -8,7 +8,7 @@ import { exists, readDir, remove, rename } from '@tauri-apps/plugin-fs'
 class MasterDataAccessor {
   private names: string[] = []
 
-  async read(name?: string) {
+  async read(name: string) {
     const folderPath = preferences.getFolderPath()
     if (name && folderPath) {
       try {

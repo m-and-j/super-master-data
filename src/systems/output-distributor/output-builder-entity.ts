@@ -84,7 +84,7 @@ export class OutputBuilderEntity extends OutputBuilderBase {
           const enumerations = Array.from(enumerationMap.values())
           const schemas = Array.from(schemaMap.values())
           const { fileNameTemplate } = this.entity
-          this.writeSourceCode(this.entity.sourceCodeTemplate, { name, singularName, description, columns, enumerations, schemas }, { fileNameTemplate, name })
+          await this.writeSourceCode(this.entity.sourceCodeTemplate, { name, singularName, description, columns, enumerations, schemas }, { fileNameTemplate, name })
         }
       }
     }

@@ -30,7 +30,7 @@ export class OutputBuilderEnumeration extends OutputBuilderBase {
     for (const item of projectInfo.enumerations) {
       const { fileNameTemplate } = this.enumeration
       const { name } = item
-      this.writeSourceCode(this.enumeration.sourceCodeTemplate, item, { fileNameTemplate, name })
+      await this.writeSourceCode(this.enumeration.sourceCodeTemplate, item, { fileNameTemplate, name })
     }
   }
 }

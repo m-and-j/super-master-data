@@ -43,7 +43,7 @@ export class OutputBuilderOther extends OutputBuilderBase {
           }
         }
       }
-      this.writeSourceCode(this.other.sourceCodeTemplate, { tables })
+      await this.writeSourceCode(this.other.sourceCodeTemplate, { tables })
     } else {
       await this.removePreviousFiles()
       const names = masterDataAccessor.getNames()
@@ -54,7 +54,7 @@ export class OutputBuilderOther extends OutputBuilderBase {
             const { fileNameTemplate = '' } = this.other
             const { name, description } = table
             const singularName = pluralize.singular(name)
-            this.writeSourceCode(this.other.sourceCodeTemplate, { name, singularName, description }, { fileNameTemplate, name })
+            await this.writeSourceCode(this.other.sourceCodeTemplate, { name, singularName, description }, { fileNameTemplate, name })
           }
         }
       }

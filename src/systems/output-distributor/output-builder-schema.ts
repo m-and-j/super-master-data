@@ -53,7 +53,7 @@ export class OutputBuilderSchema extends OutputBuilderBase {
       const { name, description } = item
       const enumerations = Array.from(enumerationMap.values())
       const { fileNameTemplate } = this.schema
-      this.writeSourceCode(this.schema.sourceCodeTemplate, { name, description, columns, enumerations }, { fileNameTemplate, name })
+      await this.writeSourceCode(this.schema.sourceCodeTemplate, { name, description, columns, enumerations }, { fileNameTemplate, name })
     }
   }
 }

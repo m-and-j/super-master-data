@@ -6,15 +6,12 @@ import { OutputBuilderSchema } from '@/systems/output-distributor/output-builder
 import { OutputProjectRaw } from '@/systems/types'
 
 export async function outputDistribution(outputProject: OutputProjectRaw) {
-  const outputs = []
-  outputs.push(await OutputBuilderMasterData.create(outputProject))
-  outputs.push(await OutputBuilderEntity.create(outputProject))
-  outputs.push(await OutputBuilderSchema.create(outputProject))
-  outputs.push(await OutputBuilderEnumeration.create(outputProject))
-  for (const other of outputProject.others) {
-    outputs.push(await OutputBuilderOther.create(outputProject, other))
-  }
-  for (const output of outputs) {
-    await output.write()
-  }
+  const outputs = await Promise.all([
+    OutputBuilderMasterData.create(outputProject),
+    OutputBuilderEntity.create(outputProject),
+    OutputBuilderSchema.create(outputProject),
+    OutputBuilderEnumeration.create(outputProject),
+    ...outputProject.others.map((other) => OutputBuilderOther.create(outputProject, other)),
+  ])
+  await Promise.all(outputs.map((output) => output.write()))
 }

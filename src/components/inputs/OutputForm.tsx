@@ -8,8 +8,9 @@ import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { TabItem } from '@/components/wayFinders/TabItem'
 import { TabPanel } from '@/components/wayFinders/TabPanel'
 import { masterDataAccessor } from '@/systems/master-data-accessor'
+import { OutputProject } from '@/systems/output-distributor/output-project'
 import { preferences } from '@/systems/preferences'
-import { OutputProject, OutputProjectRaw } from '@/systems/types'
+import { OutputProjectRaw } from '@/systems/types'
 import { MJ, MJCustomElement, ref, Reference } from '@mj/jsx'
 import { MJRouter } from '@mj/router'
 
@@ -185,11 +186,13 @@ export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
   }
 
   private selectAllMasterData() {
-    this.querySelectorAll<HTMLInputElement>('input[name="targetMasterData"][type="checkbox"]').forEach((checkbox) => (checkbox.checked = true))
+    this.outputProject.allCheckMasterDataTargets()
+    this.render()
   }
 
   private deselectAllMasterData() {
-    this.querySelectorAll<HTMLInputElement>('input[name="targetMasterData"][type="checkbox"]').forEach((checkbox) => (checkbox.checked = false))
+    this.outputProject.allClearMasterDataTargets()
+    this.render()
   }
 
   private async register(event: SubmitEvent) {

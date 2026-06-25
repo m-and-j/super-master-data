@@ -37,7 +37,7 @@ export abstract class OutputBuilderBase {
     const eta = new Eta({ autoTrim: false })
     const contents = eta.renderString(sourceCodeTemplate, data)
     const dataString = new TextEncoder().encode(contents)
-    writeFile(filePath, dataString)
+    await writeFile(filePath, dataString)
   }
 
   /**
