@@ -1,11 +1,11 @@
 import { ProjectFolder } from '@/systems/define'
 import { preferences } from '@/systems/preferences'
-import { DataObjectColumn, Table } from '@/systems/types'
+import { DataStructColumnRaw, TableRaw } from '@/systems/types'
 import { readJsonFile, writeJsonFile } from '@/utilities/helper'
 import { path } from '@tauri-apps/api'
 import { exists, readDir, remove, rename } from '@tauri-apps/plugin-fs'
 
-class MasterData {
+class MasterDataAccessor {
   private names: string[] = []
 
   async read(name?: string) {
@@ -13,7 +13,7 @@ class MasterData {
     if (name && folderPath) {
       try {
         const target = await path.join(folderPath, ProjectFolder.Tables, `${name}.json`)
-        return await readJsonFile<Table>(target)
+        return await readJsonFile<TableRaw>(target)
       } catch (e) {
         console.error(`MasterData[${name}]の読み込みに失敗:`, e)
       }
@@ -40,12 +40,12 @@ class MasterData {
     return this.names
   }
 
-  async write(table: Table) {
+  async write(table: TableRaw) {
     const folderPath = preferences.getFolderPath()
     if (folderPath) {
       try {
         const target = await path.join(folderPath, ProjectFolder.Tables, `${table.name}.json`)
-        const columns: DataObjectColumn[] = []
+        const columns: DataStructColumnRaw[] = []
         for (const { name, label, type, description } of table.columns) {
           const { classification, typeName, extension } = type
           columns.push({ name, label, type: { classification, typeName, extension }, description })
@@ -92,4 +92,4 @@ class MasterData {
   }
 }
 
-export const masterData = new MasterData()
+export const masterDataAccessor = new MasterDataAccessor()

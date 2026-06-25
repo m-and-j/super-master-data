@@ -1,11 +1,11 @@
 import { CellHeader } from '@/components/data-grid/CellHeader'
 import { DataObjectRow } from '@/components/data-grid/DataObjectRow'
 import { DataKindExtension } from '@/systems/define'
-import { DataObjectColumn } from '@/systems/types'
+import { DataStructColumnRaw } from '@/systems/types'
 import { MJ, MJCustomElement } from '@mj/jsx'
 
 interface Props extends MJ.CEProps<DataObjectTable> {
-  columns: DataObjectColumn[]
+  columns: DataStructColumnRaw[]
 }
 
 /**

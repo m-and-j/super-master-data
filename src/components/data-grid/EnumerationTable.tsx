@@ -1,10 +1,10 @@
 import { CellHeader } from '@/components/data-grid/CellHeader'
 import { EnumerationRow } from '@/components/data-grid/EnumerationRow'
-import { EnumerationItem } from '@/systems/types'
+import { EnumerationStructItemRaw } from '@/systems/types'
 import { MJ, MJCustomElement } from '@mj/jsx'
 
 interface Props extends MJ.CEProps<EnumerationTable> {
-  items: EnumerationItem[]
+  items: EnumerationStructItemRaw[]
 }
 
 /**

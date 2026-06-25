@@ -1,11 +1,11 @@
 import { CellText } from '@/components/data-grid/CellText'
 import { Button } from '@/components/inputs/Button'
 import { ColumnParams } from '@/systems/define'
-import { EnumerationItem } from '@/systems/types'
+import { EnumerationStructItemRaw } from '@/systems/types'
 import { MJComponent } from '@mj/jsx'
 
 interface Props {
-  item: EnumerationItem
+  item: EnumerationStructItemRaw
   index: number
   moveUp: (index: number) => void
   moveDown: (index: number) => void

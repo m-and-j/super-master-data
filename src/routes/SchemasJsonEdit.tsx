@@ -3,7 +3,7 @@ import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { SideMenuSchema } from '@/components/wayFinders/SideMenuSchema'
 import { DataClassification, DataClassificationType } from '@/systems/define'
 import { preferences } from '@/systems/preferences'
-import { DataObject, DataObjectColumn, DataObjectColumnType } from '@/systems/types'
+import { DataStructColumnRaw, DataStructColumnTypeRaw, DataStructRaw } from '@/systems/types'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
 
@@ -58,9 +58,9 @@ export class SchemasJsonEdit extends MJPage {
   }
 
   /**
-   * テキストを DataObject[] としてパース&ざっくり形式チェック。
+   * テキストをパース&ざっくり形式チェック。
    */
-  private tryParse(text: string): { ok: true; value: DataObject[] } | { ok: false; error: string } {
+  private tryParse(text: string): { ok: true; value: DataStructRaw[] } | { ok: false; error: string } {
     let parsed: unknown
     try {
       parsed = JSON.parse(text)
@@ -71,7 +71,7 @@ export class SchemasJsonEdit extends MJPage {
       return { ok: false, error: 'ルートは配列である必要があります。' }
     }
     for (let i = 0; i < parsed.length; i++) {
-      const e = parsed[i] as Partial<DataObject> | null | undefined
+      const e = parsed[i] as Partial<DataStructRaw> | null | undefined
       if (!e || typeof e !== 'object') {
         return { ok: false, error: `[${i}] がオブジェクトではありません。` }
       }
@@ -85,7 +85,7 @@ export class SchemasJsonEdit extends MJPage {
         return { ok: false, error: `[${i}] columns が配列ではありません。` }
       }
       for (let j = 0; j < e.columns.length; j++) {
-        const column = e.columns[j] as Partial<DataObjectColumn> | null | undefined
+        const column = e.columns[j] as Partial<DataStructColumnRaw> | null | undefined
         if (!column || typeof column !== 'object') {
           return { ok: false, error: `[${i}].columns[${j}] がオブジェクトではありません。` }
         }
@@ -98,7 +98,7 @@ export class SchemasJsonEdit extends MJPage {
         if (typeof column.description !== 'string') {
           return { ok: false, error: `[${i}].columns[${j}] description が string ではありません。` }
         }
-        const type = column.type as Partial<DataObjectColumnType> | null | undefined
+        const type = column.type as Partial<DataStructColumnTypeRaw> | null | undefined
         if (!type || typeof type !== 'object') {
           return { ok: false, error: `[${i}].columns[${j}].type がオブジェクトではありません。` }
         }
@@ -110,6 +110,6 @@ export class SchemasJsonEdit extends MJPage {
         }
       }
     }
-    return { ok: true, value: parsed as DataObject[] }
+    return { ok: true, value: parsed as DataStructRaw[] }
   }
 }

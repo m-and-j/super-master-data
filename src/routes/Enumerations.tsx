@@ -6,13 +6,13 @@ import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { SideMenuEnumeration } from '@/components/wayFinders/SideMenuEnumeration'
 import { ColumnParams } from '@/systems/define'
 import { preferences } from '@/systems/preferences'
-import { EnumerationItem, EnumerationObject } from '@/systems/types'
+import { EnumerationStructItemRaw, EnumerationStructRaw } from '@/systems/types'
 import { FormDataEx } from '@/utilities/helper-frontend'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
 
 export class Enumerations extends MJPage {
-  private targetEnumeration?: EnumerationObject
+  private targetEnumeration?: EnumerationStructRaw
   private dataObjectTable: Reference<EnumerationTable> = ref()
 
   createNode() {
@@ -73,7 +73,7 @@ export class Enumerations extends MJPage {
     const itemNames = formData.getStringAll(ColumnParams.Names)
     const itemValues = formData.getNumberAll(ColumnParams.Values)
     const itemDescriptions = formData.getStringAll(ColumnParams.Descriptions)
-    const items: EnumerationItem[] = []
+    const items: EnumerationStructItemRaw[] = []
     for (let i = 0; i < itemNames.length; i++) {
       items.push({
         label: itemNames[i],

@@ -14,9 +14,9 @@ import {
   DataKindForLabelValues,
   DataKindValues,
 } from '@/systems/define'
-import { masterData } from '@/systems/master-data'
+import { masterDataAccessor } from '@/systems/master-data-accessor'
 import { preferences } from '@/systems/preferences'
-import { DataObjectColumn, DataObjectColumnLabel } from '@/systems/types'
+import { DataStructColumnLabel, DataStructColumnRaw } from '@/systems/types'
 import { MJ, MJCustomElement, ref, Reference } from '@mj/jsx'
 
 interface Props extends MJ.CEProps<HTMLDivElement> {
@@ -41,8 +41,8 @@ export class DataObjectCursor extends MJCustomElement<Props>()(HTMLDivElement) {
   private tableSelect: Reference<DataObjectCellSelect> = ref()
   private schemaSelect: Reference<DataObjectCellSelect> = ref()
   private enumerationSelect: Reference<DataObjectCellSelect> = ref()
-  private column?: DataObjectColumn
-  private kind?: DataObjectColumnLabel
+  private column?: DataStructColumnRaw
+  private kind?: DataStructColumnLabel
 
   connectedCallback() {
     this.addClassName('absolute hidden transparent z-10 border-2 border-blue-500')
@@ -58,7 +58,7 @@ export class DataObjectCursor extends MJCustomElement<Props>()(HTMLDivElement) {
       const dataKindForIdItems = DataKindForIdValues.map(([label, value]) => ({ label, value, selected: typeName === value }))
       const dataKindForLabelItems = DataKindForLabelValues.map(([label, value]) => ({ label, value, selected: typeName === value }))
       const dataKindExtensionItems = DataKindExtensionLabelValues.map(([value, label]) => ({ label, value, selected: extension === value }))
-      const tables = masterData.getNames().map((name) => ({ label: name, value: name, selected: typeName === name }))
+      const tables = masterDataAccessor.getNames().map((name) => ({ label: name, value: name, selected: typeName === name }))
       const projectInfo = preferences.getProjectInfo()
       const schemas = projectInfo.schemas.filter(({ name }) => name !== schemaName).map(({ name }) => ({ label: name, value: name, selected: typeName === name }))
       const enumerations = projectInfo.enumerations.map(({ name, description }) => ({ label: `${name}【${description}】`, value: name, selected: typeName === name }))
@@ -80,7 +80,7 @@ export class DataObjectCursor extends MJCustomElement<Props>()(HTMLDivElement) {
     }
   }
 
-  async select(event: MouseEvent, column: DataObjectColumn, kind: DataObjectColumnLabel) {
+  async select(event: MouseEvent, column: DataStructColumnRaw, kind: DataStructColumnLabel) {
     this.column = column
     this.kind = kind
     const { dataObjectTable } = this.props
@@ -192,7 +192,7 @@ export class DataObjectCursor extends MJCustomElement<Props>()(HTMLDivElement) {
               break
             }
             case DataClassification.RelationID: {
-              this.column.type.typeName = masterData.getNames()[0] ?? ''
+              this.column.type.typeName = masterDataAccessor.getNames()[0] ?? ''
               break
             }
             case DataClassification.Schema: {

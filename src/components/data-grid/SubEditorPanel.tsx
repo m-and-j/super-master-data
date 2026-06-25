@@ -2,7 +2,7 @@ import { MasterDataGrid } from '@/components/data-grid/MasterDataGrid'
 import { Button } from '@/components/inputs/Button'
 import { DataClassification } from '@/systems/define'
 import { preferences } from '@/systems/preferences'
-import { DataObjectColumn, MasterRecord } from '@/systems/types'
+import { DataStructColumnRaw, MasterRecord } from '@/systems/types'
 import { MJ, MJCustomElement, ref, Reference } from '@mj/jsx'
 
 interface Props extends MJ.CEProps<SubEditorPanel> {
@@ -14,7 +14,7 @@ interface Props extends MJ.CEProps<SubEditorPanel> {
  * データ編集用分割パネル(右側に出る分割パネル)
  */
 export class SubEditorPanel extends MJCustomElement<Props>()(HTMLDivElement) {
-  private column?: DataObjectColumn
+  private column?: DataStructColumnRaw
   private data: MasterRecord[] = []
   private grid: Reference<MasterDataGrid> = ref()
 
@@ -71,7 +71,7 @@ export class SubEditorPanel extends MJCustomElement<Props>()(HTMLDivElement) {
     return null
   }
 
-  async open(column: DataObjectColumn, data: any) {
+  async open(column: DataStructColumnRaw, data: any) {
     this.column = column
     this.data = data
     this.classList.remove('hidden')

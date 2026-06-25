@@ -2,12 +2,12 @@ import { CellHeader } from '@/components/data-grid/CellHeader'
 import { MasterDataCell } from '@/components/data-grid/MasterDataCell'
 import { SubEditorPanel } from '@/components/data-grid/SubEditorPanel'
 import { Button } from '@/components/inputs/Button'
-import { DataObjectColumn, MasterRecord } from '@/systems/types'
+import { DataStructColumnRaw, MasterRecord } from '@/systems/types'
 import { defaultValueFor } from '@/utilities/data-grid'
 import { MJ, MJCustomElement, Reference } from '@mj/jsx'
 
 interface Props extends MJ.CEProps<MasterDataGrid> {
-  columns: DataObjectColumn[]
+  columns: DataStructColumnRaw[]
   data: MasterRecord[]
   schemaPanelRef?: Reference<SubEditorPanel>
 }

@@ -86,6 +86,23 @@ export const ColumnParams = {
 } as const
 
 /**
+ * 出力種別
+ */
+export const OutputKind = {
+  Single: 'single',
+  MultipleTables: 'multipleTables',
+} as const
+export type OutputKindType = (typeof OutputKind)[keyof typeof OutputKind]
+export const OutputKindLabels = {
+  [OutputKind.Single]: '単一ファイル出力',
+  [OutputKind.MultipleTables]: '複数ファイル出力(テーブル単位)',
+} as const
+export const OutputKindOptions = [
+  { label: OutputKindLabels[OutputKind.Single], value: OutputKind.Single },
+  { label: OutputKindLabels[OutputKind.MultipleTables], value: OutputKind.MultipleTables },
+]
+
+/**
  * マウスボタンコード
  */
 export const MouseButtonCode = {

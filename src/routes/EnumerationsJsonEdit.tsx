@@ -2,7 +2,7 @@ import { Button } from '@/components/inputs/Button'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { SideMenuEnumeration } from '@/components/wayFinders/SideMenuEnumeration'
 import { preferences } from '@/systems/preferences'
-import { EnumerationItem, EnumerationObject } from '@/systems/types'
+import { EnumerationStructItemRaw, EnumerationStructRaw } from '@/systems/types'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
 
@@ -55,9 +55,9 @@ export class EnumerationsJsonEdit extends MJPage {
   }
 
   /**
-   * テキストを EnumerationObject[] としてパース&ざっくり形式チェック。
+   * テキストをパース&ざっくり形式チェック。
    */
-  private tryParse(text: string): { ok: true; value: EnumerationObject[] } | { ok: false; error: string } {
+  private tryParse(text: string): { ok: true; value: EnumerationStructRaw[] } | { ok: false; error: string } {
     let parsed: unknown
     try {
       parsed = JSON.parse(text)
@@ -68,7 +68,7 @@ export class EnumerationsJsonEdit extends MJPage {
       return { ok: false, error: 'ルートは配列である必要があります。' }
     }
     for (let i = 0; i < parsed.length; i++) {
-      const e = parsed[i] as Partial<EnumerationObject> | null | undefined
+      const e = parsed[i] as Partial<EnumerationStructRaw> | null | undefined
       if (!e || typeof e !== 'object') {
         return { ok: false, error: `[${i}] がオブジェクトではありません。` }
       }
@@ -82,7 +82,7 @@ export class EnumerationsJsonEdit extends MJPage {
         return { ok: false, error: `[${i}] items が配列ではありません。` }
       }
       for (let j = 0; j < e.items.length; j++) {
-        const item = e.items[j] as Partial<EnumerationItem> | null | undefined
+        const item = e.items[j] as Partial<EnumerationStructItemRaw> | null | undefined
         if (!item || typeof item !== 'object') {
           return { ok: false, error: `[${i}].items[${j}] がオブジェクトではありません。` }
         }
@@ -97,6 +97,6 @@ export class EnumerationsJsonEdit extends MJPage {
         }
       }
     }
-    return { ok: true, value: parsed as EnumerationObject[] }
+    return { ok: true, value: parsed as EnumerationStructRaw[] }
   }
 }

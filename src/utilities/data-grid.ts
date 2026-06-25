@@ -1,11 +1,11 @@
 import { DataClassification, DataKind, DataKindExtension } from '@/systems/define'
 import { preferences } from '@/systems/preferences'
-import { DataObjectColumn } from '@/systems/types'
+import { DataStructColumnRaw } from '@/systems/types'
 
 /**
  * カラムの初期値(新規行作成時)
  */
-export function defaultValueFor(column: DataObjectColumn): any {
+export function defaultValueFor(column: DataStructColumnRaw): any {
   if (column.type.extension === DataKindExtension.Array) {
     return []
   } else {

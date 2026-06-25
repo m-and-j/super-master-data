@@ -1,12 +1,12 @@
 import { SubEditorPanel } from '@/components/data-grid/SubEditorPanel'
 import { DataClassification, DataKind, DataKindExtension } from '@/systems/define'
-import { masterData } from '@/systems/master-data'
+import { masterDataAccessor } from '@/systems/master-data-accessor'
 import { preferences } from '@/systems/preferences'
-import { DataObjectColumn, Table } from '@/systems/types'
+import { DataStructColumnRaw, TableRaw } from '@/systems/types'
 import { MJ, MJComponent, Reference } from '@mj/jsx'
 
 interface Props {
-  column: DataObjectColumn
+  column: DataStructColumnRaw
   value: any
   className?: MJ.ClassProp
   schemaPanelRef?: Reference<SubEditorPanel>
@@ -16,12 +16,12 @@ interface Props {
  * カラムセルのエディタ
  */
 export class MasterDataCell extends MJComponent<Props> {
-  private relationTable?: Table
+  private relationTable?: TableRaw
 
   async beforeRender({ column }: Props) {
     const { type } = column
     if (type.classification === DataClassification.RelationID) {
-      this.relationTable = await masterData.read(type.typeName)
+      this.relationTable = await masterDataAccessor.read(type.typeName)
     }
   }
 

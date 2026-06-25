@@ -32,6 +32,18 @@ jobs:
           git submodule sync --recursive
           git submodule update --init --recursive
 
+      - name: Get tag message
+        id: tag_message
+        shell: bash
+        run: |
+          git fetch --tags --force
+          MESSAGE=$(git for-each-ref "refs/tags/${GITHUB_REF_NAME}" --format='%(contents)')
+          {
+            echo 'message<<EOF'
+            echo "$MESSAGE"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -58,7 +70,7 @@ jobs:
         with:
           tagName: ${{ github.ref_name }}
           releaseName: ${{ github.ref_name }}
-          releaseBody: 'リリースノートを編集してください。'
+          releaseBody: ${{ steps.tag_message.outputs.message }}
           releaseDraft: true
           prerelease: false
           includeUpdaterJson: true

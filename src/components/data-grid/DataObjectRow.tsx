@@ -2,12 +2,12 @@ import { DataObjectCell } from '@/components/data-grid/DataObjectCell'
 import { Button } from '@/components/inputs/Button'
 import { DataClassification, DataClassificationLabelValues, DataKindExtensionLabelValues, DataKindForIdValues, DataKindForLabelValues, DataKindValues } from '@/systems/define'
 import { preferences } from '@/systems/preferences'
-import { DataObjectColumn } from '@/systems/types'
+import { DataStructColumnRaw } from '@/systems/types'
 import { MJComponent } from '@mj/jsx'
 
 interface Props {
   index: number
-  column: DataObjectColumn
+  column: DataStructColumnRaw
   deleteRow: (index: number) => void
 }
 

@@ -5,20 +5,20 @@ import { InputText } from '@/components/inputs/InputText'
 import { ConfirmModal } from '@/components/modals/ConfirmModal'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { SideMenuTable } from '@/components/wayFinders/SideMenuTable'
-import { masterData } from '@/systems/master-data'
-import { Table } from '@/systems/types'
+import { masterDataAccessor } from '@/systems/master-data-accessor'
+import { TableRaw } from '@/systems/types'
 import { deepCopy } from '@/utilities/helper'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
 
 export class Tables extends MJPage {
-  private originalTable?: Table
-  private editableTable: Table = { name: '', description: '', columns: [], data: [] }
+  private originalTable?: TableRaw
+  private editableTable: TableRaw = { name: '', description: '', columns: [], data: [] }
   private dataObjectTable: Reference<DataObjectTable> = ref()
 
   async beforeRender() {
     const { name } = this.params
-    this.originalTable = await masterData.read(name)
+    this.originalTable = await masterDataAccessor.read(name)
     if (this.originalTable) {
       this.editableTable = deepCopy(this.originalTable)
     }
@@ -84,9 +84,9 @@ export class Tables extends MJPage {
   private async register() {
     try {
       if (this.originalTable) {
-        await masterData.rename(this.originalTable.name, this.editableTable.name)
+        await masterDataAccessor.rename(this.originalTable.name, this.editableTable.name)
       }
-      await masterData.write(this.editableTable)
+      await masterDataAccessor.write(this.editableTable)
       MJRouter.instance.push(`/tables/${this.editableTable.name}`)
       ToastMessage.instance.open('success', '保存しました。')
     } catch (e) {
@@ -105,7 +105,7 @@ export class Tables extends MJPage {
           label: '削除',
           variant: 'danger',
           callback: async () => {
-            await masterData.remove(name)
+            await masterDataAccessor.remove(name)
             MJRouter.instance.push('/tables')
             ToastMessage.instance.open('success', `「${name}」を削除しました。`)
           },

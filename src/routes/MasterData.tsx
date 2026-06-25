@@ -4,19 +4,19 @@ import { Button } from '@/components/inputs/Button'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { SideMenuMasterData } from '@/components/wayFinders/SideMenuMasterData'
 import { DataClassification } from '@/systems/define'
-import { masterData } from '@/systems/master-data'
-import { Table } from '@/systems/types'
+import { masterDataAccessor } from '@/systems/master-data-accessor'
+import { TableRaw } from '@/systems/types'
 import { formatNumber } from '@/utilities/helper-text'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage } from '@mj/router'
 
 export class MasterData extends MJPage {
-  private table?: Table
+  private table?: TableRaw
   private idColumnCount = 0
 
   async beforeRender() {
     const { name } = this.params
-    this.table = await masterData.read(name)
+    this.table = await masterDataAccessor.read(name)
     const { columns = [] } = this.table ?? {}
     this.idColumnCount = columns.filter((c) => c.type.classification === DataClassification.ID).length
   }
@@ -80,7 +80,7 @@ export class MasterData extends MJPage {
     if (this.table) {
       try {
         const tableData = JSON.parse(JSON.stringify(this.table))
-        await masterData.write(tableData)
+        await masterDataAccessor.write(tableData)
         ToastMessage.instance.open('success', '保存しました。')
       } catch (e) {
         console.error(e)

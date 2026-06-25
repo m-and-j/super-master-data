@@ -1,6 +1,6 @@
 import { cacheStore } from '@/systems/cache-store'
-import { masterData } from '@/systems/master-data'
-import { DataObject, EnumerationItem, EnumerationObject, OutputItem, OutputProject, ProjectInfo } from '@/systems/types'
+import { masterDataAccessor } from '@/systems/master-data-accessor'
+import { DataStructRaw, EnumerationStructItemRaw, EnumerationStructRaw, OutputProjectRaw, ProjectInfoRaw } from '@/systems/types'
 import { readJsonFile, writeJsonFile } from '@/utilities/helper'
 import { exists } from '@tauri-apps/plugin-fs'
 
@@ -8,9 +8,9 @@ class Preferences {
   private loadingPromise: Promise<boolean> | undefined
   private name: string = ''
   private description: string = ''
-  private schemas: DataObject[] = []
-  private enumerations: EnumerationObject[] = []
-  private outputs: OutputProject[] = []
+  private schemas: DataStructRaw[] = []
+  private enumerations: EnumerationStructRaw[] = []
+  private outputs: OutputProjectRaw[] = []
   private folderPath: string | undefined
 
   /**
@@ -23,14 +23,14 @@ class Preferences {
         let result = false
         if (savedPath) {
           try {
-            const projectInfo = await readJsonFile<ProjectInfo>(this.toProjectFilePath(savedPath))
+            const projectInfo = await readJsonFile<ProjectInfoRaw>(this.toProjectFilePath(savedPath))
             this.name = projectInfo.name
             this.description = projectInfo.description
             this.schemas = projectInfo.schemas
             this.enumerations = projectInfo.enumerations
             this.outputs = projectInfo.outputs
             this.folderPath = savedPath
-            await masterData.readFiles()
+            await masterDataAccessor.readFiles()
             result = true
           } catch (e) {
             console.error('前回のプロジェクトファイルの読み込みに失敗しました:', e)
@@ -43,7 +43,7 @@ class Preferences {
     return await this.loadingPromise
   }
 
-  getProjectInfo(): ProjectInfo {
+  getProjectInfo(): ProjectInfoRaw {
     return {
       name: this.name,
       description: this.description,
@@ -74,7 +74,7 @@ class Preferences {
     cacheStore.projectPath.setValue(path)
     const filePath = this.toProjectFilePath(path)
     if (await exists(filePath)) {
-      const projectInfo = await readJsonFile<ProjectInfo>(filePath)
+      const projectInfo = await readJsonFile<ProjectInfoRaw>(filePath)
       this.name = projectInfo.name
       this.description = projectInfo.description
       this.schemas = projectInfo.schemas
@@ -102,7 +102,7 @@ class Preferences {
    * スキーマ追加
    * @param schema
    */
-  async addSchema(schema: DataObject) {
+  async addSchema(schema: DataStructRaw) {
     if (this.schemas.some((s) => s.name === schema.name)) {
       throw new Error('すでに同名のスキーマが存在します。')
     } else {
@@ -118,7 +118,7 @@ class Preferences {
    * @param beforeName
    * @param newSchema
    */
-  async updateSchema(beforeName: string, newSchema: DataObject) {
+  async updateSchema(beforeName: string, newSchema: DataStructRaw) {
     const schema = this.schemas.find((s) => s.name === beforeName)
     if (schema) {
       const { name, description, columns } = newSchema
@@ -144,7 +144,7 @@ class Preferences {
    * @param description
    * @param items
    */
-  async addEnumeration(name: string, description: string, items: EnumerationItem[]) {
+  async addEnumeration(name: string, description: string, items: EnumerationStructItemRaw[]) {
     if (this.enumerations.some((e) => e.name === name)) {
       throw new Error('すでに同名の列挙型が存在します。')
     } else {
@@ -161,7 +161,7 @@ class Preferences {
    * @param description
    * @param items
    */
-  async updateEnumeration(beforeName: string, afterName: string, description: string, items: EnumerationItem[]) {
+  async updateEnumeration(beforeName: string, afterName: string, description: string, items: EnumerationStructItemRaw[]) {
     const enumeration = this.enumerations.find((e) => e.name === beforeName)
     if (enumeration) {
       enumeration.name = afterName
@@ -182,29 +182,14 @@ class Preferences {
 
   /**
    * 出力設定追加
-   * @param name
-   * @param description
-   * @param dataPath
-   * @param targetMasterData
-   * @param codeExtension
-   * @param entity
-   * @param schema
-   * @param enumeration
+   * @param outputProject
    */
-  async addOutput(
-    name: string,
-    description: string,
-    dataPath: string,
-    targetMasterData: string[],
-    codeExtension: string,
-    entity: OutputItem,
-    schema: OutputItem,
-    enumeration: OutputItem,
-  ) {
-    if (this.outputs.some((e) => e.name === name)) {
+  async addOutput(outputProject: OutputProjectRaw) {
+    if (this.outputs.some((e) => e.name === outputProject.name)) {
       throw new Error('すでに同名の出力設定が存在します。')
     } else {
-      this.outputs.push({ name, description, dataPath, targetMasterData, codeExtension, entity, schema, enumeration })
+      const { name, description, codeExtension, masterData, entity, schema, enumeration, others } = outputProject
+      this.outputs.push({ name, description, codeExtension, masterData, entity, schema, enumeration, others })
       this.outputs.sort((a, b) => a.name.localeCompare(b.name))
       await this.save()
     }
@@ -212,35 +197,19 @@ class Preferences {
 
   /**
    * 出力設定更新
-   * @param name
-   * @param description
-   * @param dataPath
-   * @param targetMasterData
-   * @param codeExtension
-   * @param entity
-   * @param schema
-   * @param enumeration
+   * @param outputProject
    */
-  async updateOutput(
-    name: string,
-    description: string,
-    dataPath: string,
-    targetMasterData: string[],
-    codeExtension: string,
-    entity: OutputItem,
-    schema: OutputItem,
-    enumeration: OutputItem,
-  ) {
-    const output = this.outputs.find((e) => e.name === name)
+  async updateOutput(outputProject: OutputProjectRaw) {
+    const output = this.outputs.find((e) => e.name === outputProject.name)
     if (output) {
-      output.name = name
-      output.description = description
-      output.dataPath = dataPath
-      output.targetMasterData = targetMasterData
-      output.codeExtension = codeExtension
-      output.entity = entity
-      output.schema = schema
-      output.enumeration = enumeration
+      output.name = outputProject.name
+      output.description = outputProject.description
+      output.codeExtension = outputProject.codeExtension
+      output.masterData = outputProject.masterData
+      output.entity = outputProject.entity
+      output.schema = outputProject.schema
+      output.enumeration = outputProject.enumeration
+      output.others = outputProject.others
       await this.save()
     }
   }
@@ -257,7 +226,7 @@ class Preferences {
   /**
    * リストを丸ごと置換する(JSON 直接編集用)
    */
-  async replace({ schemas, enumerations, outputs }: { schemas?: DataObject[]; enumerations?: EnumerationObject[]; outputs?: OutputProject[] }) {
+  async replace({ schemas, enumerations, outputs }: { schemas?: DataStructRaw[]; enumerations?: EnumerationStructRaw[]; outputs?: OutputProjectRaw[] }) {
     if (schemas) {
       this.schemas = []
       for (const { name, description, columns } of schemas.sort((a, b) => a.name.localeCompare(b.name))) {
@@ -272,8 +241,8 @@ class Preferences {
     }
     if (outputs) {
       this.outputs = []
-      for (const { name, description, dataPath, targetMasterData, codeExtension, entity, schema, enumeration } of outputs.sort((a, b) => a.name.localeCompare(b.name))) {
-        this.outputs.push({ name, description, dataPath, targetMasterData, codeExtension, entity, schema, enumeration })
+      for (const { name, description, codeExtension, masterData, entity, schema, enumeration, others } of outputs.sort((a, b) => a.name.localeCompare(b.name))) {
+        this.outputs.push({ name, description, codeExtension, masterData, entity, schema, enumeration, others })
       }
     }
     await this.save()
@@ -286,7 +255,7 @@ class Preferences {
   private async save() {
     if (this.folderPath) {
       try {
-        const projectInfo: ProjectInfo = {
+        const projectInfo: ProjectInfoRaw = {
           name: this.name,
           description: this.description,
           schemas: this.schemas,

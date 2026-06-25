@@ -3,9 +3,9 @@ import { InputText } from '@/components/inputs/InputText'
 import { LoadingMessage } from '@/components/notifications/LoadingMessage'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { NavigationTab } from '@/components/wayFinders/NavigationTab'
-import { OutputDistributor } from '@/systems/output-distributor'
+import { outputDistribution } from '@/systems/output-distributor/output-distributor'
 import { preferences } from '@/systems/preferences'
-import { OutputProject } from '@/systems/types'
+import { OutputProjectRaw } from '@/systems/types'
 import { checkUpdate, getCurrentVersion } from '@/systems/updater'
 import { FormDataEx } from '@/utilities/helper-frontend'
 import { MJPage, MJRouter } from '@mj/router'
@@ -144,8 +144,7 @@ export class Home extends MJPage {
       LoadingMessage.instance?.attach()
       const outputs = preferences.getProjectInfo().outputs
       for (const output of outputs) {
-        const distributor = new OutputDistributor(output)
-        await distributor.exec()
+        await outputDistribution(output)
       }
       LoadingMessage.instance?.detach()
       ToastMessage.instance.open('success', 'データを出力しました')
@@ -154,11 +153,10 @@ export class Home extends MJPage {
     }
   }
 
-  private async onClickOutput(output: OutputProject) {
+  private async onClickOutput(output: OutputProjectRaw) {
     try {
       LoadingMessage.instance?.attach()
-      const distributor = new OutputDistributor(output)
-      await distributor.exec()
+      await outputDistribution(output)
       LoadingMessage.instance?.detach()
       ToastMessage.instance.open('success', `「${output.name}」データを出力しました`)
     } catch (e) {

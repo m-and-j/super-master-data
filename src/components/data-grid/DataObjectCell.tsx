@@ -1,10 +1,10 @@
 import { DataObjectCursor } from '@/components/data-grid/DataObjectCursor'
-import { DataObjectColumn, DataObjectColumnLabel } from '@/systems/types'
+import { DataStructColumnLabel, DataStructColumnRaw } from '@/systems/types'
 import { MJComponent } from '@mj/jsx'
 
 interface Props {
-  column: DataObjectColumn
-  kind: DataObjectColumnLabel
+  column: DataStructColumnRaw
+  kind: DataStructColumnLabel
   value: string
   selectable?: boolean
 }

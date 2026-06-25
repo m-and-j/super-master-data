@@ -1,4 +1,4 @@
-import { masterData } from '@/systems/master-data'
+import { masterDataAccessor } from '@/systems/master-data-accessor'
 import { SideMenuScroller } from '@/utilities/side-menu-scroller'
 import { MJ, MJComponent } from '@mj/jsx'
 import { MJLink } from '@mj/router'
@@ -29,7 +29,7 @@ export class SideMenuTable extends MJComponent<Props> {
         </div>
         <hr class="border-zinc-500" />
         <div class="scrollbar flex h-[calc(100vh-94px)] flex-col overflow-y-scroll p-2" ref={this.sideMenuScroller.scrollRef}>
-          {masterData.getNames().map((name) => (
+          {masterDataAccessor.getNames().map((name) => (
             <MJLink to={`/tables/${name}`} className={['px-1 text-blue-500', name === currentName ? 'bg-zinc-700' : '']}>
               {name}
             </MJLink>

@@ -5,14 +5,14 @@ import { ConfirmModal } from '@/components/modals/ConfirmModal'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { SideMenuSchema } from '@/components/wayFinders/SideMenuSchema'
 import { preferences } from '@/systems/preferences'
-import { DataObject } from '@/systems/types'
+import { DataStructRaw } from '@/systems/types'
 import { deepCopy } from '@/utilities/helper'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
 
 export class Schemas extends MJPage {
-  private originalSchema?: DataObject
-  private editableSchema: DataObject = { name: '', description: '', columns: [] }
+  private originalSchema?: DataStructRaw
+  private editableSchema: DataStructRaw = { name: '', description: '', columns: [] }
   private dataObjectTable: Reference<DataObjectTable> = ref()
 
   createNode() {

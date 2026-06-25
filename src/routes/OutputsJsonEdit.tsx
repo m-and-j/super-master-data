@@ -2,7 +2,7 @@ import { Button } from '@/components/inputs/Button'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { SideMenuOutput } from '@/components/wayFinders/SideMenuOutput'
 import { preferences } from '@/systems/preferences'
-import { OutputProject } from '@/systems/types'
+import { OutputProjectRaw } from '@/systems/types'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
 
@@ -55,15 +55,15 @@ export class OUtputsJsonEdit extends MJPage {
   }
 
   /**
-   * テキストを OutputProject[] としてパース&ざっくり形式チェック。
+   * テキストをパース&ざっくり形式チェック。
    */
-  private tryParse(text: string): { ok: true; value: OutputProject[] } | { ok: false; error: string } {
+  private tryParse(text: string): { ok: true; value: OutputProjectRaw[] } | { ok: false; error: string } {
     let parsed: unknown
     try {
       parsed = JSON.parse(text)
     } catch (e) {
       return { ok: false, error: `JSON の構文エラー: ${e instanceof Error ? e.message : String(e)}` }
     }
-    return { ok: true, value: parsed as OutputProject[] }
+    return { ok: true, value: parsed as OutputProjectRaw[] }
   }
 }
