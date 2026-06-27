@@ -1,6 +1,6 @@
 import { OutputKind } from '@/systems/define'
 import { masterDataAccessor } from '@/systems/master-data-accessor'
-import { OutputProjectOtherRaw, OutputProjectRaw, OutputProjectStandardRaw } from '@/systems/types'
+import { OutputProjectOtherRaw, OutputProjectRaw, OutputProjectStandardMultipleRaw, OutputProjectStandardSingleRaw } from '@/systems/types'
 import { deepCopy } from '@/utilities/helper'
 
 export class OutputProject {
@@ -9,9 +9,10 @@ export class OutputProject {
   private codeExtension = ''
   private masterDataPath = ''
   private masterDataTargets = new Set<string>()
-  private entity: OutputProjectStandardRaw = { path: '', fileNameTemplate: '{{filename}}', sourceCodeTemplate: '' }
-  private schema: OutputProjectStandardRaw = { path: '', fileNameTemplate: '{{filename}}', sourceCodeTemplate: '' }
-  private enumeration: OutputProjectStandardRaw = { path: '', fileNameTemplate: '{{filename}}', sourceCodeTemplate: '' }
+  private entity: OutputProjectStandardMultipleRaw = { path: '', fileNameTemplate: '{{filename}}', sourceCodeTemplate: '' }
+  private schema: OutputProjectStandardMultipleRaw = { path: '', fileNameTemplate: '{{filename}}', sourceCodeTemplate: '' }
+  private enumeration: OutputProjectStandardMultipleRaw = { path: '', fileNameTemplate: '{{filename}}', sourceCodeTemplate: '' }
+  private constant: OutputProjectStandardSingleRaw = { path: '', sourceCodeTemplate: '' }
   private others: OutputProjectOtherRaw[] = []
 
   setRaw(raw?: OutputProjectRaw) {
@@ -25,6 +26,7 @@ export class OutputProject {
       this.entity = copy.entity
       this.schema = copy.schema
       this.enumeration = copy.enumeration
+      this.constant = copy.constant
       this.others = copy.others
     }
   }
@@ -61,6 +63,10 @@ export class OutputProject {
     return this.enumeration
   }
 
+  getConstant() {
+    return this.constant
+  }
+
   getOthers() {
     return this.others
   }
@@ -74,6 +80,7 @@ export class OutputProject {
       entity: this.entity,
       schema: this.schema,
       enumeration: this.enumeration,
+      constant: this.constant,
       others: this.others,
     }
   }

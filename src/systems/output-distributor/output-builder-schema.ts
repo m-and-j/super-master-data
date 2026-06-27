@@ -1,7 +1,7 @@
 import { DataClassification, DataKindExtension } from '@/systems/define'
 import { OutputBuilderBase } from '@/systems/output-distributor/output-builder-base'
 import { preferences } from '@/systems/preferences'
-import { OutputProjectRaw, OutputProjectStandardRaw } from '@/systems/types'
+import { OutputProjectRaw, OutputProjectStandardMultipleRaw } from '@/systems/types'
 import { path } from '@tauri-apps/api'
 
 /**
@@ -17,7 +17,7 @@ export class OutputBuilderSchema extends OutputBuilderBase {
   constructor(
     outputPath: string,
     codeExtension: string,
-    private schema: OutputProjectStandardRaw,
+    private schema: OutputProjectStandardMultipleRaw,
     private enumerationFileNameTemplate: string,
   ) {
     super(outputPath, codeExtension)

@@ -1,8 +1,9 @@
 import { Button } from '@/components/inputs/Button'
 import { CheckBox } from '@/components/inputs/CheckBox'
 import { InputText } from '@/components/inputs/InputText'
-import { OutputSourceCode } from '@/components/inputs/OutputSourceCode'
 import { OutputSourceCodeOther } from '@/components/inputs/OutputSourceCodeOther'
+import { OutputSourceCodeStandardMultiple } from '@/components/inputs/OutputSourceCodeStandardMultiple'
+import { OutputSourceCodeStandardSingle } from '@/components/inputs/OutputSourceCodeStandardSingle'
 import { ConfirmModal } from '@/components/modals/ConfirmModal'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { TabItem } from '@/components/wayFinders/TabItem'
@@ -23,6 +24,7 @@ const Mode = {
   Entity: 'entity',
   Schema: 'schema',
   Enumeration: 'enumeration',
+  Constant: 'constant',
 } as const
 
 /**
@@ -32,9 +34,10 @@ export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
   private mode: string = Mode.MasterData
   private outputProject = new OutputProject()
   private masterFieldset: Reference<HTMLFieldSetElement> = ref()
-  private entityOutputSourceCode: Reference<OutputSourceCode> = ref()
-  private schemaOutputSourceCode: Reference<OutputSourceCode> = ref()
-  private enumerationOutputSourceCode: Reference<OutputSourceCode> = ref()
+  private entityOutputSourceCode: Reference<OutputSourceCodeStandardMultiple> = ref()
+  private schemaOutputSourceCode: Reference<OutputSourceCodeStandardMultiple> = ref()
+  private enumerationOutputSourceCode: Reference<OutputSourceCodeStandardMultiple> = ref()
+  private constantOutputSourceCode: Reference<OutputSourceCodeStandardSingle> = ref()
   private otherOutputSourceCodeList: Reference<OutputSourceCodeOther>[] = []
 
   connectedCallback() {
@@ -83,6 +86,9 @@ export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
           <TabItem type="change" name={Mode.Enumeration} onchange={(name) => this.changeTab(name)} defaultActive={this.mode === Mode.Enumeration}>
             列挙型
           </TabItem>
+          <TabItem type="change" name={Mode.Constant} onchange={(name) => this.changeTab(name)} defaultActive={this.mode === Mode.Constant}>
+            定数
+          </TabItem>
           {this.outputProject.getOthers().map((item, index) => (
             <TabItem type="change" name={`${index}`} onchange={(name) => this.changeTab(name)} defaultActive={this.mode === `${index}`}>
               {item.name}
@@ -127,9 +133,30 @@ export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
             </div>
           </div>
         </fieldset>
-        <OutputSourceCode outputProjectStandard={this.outputProject.getEntity()} mode={Mode.Entity} currentMode={this.mode} ref={this.entityOutputSourceCode} />
-        <OutputSourceCode outputProjectStandard={this.outputProject.getSchema()} mode={Mode.Schema} currentMode={this.mode} ref={this.schemaOutputSourceCode} />
-        <OutputSourceCode outputProjectStandard={this.outputProject.getEnumeration()} mode={Mode.Enumeration} currentMode={this.mode} ref={this.enumerationOutputSourceCode} />
+        <OutputSourceCodeStandardMultiple
+          outputProjectStandardMultiple={this.outputProject.getEntity()}
+          mode={Mode.Entity}
+          currentMode={this.mode}
+          ref={this.entityOutputSourceCode}
+        />
+        <OutputSourceCodeStandardMultiple
+          outputProjectStandardMultiple={this.outputProject.getSchema()}
+          mode={Mode.Schema}
+          currentMode={this.mode}
+          ref={this.schemaOutputSourceCode}
+        />
+        <OutputSourceCodeStandardMultiple
+          outputProjectStandardMultiple={this.outputProject.getEnumeration()}
+          mode={Mode.Enumeration}
+          currentMode={this.mode}
+          ref={this.enumerationOutputSourceCode}
+        />
+        <OutputSourceCodeStandardSingle
+          outputProjectStandardSingle={this.outputProject.getConstant()}
+          mode={Mode.Constant}
+          currentMode={this.mode}
+          ref={this.constantOutputSourceCode}
+        />
         {this.outputProject.getOthers().map((item, index) => (
           <OutputSourceCodeOther
             outputProjectOther={item}
@@ -168,6 +195,7 @@ export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
     this.entityOutputSourceCode.value?.toggle(this.mode)
     this.schemaOutputSourceCode.value?.toggle(this.mode)
     this.enumerationOutputSourceCode.value?.toggle(this.mode)
+    this.constantOutputSourceCode.value?.toggle(this.mode)
     for (const outputSourceCode of this.otherOutputSourceCodeList) {
       outputSourceCode.value?.toggle(this.mode)
     }

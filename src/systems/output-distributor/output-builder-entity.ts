@@ -1,7 +1,7 @@
 import { DataClassification, DataKindExtension } from '@/systems/define'
 import { masterDataAccessor } from '@/systems/master-data-accessor'
 import { OutputBuilderBase } from '@/systems/output-distributor/output-builder-base'
-import { OutputProjectRaw, OutputProjectStandardRaw } from '@/systems/types'
+import { OutputProjectRaw, OutputProjectStandardMultipleRaw } from '@/systems/types'
 import { path } from '@tauri-apps/api'
 import pluralize from '@theothergothamdev/pluralize-ts'
 
@@ -26,7 +26,7 @@ export class OutputBuilderEntity extends OutputBuilderBase {
   constructor(
     outputPath: string,
     codeExtension: string,
-    private entity: OutputProjectStandardRaw,
+    private entity: OutputProjectStandardMultipleRaw,
     private targets: string[],
     private schemaFileNameTemplate: string,
     private enumerationFileNameTemplate: string,

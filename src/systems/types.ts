@@ -1,10 +1,11 @@
-import { DataClassificationType, DataKindExtensionType, OutputKindType } from '@/systems/define'
+import { ConstantKindType, DataClassificationType, DataKindExtensionType, OutputKindType } from '@/systems/define'
 
 export interface ProjectInfoRaw {
   name: string
   description: string
   schemas: DataStructRaw[]
   enumerations: EnumerationStructRaw[]
+  constants: ConstantRaw[]
   outputs: OutputProjectRaw[]
 }
 
@@ -50,14 +51,22 @@ export interface EnumerationStructItemRaw {
   description: string
 }
 
+export interface ConstantRaw {
+  name: string
+  label: string
+  type: ConstantKindType
+  value: number | string | number[] | string[]
+}
+
 export interface OutputProjectRaw {
   name: string
   description: string
   codeExtension: string
   masterData: OutputProjectMasterDataRaw
-  entity: OutputProjectStandardRaw
-  schema: OutputProjectStandardRaw
-  enumeration: OutputProjectStandardRaw
+  entity: OutputProjectStandardMultipleRaw
+  schema: OutputProjectStandardMultipleRaw
+  enumeration: OutputProjectStandardMultipleRaw
+  constant: OutputProjectStandardSingleRaw
   others: OutputProjectOtherRaw[]
 }
 
@@ -66,7 +75,12 @@ export interface OutputProjectMasterDataRaw {
   targets: string[]
 }
 
-export interface OutputProjectStandardRaw {
+export interface OutputProjectStandardSingleRaw {
+  path: string
+  sourceCodeTemplate: string
+}
+
+export interface OutputProjectStandardMultipleRaw {
   path: string
   fileNameTemplate: string
   sourceCodeTemplate: string

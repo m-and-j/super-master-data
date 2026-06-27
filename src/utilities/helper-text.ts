@@ -28,6 +28,15 @@ export function omitText(text: string | null | undefined, length: number, tail =
 }
 
 /**
+ * ダブルクォートエスケープ
+ * @param str
+ * @returns
+ */
+export function escapeDoubleQuotes(str: string) {
+  return str.replace(/"/g, '\\"')
+}
+
+/**
  * 正規表現エスケープ
  * @param str
  * @returns

@@ -1,6 +1,6 @@
 import { OutputBuilderBase } from '@/systems/output-distributor/output-builder-base'
 import { preferences } from '@/systems/preferences'
-import { OutputProjectRaw, OutputProjectStandardRaw } from '@/systems/types'
+import { OutputProjectRaw, OutputProjectStandardMultipleRaw } from '@/systems/types'
 import { path } from '@tauri-apps/api'
 
 /**
@@ -16,7 +16,7 @@ export class OutputBuilderEnumeration extends OutputBuilderBase {
   constructor(
     outputPath: string,
     codeExtension: string,
-    private enumeration: OutputProjectStandardRaw,
+    private enumeration: OutputProjectStandardMultipleRaw,
   ) {
     super(outputPath, codeExtension)
   }

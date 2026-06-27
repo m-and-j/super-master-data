@@ -1,6 +1,6 @@
 import { cacheStore } from '@/systems/cache-store'
 import { masterDataAccessor } from '@/systems/master-data-accessor'
-import { DataStructRaw, EnumerationStructItemRaw, EnumerationStructRaw, OutputProjectRaw, ProjectInfoRaw } from '@/systems/types'
+import { ConstantRaw, DataStructRaw, EnumerationStructItemRaw, EnumerationStructRaw, OutputProjectRaw, ProjectInfoRaw } from '@/systems/types'
 import { readJsonFile, writeJsonFile } from '@/utilities/helper'
 import { exists } from '@tauri-apps/plugin-fs'
 
@@ -10,6 +10,7 @@ class Preferences {
   private description: string = ''
   private schemas: DataStructRaw[] = []
   private enumerations: EnumerationStructRaw[] = []
+  private constants: ConstantRaw[] = []
   private outputs: OutputProjectRaw[] = []
   private folderPath: string | undefined
 
@@ -28,6 +29,7 @@ class Preferences {
             this.description = projectInfo.description
             this.schemas = projectInfo.schemas
             this.enumerations = projectInfo.enumerations
+            this.constants = projectInfo.constants
             this.outputs = projectInfo.outputs
             this.folderPath = savedPath
             await masterDataAccessor.readFiles()
@@ -49,6 +51,7 @@ class Preferences {
       description: this.description,
       schemas: this.schemas,
       enumerations: this.enumerations,
+      constants: this.constants,
       outputs: this.outputs,
     }
   }
@@ -79,6 +82,7 @@ class Preferences {
       this.description = projectInfo.description
       this.schemas = projectInfo.schemas
       this.enumerations = projectInfo.enumerations
+      this.constants = projectInfo.constants
       this.outputs = projectInfo.outputs
       return false
     } else {
@@ -181,6 +185,58 @@ class Preferences {
   }
 
   /**
+   * 定数追加
+   * @param constant
+   */
+  async addConstant(constant: ConstantRaw) {
+    if (this.constants.some((c) => c.name === constant.name)) {
+      throw new Error('すでに同名の定数が存在します。')
+    } else {
+      const { name, label, type, value } = constant
+      this.constants.push({ name, label, type, value })
+      this.constants.sort((a, b) => a.name.localeCompare(b.name))
+      await this.save()
+    }
+  }
+
+  /**
+   * 定数更新
+   * @param beforeName
+   * @param newConstant
+   */
+  async updateConstant(beforeName: string, newConstant: ConstantRaw) {
+    const constant = this.constants.find((c) => c.name === beforeName)
+    if (constant) {
+      constant.name = newConstant.name
+      constant.label = newConstant.label
+      constant.type = newConstant.type
+      constant.value = newConstant.value
+      await this.save()
+    }
+  }
+
+  /**
+   * 定数削除
+   * @param name
+   */
+  async deleteConstant(name: string) {
+    this.constants = this.constants.filter((c) => c.name !== name)
+    await this.save()
+  }
+
+  /**
+   * 定数リスト一括置換(編集画面/JSON直編集用)
+   * @param constants
+   */
+  async replaceConstants(constants: ConstantRaw[]) {
+    this.constants = []
+    for (const { name, label, type, value } of constants.sort((a, b) => a.name.localeCompare(b.name))) {
+      this.constants.push({ name, label, type, value })
+    }
+    await this.save()
+  }
+
+  /**
    * 出力設定追加
    * @param outputProject
    */
@@ -188,8 +244,8 @@ class Preferences {
     if (this.outputs.some((e) => e.name === outputProject.name)) {
       throw new Error('すでに同名の出力設定が存在します。')
     } else {
-      const { name, description, codeExtension, masterData, entity, schema, enumeration, others } = outputProject
-      this.outputs.push({ name, description, codeExtension, masterData, entity, schema, enumeration, others })
+      const { name, description, codeExtension, masterData, entity, schema, enumeration, constant, others } = outputProject
+      this.outputs.push({ name, description, codeExtension, masterData, entity, schema, enumeration, constant, others })
       this.outputs.sort((a, b) => a.name.localeCompare(b.name))
       await this.save()
     }
@@ -209,6 +265,7 @@ class Preferences {
       output.entity = outputProject.entity
       output.schema = outputProject.schema
       output.enumeration = outputProject.enumeration
+      output.constant = outputProject.constant
       output.others = outputProject.others
       await this.save()
     }
@@ -226,7 +283,17 @@ class Preferences {
   /**
    * リストを丸ごと置換する(JSON 直接編集用)
    */
-  async replace({ schemas, enumerations, outputs }: { schemas?: DataStructRaw[]; enumerations?: EnumerationStructRaw[]; outputs?: OutputProjectRaw[] }) {
+  async replace({
+    schemas,
+    enumerations,
+    constants,
+    outputs,
+  }: {
+    schemas?: DataStructRaw[]
+    enumerations?: EnumerationStructRaw[]
+    constants?: ConstantRaw[]
+    outputs?: OutputProjectRaw[]
+  }) {
     if (schemas) {
       this.schemas = []
       for (const { name, description, columns } of schemas.sort((a, b) => a.name.localeCompare(b.name))) {
@@ -239,10 +306,16 @@ class Preferences {
         this.enumerations.push({ name, description, items })
       }
     }
+    if (constants) {
+      this.constants = []
+      for (const { name, label, type, value } of constants.sort((a, b) => a.name.localeCompare(b.name))) {
+        this.constants.push({ name, label, type, value })
+      }
+    }
     if (outputs) {
       this.outputs = []
-      for (const { name, description, codeExtension, masterData, entity, schema, enumeration, others } of outputs.sort((a, b) => a.name.localeCompare(b.name))) {
-        this.outputs.push({ name, description, codeExtension, masterData, entity, schema, enumeration, others })
+      for (const { name, description, codeExtension, masterData, entity, schema, enumeration, constant, others } of outputs.sort((a, b) => a.name.localeCompare(b.name))) {
+        this.outputs.push({ name, description, codeExtension, masterData, entity, schema, enumeration, constant, others })
       }
     }
     await this.save()
@@ -260,6 +333,7 @@ class Preferences {
           description: this.description,
           schemas: this.schemas,
           enumerations: this.enumerations,
+          constants: this.constants,
           outputs: this.outputs,
         }
         await writeJsonFile(projectInfo, this.toProjectFilePath(this.folderPath))

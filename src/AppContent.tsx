@@ -3,6 +3,8 @@ import { LoadingMessage } from '@/components/notifications/LoadingMessage'
 import { ShotMessage } from '@/components/notifications/ShotMessage'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { NavigationTab } from '@/components/wayFinders/NavigationTab'
+import { Constants } from '@/routes/Constants'
+import { ConstantsJsonEdit } from '@/routes/ConstantsJsonEdit'
 import { Enumerations } from '@/routes/Enumerations'
 import { EnumerationsJsonEdit } from '@/routes/EnumerationsJsonEdit'
 import { Home } from '@/routes/Home'
@@ -35,6 +37,7 @@ export class AppContent extends MJComponent {
             { path: '/tables', group: '/tables', title: 'テーブル', icon: 'icon-[ic--outline-table-chart] text-xl', unerasable: true },
             { path: '/schemas', group: '/schemas', title: 'スキーマ', icon: 'icon-[ic--outline-schema] text-xl', unerasable: true },
             { path: '/enumerations', group: '/enumerations', title: '列挙型', icon: 'icon-[ic--round-format-list-bulleted] text-xl', unerasable: true },
+            { path: '/constants', group: '/constants', title: '定数', icon: 'icon-[ic--round-functions] text-xl', unerasable: true },
             { path: '/master-data', group: '/master-data', title: 'マスターデータ', icon: 'icon-[ic--outline-dataset] text-xl', unerasable: true },
           ]}
         />
@@ -42,6 +45,8 @@ export class AppContent extends MJComponent {
         <MJRouter
           routes={[
             { path: '/', Page: Home },
+            { path: '/constants', Page: Constants },
+            { path: '/constants-edit-json', Page: ConstantsJsonEdit },
             { path: '/enumerations', Page: Enumerations },
             { path: '/enumerations/{name}', Page: Enumerations },
             { path: '/enumerations-edit-json', Page: EnumerationsJsonEdit },

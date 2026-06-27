@@ -73,14 +73,31 @@ export const DataKindExtensionLabels = {
 export const DataKindExtensionLabelValues = Object.entries(DataKindExtensionLabels)
 
 /**
+ * 定数型
+ */
+export const ConstantKind = {
+  Int: 'int',
+  Float: 'float',
+  String: 'string',
+  IntArray: 'int[]',
+  FloatArray: 'float[]',
+  StringArray: 'string[]',
+} as const
+export type ConstantKindType = (typeof ConstantKind)[keyof typeof ConstantKind]
+export const ConstantKindValues = Object.values(ConstantKind)
+export const ConstantKindOptions = ConstantKindValues.map((kind) => ({ label: kind, value: kind }))
+
+/**
  * カラムパラメータ
  */
 export const ColumnParams = {
   Names: 'names',
+  Labels: 'labels',
   TypeClassifications: 'typeClassifications',
   TypeKinds: 'typeKinds',
   TypeArrayFlags: 'typeArrayFlags',
   TypeNullableFlags: 'typeNullableFlags',
+  Types: 'types',
   Values: 'values',
   Descriptions: 'descriptions',
 } as const

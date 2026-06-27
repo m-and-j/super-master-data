@@ -1,3 +1,4 @@
+import { OutputBuilderConstant } from '@/systems/output-distributor/output-builder-constant'
 import { OutputBuilderEntity } from '@/systems/output-distributor/output-builder-entity'
 import { OutputBuilderEnumeration } from '@/systems/output-distributor/output-builder-enumeration'
 import { OutputBuilderMasterData } from '@/systems/output-distributor/output-builder-master-data'
@@ -11,6 +12,7 @@ export async function outputDistribution(outputProject: OutputProjectRaw) {
     OutputBuilderEntity.create(outputProject),
     OutputBuilderSchema.create(outputProject),
     OutputBuilderEnumeration.create(outputProject),
+    OutputBuilderConstant.create(outputProject),
     ...outputProject.others.map((other) => OutputBuilderOther.create(outputProject, other)),
   ])
   await Promise.all(outputs.map((output) => output.write()))
