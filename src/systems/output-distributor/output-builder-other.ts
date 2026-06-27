@@ -2,6 +2,7 @@ import { OutputKind } from '@/systems/define'
 import { masterDataAccessor } from '@/systems/master-data-accessor'
 import { OutputBuilderBase } from '@/systems/output-distributor/output-builder-base'
 import { OutputProjectOtherRaw, OutputProjectRaw } from '@/systems/types'
+import { camelToKebabCase } from '@/utilities/helper-text'
 import { path } from '@tauri-apps/api'
 import pluralize from '@theothergothamdev/pluralize-ts'
 
@@ -38,8 +39,8 @@ export class OutputBuilderOther extends OutputBuilderBase {
           if (table) {
             const { name, description } = table
             const singularName = pluralize.singular(name)
-            const lowerName = name.toLowerCase()
-            tables.push({ name, singularName, lowerName, description })
+            const kebabName = camelToKebabCase(name)
+            tables.push({ name, singularName, kebabName, description })
           }
         }
       }

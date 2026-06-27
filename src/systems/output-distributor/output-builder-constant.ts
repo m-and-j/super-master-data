@@ -2,7 +2,7 @@ import { ConstantKind } from '@/systems/define'
 import { OutputBuilderBase } from '@/systems/output-distributor/output-builder-base'
 import { preferences } from '@/systems/preferences'
 import { ConstantRaw, OutputProjectRaw, OutputProjectStandardSingleRaw } from '@/systems/types'
-import { escapeDoubleQuotes } from '@/utilities/helper-text'
+import { escapeDoubleQuotes, escapeSingleQuotes } from '@/utilities/helper-text'
 import { path } from '@tauri-apps/api'
 
 /**
@@ -62,6 +62,28 @@ export class OutputBuilderConstant extends OutputBuilderBase {
           }
           case ConstantKind.StringArray: {
             return `{ ${(value as string[]).map((v) => `"${escapeDoubleQuotes(v)}"`).join(', ')} }`
+          }
+        }
+      }
+      case 'ts': {
+        switch (type) {
+          case ConstantKind.Int: {
+            return `${value}`
+          }
+          case ConstantKind.Float: {
+            return `${value}`
+          }
+          case ConstantKind.String: {
+            return `'${escapeSingleQuotes(`${value}`)}'`
+          }
+          case ConstantKind.IntArray: {
+            return `[${(value as number[]).join(', ')}]`
+          }
+          case ConstantKind.FloatArray: {
+            return `[${(value as number[]).join(', ')}]`
+          }
+          case ConstantKind.StringArray: {
+            return `[${(value as string[]).map((v) => `'${escapeDoubleQuotes(v)}'`).join(', ')}]`
           }
         }
       }

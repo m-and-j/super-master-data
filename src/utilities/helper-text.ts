@@ -28,6 +28,15 @@ export function omitText(text: string | null | undefined, length: number, tail =
 }
 
 /**
+ * シングルクォートエスケープ
+ * @param str
+ * @returns
+ */
+export function escapeSingleQuotes(str: string) {
+  return str.replace(/'/g, "\\'")
+}
+
+/**
  * ダブルクォートエスケープ
  * @param str
  * @returns
