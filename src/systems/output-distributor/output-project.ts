@@ -72,11 +72,12 @@ export class OutputProject {
   }
 
   toRaw(): OutputProjectRaw {
+    const targets = Array.from(this.masterDataTargets).sort()
     return {
       name: this.name,
       description: this.description,
       codeExtension: this.codeExtension,
-      masterData: { path: this.masterDataPath, targets: Array.from(this.masterDataTargets) },
+      masterData: { path: this.masterDataPath, targets },
       entity: this.entity,
       schema: this.schema,
       enumeration: this.enumeration,
