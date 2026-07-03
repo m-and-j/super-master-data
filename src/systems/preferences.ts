@@ -281,6 +281,37 @@ class Preferences {
   }
 
   /**
+   * 対象のテーブル名を変更
+   * @param tableName
+   */
+  async changeTableName(oldTableName: string, newTableName: string) {
+    if (oldTableName !== newTableName) {
+      for (const output of this.outputs) {
+        const index = output.masterData.targets.indexOf(oldTableName)
+        if (index >= 0) {
+          output.masterData.targets.splice(index, 1, newTableName)
+          output.masterData.targets.sort()
+        }
+      }
+      await this.save()
+    }
+  }
+
+  /**
+   * 対象のテーブルを削除
+   * @param tableName
+   */
+  async deleteTableName(tableName: string) {
+    for (const output of this.outputs) {
+      const index = output.masterData.targets.indexOf(tableName)
+      if (index >= 0) {
+        output.masterData.targets.splice(index, 1)
+      }
+    }
+    await this.save()
+  }
+
+  /**
    * リストを丸ごと置換する(JSON 直接編集用)
    */
   async replace({

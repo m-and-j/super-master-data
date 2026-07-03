@@ -6,6 +6,7 @@ import { ConfirmModal } from '@/components/modals/ConfirmModal'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { SideMenuTable } from '@/components/wayFinders/SideMenuTable'
 import { masterDataAccessor } from '@/systems/master-data-accessor'
+import { preferences } from '@/systems/preferences'
 import { TableRaw } from '@/systems/types'
 import { deepCopy } from '@/utilities/helper'
 import { ref, Reference } from '@mj/jsx'
@@ -85,6 +86,7 @@ export class Tables extends MJPage {
     try {
       if (this.originalTable) {
         await masterDataAccessor.rename(this.originalTable.name, this.editableTable.name)
+        await preferences.changeTableName(this.originalTable.name, this.editableTable.name)
       }
       await masterDataAccessor.write(this.editableTable)
       MJRouter.instance.push(`/tables/${this.editableTable.name}`)
@@ -106,6 +108,7 @@ export class Tables extends MJPage {
           variant: 'danger',
           callback: async () => {
             await masterDataAccessor.remove(name)
+            await preferences.deleteTableName(name)
             MJRouter.instance.push('/tables')
             ToastMessage.instance.open('success', `「${name}」を削除しました。`)
           },

@@ -72,7 +72,9 @@ export class OutputProject {
   }
 
   toRaw(): OutputProjectRaw {
-    const targets = Array.from(this.masterDataTargets).sort()
+    const targets = Array.from(this.masterDataTargets)
+      .filter((name) => masterDataAccessor.getNames().includes(name))
+      .sort()
     return {
       name: this.name,
       description: this.description,
