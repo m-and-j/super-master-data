@@ -1,6 +1,6 @@
 import { OutputKind } from '@/systems/define'
 import { masterDataAccessor } from '@/systems/master-data-accessor'
-import { OutputProjectOtherRaw, OutputProjectRaw, OutputProjectStandardMultipleRaw, OutputProjectStandardSingleRaw } from '@/systems/types'
+import { OutputProjectOtherRaw, OutputProjectRaw, OutputProjectStandardRaw } from '@/systems/types'
 import { deepCopy } from '@/utilities/helper'
 
 export class OutputProject {
@@ -9,10 +9,12 @@ export class OutputProject {
   private codeExtension = ''
   private masterDataPath = ''
   private masterDataTargets = new Set<string>()
-  private entity: OutputProjectStandardMultipleRaw = { path: '', fileNameTemplate: '{{filename}}', sourceCodeTemplate: '' }
-  private schema: OutputProjectStandardMultipleRaw = { path: '', fileNameTemplate: '{{filename}}', sourceCodeTemplate: '' }
-  private enumeration: OutputProjectStandardMultipleRaw = { path: '', fileNameTemplate: '{{filename}}', sourceCodeTemplate: '' }
-  private constant: OutputProjectStandardSingleRaw = { path: '', sourceCodeTemplate: '' }
+  private constantsDataPath = ''
+  private constantsDataTargets = new Set<string>()
+  private entity: OutputProjectStandardRaw = { path: '', fileNameTemplate: '{{filename}}', sourceCodeTemplate: '' }
+  private schema: OutputProjectStandardRaw = { path: '', fileNameTemplate: '{{filename}}', sourceCodeTemplate: '' }
+  private enumeration: OutputProjectStandardRaw = { path: '', fileNameTemplate: '{{filename}}', sourceCodeTemplate: '' }
+  private constant: OutputProjectStandardRaw = { path: '', fileNameTemplate: '{{filename}}', sourceCodeTemplate: '' }
   private others: OutputProjectOtherRaw[] = []
 
   setRaw(raw?: OutputProjectRaw) {
@@ -23,6 +25,8 @@ export class OutputProject {
       this.codeExtension = copy.codeExtension
       this.masterDataPath = copy.masterData.path
       this.masterDataTargets = new Set(copy.masterData.targets)
+      this.constantsDataPath = copy.constantsData.path
+      this.constantsDataTargets = new Set(copy.constantsData.targets)
       this.entity = copy.entity
       this.schema = copy.schema
       this.enumeration = copy.enumeration
@@ -51,6 +55,14 @@ export class OutputProject {
     return this.masterDataTargets.has(name)
   }
 
+  getConstantsDataPath() {
+    return this.constantsDataPath
+  }
+
+  hasConstantsDataTarget(name: string) {
+    return this.constantsDataTargets.has(name)
+  }
+
   getEntity() {
     return this.entity
   }
@@ -72,14 +84,16 @@ export class OutputProject {
   }
 
   toRaw(): OutputProjectRaw {
-    const targets = Array.from(this.masterDataTargets)
+    const masterDataTargets = Array.from(this.masterDataTargets)
       .filter((name) => masterDataAccessor.getNames().includes(name))
       .sort()
+    const constantsDataTargets = Array.from(this.constantsDataTargets).sort()
     return {
       name: this.name,
       description: this.description,
       codeExtension: this.codeExtension,
-      masterData: { path: this.masterDataPath, targets },
+      masterData: { path: this.masterDataPath, targets: masterDataTargets },
+      constantsData: { path: this.constantsDataPath, targets: constantsDataTargets },
       entity: this.entity,
       schema: this.schema,
       enumeration: this.enumeration,
@@ -110,6 +124,19 @@ export class OutputProject {
       this.masterDataTargets.add(checkbox.value)
     } else {
       this.masterDataTargets.delete(checkbox.value)
+    }
+  }
+
+  changeConstantsDataPath(e: Event) {
+    this.constantsDataPath = (e.target as HTMLInputElement).value
+  }
+
+  changeConstantsDataTarget(e: Event) {
+    const checkbox = e.target as HTMLInputElement
+    if (checkbox.checked) {
+      this.constantsDataTargets.add(checkbox.value)
+    } else {
+      this.constantsDataTargets.delete(checkbox.value)
     }
   }
 

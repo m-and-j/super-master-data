@@ -46,6 +46,7 @@ export class AppContent extends MJComponent {
           routes={[
             { path: '/', Page: Home },
             { path: '/constants', Page: Constants },
+            { path: '/constants/{name}', Page: Constants },
             { path: '/constants-edit-json', Page: ConstantsJsonEdit },
             { path: '/enumerations', Page: Enumerations },
             { path: '/enumerations/{name}', Page: Enumerations },

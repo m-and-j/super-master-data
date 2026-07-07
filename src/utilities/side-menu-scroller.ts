@@ -1,7 +1,7 @@
 import { cacheStore } from '@/systems/cache-store'
 import { ref, Reference } from '@mj/jsx'
 
-type Mode = 'table' | 'schema' | 'enum' | 'master-data' | 'output'
+type Mode = 'table' | 'schema' | 'enum' | 'constant' | 'master-data' | 'output'
 
 /**
  * 左メニューのスクロールを保持する

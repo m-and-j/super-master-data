@@ -1,42 +1,66 @@
 import { ConstantTable } from '@/components/data-grid/ConstantTable'
 import { Button } from '@/components/inputs/Button'
+import { InputText } from '@/components/inputs/InputText'
+import { ConfirmModal } from '@/components/modals/ConfirmModal'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
+import { SideMenuConstant } from '@/components/wayFinders/SideMenuConstant'
 import { ColumnParams, ConstantKind, ConstantKindType, ConstantKindValues } from '@/systems/define'
 import { preferences } from '@/systems/preferences'
-import { ConstantRaw } from '@/systems/types'
+import { ConstantGroupItemRaw, ConstantGroupRaw } from '@/systems/types'
 import { FormDataEx } from '@/utilities/helper-frontend'
 import { ref, Reference } from '@mj/jsx'
-import { MJLink, MJPage, MJRouter } from '@mj/router'
+import { MJPage, MJRouter } from '@mj/router'
 
 export class Constants extends MJPage {
+  private targetConstant?: ConstantGroupRaw
   private constantTable: Reference<ConstantTable> = ref()
 
   createNode() {
+    const { name } = this.params
     const projectInfo = preferences.getProjectInfo()
-    const items = projectInfo.constants.map((c) => ({ ...c }))
+    this.targetConstant = projectInfo.constants.find((c) => c.name === name)
     return (
-      <form class="flex h-[calc(100vh-52px)] flex-col p-3 text-sm" onsubmit={(e) => this.register(e)}>
-        <div class="mb-3 flex items-center gap-2">
-          <div class="font-semibold">定数</div>
-          <div class="text-sm text-zinc-400">{items.length} 件</div>
-          <div class="flex-auto" />
-          <MJLink to="/constants-edit-json" className="text-sm text-blue-500 underline">
-            JSON編集
-          </MJLink>
-          <Button variant="success" size="sm" onclick={() => this.constantTable.value?.addRow()}>
-            <div class="flex items-center justify-center gap-1">
-              <span class="icon-[ic--baseline-add] text-lg"></span>
-              項目追加
+      <form class="grid h-[calc(100vh-52px)] grid-cols-[300px_1fr] grid-rows-[90px_1fr] text-sm" onsubmit={(e) => this.register(e)}>
+        {/** 左メニュー */}
+        <SideMenuConstant currentName={name} className="row-span-2" />
+
+        {/** コンテンツ */}
+        <div class="flex flex-col justify-center">
+          <div class="mx-3 flex items-center gap-2">
+            <div class="flex-[0_0_100px] text-right">グループ名</div>
+            <div class="flex-[0_0_400px]">
+              <InputText name="name" placeholder="グループ名" value={this.targetConstant?.name} />
             </div>
-          </Button>
-          <Button type="submit" variant="primary" size="sm">
-            <div class="flex items-center justify-center gap-1">
-              <span class="icon-[ic--baseline-save] text-lg"></span>
-              保存
+            <div class="flex-[0_0_50px] text-right">説明</div>
+            <div class="flex-auto">
+              <InputText name="description" placeholder="内容" value={this.targetConstant?.description} />
             </div>
-          </Button>
+          </div>
+          <div class="mx-2 mt-3 flex gap-2">
+            <Button variant="success" size="sm" onclick={() => this.constantTable.value?.addRow()}>
+              <div class="flex items-center justify-center gap-1">
+                <span class="icon-[ic--baseline-add] text-lg"></span>
+                項目追加
+              </div>
+            </Button>
+            <div class="flex-auto"></div>
+            <Button type="submit" variant="primary" size="sm">
+              <div class="flex items-center justify-center gap-1">
+                <span class="icon-[ic--baseline-save] text-lg"></span>
+                保存
+              </div>
+            </Button>
+            {this.targetConstant && (
+              <Button type="button" variant="danger" size="sm" onclick={() => this.confirmDelete()}>
+                <div class="flex items-center justify-center gap-1">
+                  <span class="icon-[ic--baseline-delete] text-lg"></span>
+                  削除
+                </div>
+              </Button>
+            )}
+          </div>
         </div>
-        <ConstantTable items={items} ref={this.constantTable} />
+        <ConstantTable items={this.targetConstant?.items ?? []} ref={this.constantTable} />
       </form>
     )
   }
@@ -44,11 +68,13 @@ export class Constants extends MJPage {
   private async register(event: SubmitEvent) {
     event.preventDefault()
     const formData = new FormDataEx(event)
+    const name = formData.getString('name', '')
+    const description = formData.getString('description', '')
     const itemNames = formData.getStringAll(ColumnParams.Names)
     const itemLabels = formData.getStringAll(ColumnParams.Labels)
     const itemTypes = formData.getStringAll(ColumnParams.Types)
     const itemValues = formData.getStringAll(ColumnParams.Values)
-    const items: ConstantRaw[] = []
+    const items: ConstantGroupItemRaw[] = []
     for (let i = 0; i < itemNames.length; i++) {
       const type = this.toConstantKind(itemTypes[i])
       items.push({
@@ -59,13 +85,37 @@ export class Constants extends MJPage {
       })
     }
     try {
-      await preferences.replaceConstants(items)
+      if (this.targetConstant) {
+        await preferences.updateConstant(this.targetConstant.name, { name, description, items })
+        MJRouter.instance.push(`/constants/${name}`)
+      } else {
+        await preferences.addConstant({ name, description, items })
+        MJRouter.instance.push(`/constants/${name}`)
+      }
       ToastMessage.instance.open('success', '保存しました。')
-      MJRouter.instance.reload()
     } catch (e) {
       if (e instanceof Error) {
         ToastMessage.instance.open('danger', e.message)
       }
+    }
+  }
+
+  private confirmDelete() {
+    if (this.targetConstant) {
+      const { name } = this.targetConstant
+      ConfirmModal.instance?.open(`「${name}」を削除します。よろしいですか?`, {
+        headerTitle: '削除確認',
+        positive: {
+          label: '削除',
+          variant: 'danger',
+          callback: async () => {
+            await preferences.deleteConstant(name)
+            MJRouter.instance.push('/constants')
+            ToastMessage.instance.open('success', `「${name}」を削除しました。`)
+          },
+        },
+        negative: { label: 'キャンセル', callback: () => {} },
+      })
     }
   }
 

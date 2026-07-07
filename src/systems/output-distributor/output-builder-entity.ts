@@ -1,9 +1,8 @@
 import { DataClassification, DataKindExtension } from '@/systems/define'
 import { masterDataAccessor } from '@/systems/master-data-accessor'
 import { OutputBuilderBase } from '@/systems/output-distributor/output-builder-base'
-import { OutputProjectRaw, OutputProjectStandardMultipleRaw } from '@/systems/types'
+import { OutputProjectRaw, OutputProjectStandardRaw } from '@/systems/types'
 import { path } from '@tauri-apps/api'
-import pluralize from '@theothergothamdev/pluralize-ts'
 
 /**
  * エンティティ出力クラス
@@ -26,7 +25,7 @@ export class OutputBuilderEntity extends OutputBuilderBase {
   constructor(
     outputPath: string,
     codeExtension: string,
-    private entity: OutputProjectStandardMultipleRaw,
+    private entity: OutputProjectStandardRaw,
     private targets: string[],
     private schemaFileNameTemplate: string,
     private enumerationFileNameTemplate: string,
@@ -80,11 +79,10 @@ export class OutputBuilderEntity extends OutputBuilderBase {
             }
           }
           const { name, description } = table
-          const singularName = pluralize.singular(name)
           const enumerations = Array.from(enumerationMap.values())
           const schemas = Array.from(schemaMap.values())
           const { fileNameTemplate } = this.entity
-          await this.writeSourceCode(this.entity.sourceCodeTemplate, { name, singularName, description, columns, enumerations, schemas }, { fileNameTemplate, name })
+          await this.writeSourceCode(this.entity.sourceCodeTemplate, { name, description, columns, enumerations, schemas }, { fileNameTemplate, name })
         }
       }
     }

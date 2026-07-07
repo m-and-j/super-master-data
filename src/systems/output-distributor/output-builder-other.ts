@@ -1,10 +1,9 @@
 import { OutputKind } from '@/systems/define'
 import { masterDataAccessor } from '@/systems/master-data-accessor'
 import { OutputBuilderBase } from '@/systems/output-distributor/output-builder-base'
+import { preferences } from '@/systems/preferences'
 import { OutputProjectOtherRaw, OutputProjectRaw } from '@/systems/types'
-import { camelToKebabCase } from '@/utilities/helper-text'
 import { path } from '@tauri-apps/api'
-import pluralize from '@theothergothamdev/pluralize-ts'
 
 /**
  * その他出力クラス
@@ -13,15 +12,15 @@ export class OutputBuilderOther extends OutputBuilderBase {
   static async create(outputProject: OutputProjectRaw, outputProjectOther: OutputProjectOtherRaw) {
     const folderPath = this.getFolderPath()
     const outputPath = await path.join(folderPath, outputProjectOther.path)
-    const { targets } = outputProject.masterData
-    return new OutputBuilderOther(outputPath, outputProject.codeExtension, outputProjectOther, targets)
+    return new OutputBuilderOther(outputPath, outputProject.codeExtension, outputProjectOther, outputProject.masterData.targets, outputProject.constantsData.targets)
   }
 
   constructor(
     outputPath: string,
     codeExtension: string,
     private other: OutputProjectOtherRaw,
-    private targets: string[],
+    private masterDataTargets: string[],
+    private constantsDataTargets: string[],
   ) {
     super(outputPath, codeExtension)
   }
@@ -31,31 +30,34 @@ export class OutputBuilderOther extends OutputBuilderBase {
    */
   async write() {
     if (this.other.kind === OutputKind.Single) {
-      const tables = []
       const names = masterDataAccessor.getNames()
-      for (const targetName of this.targets) {
+      const projectInfo = preferences.getProjectInfo()
+      const tables = []
+      for (const targetName of this.masterDataTargets) {
         if (names.includes(targetName)) {
           const table = await masterDataAccessor.read(targetName)
           if (table) {
-            const { name, description } = table
-            const singularName = pluralize.singular(name)
-            const kebabName = camelToKebabCase(name)
-            tables.push({ name, singularName, kebabName, description })
+            tables.push({ name: table.name, description: table.description })
           }
         }
       }
-      await this.writeSourceCode(this.other.sourceCodeTemplate, { tables })
+      const constants = []
+      for (const constantsGroup of projectInfo.constants) {
+        if (this.constantsDataTargets.includes(constantsGroup.name)) {
+          constants.push({ name: constantsGroup.name, description: constantsGroup.description })
+        }
+      }
+      await this.writeSourceCode(this.other.sourceCodeTemplate, { tables, constants })
     } else {
       await this.removePreviousFiles()
       const names = masterDataAccessor.getNames()
-      for (const targetName of this.targets) {
+      for (const targetName of this.masterDataTargets) {
         if (names.includes(targetName)) {
           const table = await masterDataAccessor.read(targetName)
           if (table) {
             const { fileNameTemplate = '' } = this.other
             const { name, description } = table
-            const singularName = pluralize.singular(name)
-            await this.writeSourceCode(this.other.sourceCodeTemplate, { name, singularName, description }, { fileNameTemplate, name })
+            await this.writeSourceCode(this.other.sourceCodeTemplate, { name, description }, { fileNameTemplate, name })
           }
         }
       }

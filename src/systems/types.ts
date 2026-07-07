@@ -5,7 +5,7 @@ export interface ProjectInfoRaw {
   description: string
   schemas: DataStructRaw[]
   enumerations: EnumerationStructRaw[]
-  constants: ConstantRaw[]
+  constants: ConstantGroupRaw[]
   outputs: OutputProjectRaw[]
 }
 
@@ -51,7 +51,13 @@ export interface EnumerationStructItemRaw {
   description: string
 }
 
-export interface ConstantRaw {
+export interface ConstantGroupRaw {
+  name: string
+  description: string
+  items: ConstantGroupItemRaw[]
+}
+
+export interface ConstantGroupItemRaw {
   name: string
   label: string
   type: ConstantKindType
@@ -63,10 +69,11 @@ export interface OutputProjectRaw {
   description: string
   codeExtension: string
   masterData: OutputProjectMasterDataRaw
-  entity: OutputProjectStandardMultipleRaw
-  schema: OutputProjectStandardMultipleRaw
-  enumeration: OutputProjectStandardMultipleRaw
-  constant: OutputProjectStandardSingleRaw
+  constantsData: OutputProjectMasterDataRaw
+  entity: OutputProjectStandardRaw
+  schema: OutputProjectStandardRaw
+  enumeration: OutputProjectStandardRaw
+  constant: OutputProjectStandardRaw
   others: OutputProjectOtherRaw[]
 }
 
@@ -75,12 +82,7 @@ export interface OutputProjectMasterDataRaw {
   targets: string[]
 }
 
-export interface OutputProjectStandardSingleRaw {
-  path: string
-  sourceCodeTemplate: string
-}
-
-export interface OutputProjectStandardMultipleRaw {
+export interface OutputProjectStandardRaw {
   path: string
   fileNameTemplate: string
   sourceCodeTemplate: string

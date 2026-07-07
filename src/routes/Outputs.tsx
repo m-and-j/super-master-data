@@ -9,7 +9,7 @@ export class Outputs extends MJPage {
     const projectInfo = preferences.getProjectInfo()
     const targetOutput = projectInfo.outputs.find((s) => s.name === name)
     return (
-      <div class="flex h-[calc(100vh-52px)] items-stretch text-sm">
+      <div class="grid h-[calc(100vh-52px)] grid-cols-[300px_1fr] items-stretch text-sm">
         {/** 左メニュー */}
         <SideMenuOutput currentName={name} />
 

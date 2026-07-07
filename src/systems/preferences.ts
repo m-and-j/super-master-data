@@ -1,6 +1,6 @@
 import { cacheStore } from '@/systems/cache-store'
 import { masterDataAccessor } from '@/systems/master-data-accessor'
-import { ConstantRaw, DataStructRaw, EnumerationStructItemRaw, EnumerationStructRaw, OutputProjectRaw, ProjectInfoRaw } from '@/systems/types'
+import { ConstantGroupRaw, DataStructRaw, EnumerationStructItemRaw, EnumerationStructRaw, OutputProjectRaw, ProjectInfoRaw } from '@/systems/types'
 import { readJsonFile, writeJsonFile } from '@/utilities/helper'
 import { exists } from '@tauri-apps/plugin-fs'
 
@@ -10,7 +10,7 @@ class Preferences {
   private description: string = ''
   private schemas: DataStructRaw[] = []
   private enumerations: EnumerationStructRaw[] = []
-  private constants: ConstantRaw[] = []
+  private constants: ConstantGroupRaw[] = []
   private outputs: OutputProjectRaw[] = []
   private folderPath: string | undefined
 
@@ -185,54 +185,43 @@ class Preferences {
   }
 
   /**
-   * 定数追加
+   * 定数グループ追加
    * @param constant
    */
-  async addConstant(constant: ConstantRaw) {
+  async addConstant(constant: ConstantGroupRaw) {
     if (this.constants.some((c) => c.name === constant.name)) {
-      throw new Error('すでに同名の定数が存在します。')
+      throw new Error('すでに同名の定数グループが存在します。')
     } else {
-      const { name, label, type, value } = constant
-      this.constants.push({ name, label, type, value })
+      const { name, description, items } = constant
+      items.sort((a, b) => a.name.localeCompare(b.name))
+      this.constants.push({ name, description, items })
       this.constants.sort((a, b) => a.name.localeCompare(b.name))
       await this.save()
     }
   }
 
   /**
-   * 定数更新
+   * 定数グループ更新
    * @param beforeName
    * @param newConstant
    */
-  async updateConstant(beforeName: string, newConstant: ConstantRaw) {
+  async updateConstant(beforeName: string, newConstant: ConstantGroupRaw) {
     const constant = this.constants.find((c) => c.name === beforeName)
     if (constant) {
       constant.name = newConstant.name
-      constant.label = newConstant.label
-      constant.type = newConstant.type
-      constant.value = newConstant.value
+      constant.description = newConstant.description
+      constant.items = newConstant.items.sort((a, b) => a.name.localeCompare(b.name))
+      this.constants.sort((a, b) => a.name.localeCompare(b.name))
       await this.save()
     }
   }
 
   /**
-   * 定数削除
+   * 定数グループ削除
    * @param name
    */
   async deleteConstant(name: string) {
     this.constants = this.constants.filter((c) => c.name !== name)
-    await this.save()
-  }
-
-  /**
-   * 定数リスト一括置換(編集画面/JSON直編集用)
-   * @param constants
-   */
-  async replaceConstants(constants: ConstantRaw[]) {
-    this.constants = []
-    for (const { name, label, type, value } of constants.sort((a, b) => a.name.localeCompare(b.name))) {
-      this.constants.push({ name, label, type, value })
-    }
     await this.save()
   }
 
@@ -244,8 +233,8 @@ class Preferences {
     if (this.outputs.some((e) => e.name === outputProject.name)) {
       throw new Error('すでに同名の出力設定が存在します。')
     } else {
-      const { name, description, codeExtension, masterData, entity, schema, enumeration, constant, others } = outputProject
-      this.outputs.push({ name, description, codeExtension, masterData, entity, schema, enumeration, constant, others })
+      const { name, description, codeExtension, masterData, constantsData, entity, schema, enumeration, constant, others } = outputProject
+      this.outputs.push({ name, description, codeExtension, masterData, constantsData, entity, schema, enumeration, constant, others })
       this.outputs.sort((a, b) => a.name.localeCompare(b.name))
       await this.save()
     }
@@ -262,6 +251,7 @@ class Preferences {
       output.description = outputProject.description
       output.codeExtension = outputProject.codeExtension
       output.masterData = outputProject.masterData
+      output.constantsData = outputProject.constantsData
       output.entity = outputProject.entity
       output.schema = outputProject.schema
       output.enumeration = outputProject.enumeration
@@ -322,7 +312,7 @@ class Preferences {
   }: {
     schemas?: DataStructRaw[]
     enumerations?: EnumerationStructRaw[]
-    constants?: ConstantRaw[]
+    constants?: ConstantGroupRaw[]
     outputs?: OutputProjectRaw[]
   }) {
     if (schemas) {
@@ -339,14 +329,15 @@ class Preferences {
     }
     if (constants) {
       this.constants = []
-      for (const { name, label, type, value } of constants.sort((a, b) => a.name.localeCompare(b.name))) {
-        this.constants.push({ name, label, type, value })
+      for (const { name, description, items } of constants.sort((a, b) => a.name.localeCompare(b.name))) {
+        this.constants.push({ name, description, items })
       }
     }
     if (outputs) {
       this.outputs = []
-      for (const { name, description, codeExtension, masterData, entity, schema, enumeration, constant, others } of outputs.sort((a, b) => a.name.localeCompare(b.name))) {
-        this.outputs.push({ name, description, codeExtension, masterData, entity, schema, enumeration, constant, others })
+      for (const output of outputs.sort((a, b) => a.name.localeCompare(b.name))) {
+        const { name, description, codeExtension, masterData, constantsData, entity, schema, enumeration, constant, others } = output
+        this.outputs.push({ name, description, codeExtension, masterData, constantsData, entity, schema, enumeration, constant, others })
       }
     }
     await this.save()

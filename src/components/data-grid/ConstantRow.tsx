@@ -1,11 +1,11 @@
 import { CellText } from '@/components/data-grid/CellText'
 import { Button } from '@/components/inputs/Button'
 import { ColumnParams, ConstantKindOptions } from '@/systems/define'
-import { ConstantRaw } from '@/systems/types'
+import { ConstantGroupItemRaw } from '@/systems/types'
 import { MJComponent } from '@mj/jsx'
 
 interface Props {
-  item: ConstantRaw
+  item: ConstantGroupItemRaw
   index: number
   deleteRow: (index: number) => void
 }

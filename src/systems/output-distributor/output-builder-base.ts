@@ -1,3 +1,4 @@
+import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { DataClassification, DataKind } from '@/systems/define'
 import { preferences } from '@/systems/preferences'
 import { DataStructColumnTypeRaw } from '@/systems/types'
@@ -35,9 +36,19 @@ export abstract class OutputBuilderBase {
       filePath = await path.join(this.outputPath, `${fileName}.${this.codeExtension}`)
     }
     const eta = new Eta({ autoTrim: false })
-    const contents = eta.renderString(sourceCodeTemplate, data)
-    const dataString = new TextEncoder().encode(contents)
-    await writeFile(filePath, dataString)
+    const utils = {
+      firstUp: (value: string) => value.charAt(0).toUpperCase() + value.slice(1),
+      singular: (value: string) => pluralize.singular(value),
+      kebab: (value: string) => camelToKebabCase(value),
+    }
+    try {
+      const contents = eta.renderString(sourceCodeTemplate, { ...data, ...utils })
+      const dataString = new TextEncoder().encode(contents)
+      await writeFile(filePath, dataString)
+    } catch (e) {
+      console.error(e)
+      ToastMessage.instance.open('danger', 'データ出力に失敗しました。')
+    }
   }
 
   /**

@@ -2,8 +2,7 @@ import { Button } from '@/components/inputs/Button'
 import { CheckBox } from '@/components/inputs/CheckBox'
 import { InputText } from '@/components/inputs/InputText'
 import { OutputSourceCodeOther } from '@/components/inputs/OutputSourceCodeOther'
-import { OutputSourceCodeStandardMultiple } from '@/components/inputs/OutputSourceCodeStandardMultiple'
-import { OutputSourceCodeStandardSingle } from '@/components/inputs/OutputSourceCodeStandardSingle'
+import { OutputSourceCodeStandard } from '@/components/inputs/OutputSourceCodeStandard'
 import { ConfirmModal } from '@/components/modals/ConfirmModal'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { TabItem } from '@/components/wayFinders/TabItem'
@@ -34,10 +33,10 @@ export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
   private mode: string = Mode.MasterData
   private outputProject = new OutputProject()
   private masterFieldset: Reference<HTMLFieldSetElement> = ref()
-  private entityOutputSourceCode: Reference<OutputSourceCodeStandardMultiple> = ref()
-  private schemaOutputSourceCode: Reference<OutputSourceCodeStandardMultiple> = ref()
-  private enumerationOutputSourceCode: Reference<OutputSourceCodeStandardMultiple> = ref()
-  private constantOutputSourceCode: Reference<OutputSourceCodeStandardSingle> = ref()
+  private entityOutputSourceCode: Reference<OutputSourceCodeStandard> = ref()
+  private schemaOutputSourceCode: Reference<OutputSourceCodeStandard> = ref()
+  private enumerationOutputSourceCode: Reference<OutputSourceCodeStandard> = ref()
+  private constantOutputSourceCode: Reference<OutputSourceCodeStandard> = ref()
   private otherOutputSourceCodeList: Reference<OutputSourceCodeOther>[] = []
 
   connectedCallback() {
@@ -51,6 +50,7 @@ export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
 
   createNode({ targetOutput }: Props) {
     this.outputProject.getOthers().forEach(() => this.otherOutputSourceCodeList.push(ref()))
+    const projectInfo = preferences.getProjectInfo()
     return (
       <>
         {/** 基本情報 */}
@@ -98,8 +98,12 @@ export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
             <span class="icon-[ic--baseline-library-add] text-2xl"></span>
           </TabItem>
         </TabPanel>
-        <fieldset class={['h-[calc(100vh-260px)] rounded-b-md border-x border-b border-zinc-500 p-3', this.mode !== Mode.MasterData && 'hidden']} ref={this.masterFieldset}>
-          <div class="mb-2 flex items-center gap-2">
+        <fieldset
+          class={['flex h-[calc(100vh-260px)] flex-col gap-3 rounded-b-md border-x border-b border-zinc-500 p-3', this.mode !== Mode.MasterData && 'hidden']}
+          ref={this.masterFieldset}
+        >
+          <div class="border-b border-l-6 border-zinc-500 py-1 pl-2 text-lg font-bold">マスターデータJSON出力設定</div>
+          <div class="flex items-center gap-2">
             <div class="flex-[0_0_180px] text-right text-sm">出力先パス</div>
             <div class="flex-auto">
               <InputText
@@ -109,9 +113,9 @@ export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
               />
             </div>
           </div>
-          <div class="mb-2 flex items-start gap-2">
+          <div class="flex min-h-0 flex-3 gap-2">
             <div class="flex-[0_0_180px] pt-2 text-right text-sm">出力対象</div>
-            <div class="scrollbar flex h-[calc(100vh-330px)] flex-auto flex-col items-start overflow-y-scroll rounded-md border border-zinc-500">
+            <div class="scrollbar flex-auto overflow-y-scroll rounded-md border border-zinc-500">
               {masterDataAccessor.getNames().map((name) => (
                 <CheckBox
                   value={name}
@@ -132,31 +136,50 @@ export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
               </Button>
             </div>
           </div>
+          <div class="border-b border-l-6 border-zinc-500 py-1 pl-2 text-lg font-bold">定数データJSON出力設定</div>
+          <div class="flex items-center gap-2">
+            <div class="flex-[0_0_180px] text-right text-sm">出力先パス</div>
+            <div class="flex-auto">
+              <InputText
+                placeholder="例: ../Client/Assets/MasterData"
+                value={this.outputProject.getConstantsDataPath()}
+                onchange={(e) => this.outputProject.changeConstantsDataPath(e)}
+              />
+            </div>
+          </div>
+          <div class="flex min-h-0 flex-1 gap-2">
+            <div class="flex-[0_0_180px] pt-2 text-right text-sm">出力対象</div>
+            <div class="scrollbar flex-auto overflow-y-scroll rounded-md border border-zinc-500">
+              {projectInfo.constants.map((constantsGroup) => (
+                <CheckBox
+                  value={constantsGroup.name}
+                  checked={this.outputProject.hasConstantsDataTarget(constantsGroup.name)}
+                  labelClassName="px-2 py-0.5 w-full hover:bg-indigo-700"
+                  onchange={(e) => this.outputProject.changeConstantsDataTarget(e)}
+                >
+                  {constantsGroup.name}
+                </CheckBox>
+              ))}
+            </div>
+            <div class="flex flex-col gap-1">
+              <Button type="button" variant="success" size="sm" onclick={() => this.selectAllMasterData()}>
+                すべて選択
+              </Button>
+              <Button type="button" variant="secondary" size="sm" onclick={() => this.deselectAllMasterData()}>
+                すべて解除
+              </Button>
+            </div>
+          </div>
         </fieldset>
-        <OutputSourceCodeStandardMultiple
-          outputProjectStandardMultiple={this.outputProject.getEntity()}
-          mode={Mode.Entity}
-          currentMode={this.mode}
-          ref={this.entityOutputSourceCode}
-        />
-        <OutputSourceCodeStandardMultiple
-          outputProjectStandardMultiple={this.outputProject.getSchema()}
-          mode={Mode.Schema}
-          currentMode={this.mode}
-          ref={this.schemaOutputSourceCode}
-        />
-        <OutputSourceCodeStandardMultiple
-          outputProjectStandardMultiple={this.outputProject.getEnumeration()}
+        <OutputSourceCodeStandard outputProjectStandard={this.outputProject.getEntity()} mode={Mode.Entity} currentMode={this.mode} ref={this.entityOutputSourceCode} />
+        <OutputSourceCodeStandard outputProjectStandard={this.outputProject.getSchema()} mode={Mode.Schema} currentMode={this.mode} ref={this.schemaOutputSourceCode} />
+        <OutputSourceCodeStandard
+          outputProjectStandard={this.outputProject.getEnumeration()}
           mode={Mode.Enumeration}
           currentMode={this.mode}
           ref={this.enumerationOutputSourceCode}
         />
-        <OutputSourceCodeStandardSingle
-          outputProjectStandardSingle={this.outputProject.getConstant()}
-          mode={Mode.Constant}
-          currentMode={this.mode}
-          ref={this.constantOutputSourceCode}
-        />
+        <OutputSourceCodeStandard outputProjectStandard={this.outputProject.getConstant()} mode={Mode.Constant} currentMode={this.mode} ref={this.constantOutputSourceCode} />
         {this.outputProject.getOthers().map((item, index) => (
           <OutputSourceCodeOther
             outputProjectOther={item}

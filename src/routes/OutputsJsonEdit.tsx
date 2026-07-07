@@ -13,7 +13,7 @@ export class OUtputsJsonEdit extends MJPage {
     const projectInfo = preferences.getProjectInfo()
     const jsonText = JSON.stringify(projectInfo.outputs, null, 2)
     return (
-      <div class="flex min-h-[calc(100vh-52px)] items-stretch">
+      <div class="grid min-h-[calc(100vh-52px)] grid-cols-[300px_1fr] text-sm">
         {/** 左メニュー */}
         <SideMenuOutput />
 

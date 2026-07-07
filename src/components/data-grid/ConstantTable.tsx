@@ -1,11 +1,11 @@
 import { CellHeader } from '@/components/data-grid/CellHeader'
 import { ConstantRow } from '@/components/data-grid/ConstantRow'
 import { ConstantKind } from '@/systems/define'
-import { ConstantRaw } from '@/systems/types'
+import { ConstantGroupItemRaw } from '@/systems/types'
 import { MJ, MJCustomElement } from '@mj/jsx'
 
 interface Props extends MJ.CEProps<ConstantTable> {
-  items: ConstantRaw[]
+  items: ConstantGroupItemRaw[]
 }
 
 /**
