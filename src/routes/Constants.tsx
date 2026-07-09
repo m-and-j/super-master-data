@@ -5,20 +5,29 @@ import { ConfirmModal } from '@/components/modals/ConfirmModal'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { SideMenuConstant } from '@/components/wayFinders/SideMenuConstant'
 import { ColumnParams, ConstantKind, ConstantKindType, ConstantKindValues } from '@/systems/define'
+import { masterConstantsAccessor } from '@/systems/master-constants-accessor'
 import { preferences } from '@/systems/preferences'
-import { ConstantGroupItemRaw, ConstantGroupRaw } from '@/systems/types'
+import { ConstantGroupItemRaw, ConstantGroupRaw, ConstantValue } from '@/systems/types'
+import { deepCopy } from '@/utilities/helper'
 import { FormDataEx } from '@/utilities/helper-frontend'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
 
 export class Constants extends MJPage {
-  private targetConstant?: ConstantGroupRaw
+  private originalConstant?: ConstantGroupRaw
+  private editableConstant: ConstantGroupRaw = { name: '', description: '', items: [] }
   private constantTable: Reference<ConstantTable> = ref()
+
+  async beforeRender() {
+    const { name } = this.params
+    this.originalConstant = await masterConstantsAccessor.read(name)
+    if (this.originalConstant) {
+      this.editableConstant = deepCopy(this.originalConstant)
+    }
+  }
 
   createNode() {
     const { name } = this.params
-    const projectInfo = preferences.getProjectInfo()
-    this.targetConstant = projectInfo.constants.find((c) => c.name === name)
     return (
       <form class="grid h-[calc(100vh-52px)] grid-cols-[300px_1fr] grid-rows-[90px_1fr] text-sm" onsubmit={(e) => this.register(e)}>
         {/** 左メニュー */}
@@ -29,11 +38,11 @@ export class Constants extends MJPage {
           <div class="mx-3 flex items-center gap-2">
             <div class="flex-[0_0_100px] text-right">グループ名</div>
             <div class="flex-[0_0_400px]">
-              <InputText name="name" placeholder="グループ名" value={this.targetConstant?.name} />
+              <InputText name="name" placeholder="グループ名" value={this.editableConstant?.name} />
             </div>
             <div class="flex-[0_0_50px] text-right">説明</div>
             <div class="flex-auto">
-              <InputText name="description" placeholder="内容" value={this.targetConstant?.description} />
+              <InputText name="description" placeholder="内容" value={this.editableConstant?.description} />
             </div>
           </div>
           <div class="mx-2 mt-3 flex gap-2">
@@ -50,7 +59,7 @@ export class Constants extends MJPage {
                 保存
               </div>
             </Button>
-            {this.targetConstant && (
+            {this.originalConstant && (
               <Button type="button" variant="danger" size="sm" onclick={() => this.confirmDelete()}>
                 <div class="flex items-center justify-center gap-1">
                   <span class="icon-[ic--baseline-delete] text-lg"></span>
@@ -60,7 +69,7 @@ export class Constants extends MJPage {
             )}
           </div>
         </div>
-        <ConstantTable items={this.targetConstant?.items ?? []} ref={this.constantTable} />
+        <ConstantTable items={this.editableConstant?.items ?? []} ref={this.constantTable} />
       </form>
     )
   }
@@ -85,13 +94,12 @@ export class Constants extends MJPage {
       })
     }
     try {
-      if (this.targetConstant) {
-        await preferences.updateConstant(this.targetConstant.name, { name, description, items })
-        MJRouter.instance.push(`/constants/${name}`)
-      } else {
-        await preferences.addConstant({ name, description, items })
-        MJRouter.instance.push(`/constants/${name}`)
+      if (this.originalConstant) {
+        await masterConstantsAccessor.rename(this.originalConstant.name, name)
+        await preferences.changeConstantGroupName(this.originalConstant.name, name)
       }
+      await masterConstantsAccessor.write({ name, description, items })
+      MJRouter.instance.push(`/constants/${name}`)
       ToastMessage.instance.open('success', '保存しました。')
     } catch (e) {
       if (e instanceof Error) {
@@ -101,15 +109,16 @@ export class Constants extends MJPage {
   }
 
   private confirmDelete() {
-    if (this.targetConstant) {
-      const { name } = this.targetConstant
+    if (this.originalConstant) {
+      const { name } = this.originalConstant
       ConfirmModal.instance?.open(`「${name}」を削除します。よろしいですか?`, {
         headerTitle: '削除確認',
         positive: {
           label: '削除',
           variant: 'danger',
           callback: async () => {
-            await preferences.deleteConstant(name)
+            await masterConstantsAccessor.remove(name)
+            await preferences.deleteConstantGroupName(name)
             MJRouter.instance.push('/constants')
             ToastMessage.instance.open('success', `「${name}」を削除しました。`)
           },
@@ -127,7 +136,7 @@ export class Constants extends MJPage {
     }
   }
 
-  private parseValue(type: ConstantKindType, raw: string): number | string | number[] | string[] {
+  private parseValue(type: ConstantKindType, raw: string): ConstantValue {
     switch (type) {
       case ConstantKind.Int: {
         const num = parseInt(raw, 10)

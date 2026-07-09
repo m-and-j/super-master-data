@@ -4,7 +4,6 @@ import { ShotMessage } from '@/components/notifications/ShotMessage'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { NavigationTab } from '@/components/wayFinders/NavigationTab'
 import { Constants } from '@/routes/Constants'
-import { ConstantsJsonEdit } from '@/routes/ConstantsJsonEdit'
 import { Enumerations } from '@/routes/Enumerations'
 import { EnumerationsJsonEdit } from '@/routes/EnumerationsJsonEdit'
 import { Home } from '@/routes/Home'
@@ -47,7 +46,6 @@ export class AppContent extends MJComponent {
             { path: '/', Page: Home },
             { path: '/constants', Page: Constants },
             { path: '/constants/{name}', Page: Constants },
-            { path: '/constants-edit-json', Page: ConstantsJsonEdit },
             { path: '/enumerations', Page: Enumerations },
             { path: '/enumerations/{name}', Page: Enumerations },
             { path: '/enumerations-edit-json', Page: EnumerationsJsonEdit },

@@ -1,7 +1,6 @@
 import { ScrollArea } from '@/components/viewers/ScrollArea'
 import { MouseButtonCode } from '@/systems/define'
 import { preferences } from '@/systems/preferences'
-import { regulationEscape } from '@/utilities/helper-text'
 import { MJ, MJCustomElement } from '@mj/jsx'
 import { MJRouter } from '@mj/router'
 
@@ -63,13 +62,7 @@ export class NavigationTab extends MJCustomElement<Props>()(HTMLDivElement) {
           <nav class="flex flex-nowrap items-end">
             {destinations.map(({ path, group, title, icon, defaultActive }) => (
               <label class="flex max-w-52 rounded-t-md bg-zinc-500" onmousedown={(e) => this.closeTab(e, path)}>
-                <input
-                  type="radio"
-                  name="tab"
-                  class="peer hidden"
-                  checked={defaultActive ?? this.getRegex(path, group).test(location.pathname)}
-                  onclick={() => MJRouter.instance.push(path)}
-                />
+                <input type="radio" name="tab" class="peer hidden" checked={defaultActive ?? this.isActive(path, group)} onclick={() => MJRouter.instance.push(path)} />
                 <div
                   class={[
                     'w-max-full mb-[1px] truncate rounded-t-md bg-zinc-800 p-[1px_1px_0_1px]',
@@ -114,11 +107,11 @@ export class NavigationTab extends MJCustomElement<Props>()(HTMLDivElement) {
     }
   }
 
-  private getRegex(path: string, group?: string) {
+  private isActive(path: string, group?: string) {
     if (group) {
-      return new RegExp(`^${regulationEscape(group)}`)
+      return location.pathname.startsWith(group)
     } else {
-      return new RegExp(`^${regulationEscape(path)}$`)
+      return location.pathname === path
     }
   }
 

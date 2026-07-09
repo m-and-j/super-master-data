@@ -1,5 +1,5 @@
+import { masterConstantsAccessor } from '@/systems/master-constants-accessor'
 import { OutputBuilderBase } from '@/systems/output-distributor/output-builder-base'
-import { preferences } from '@/systems/preferences'
 import { OutputProjectRaw, OutputProjectStandardRaw } from '@/systems/types'
 import { path } from '@tauri-apps/api'
 
@@ -26,23 +26,24 @@ export class OutputBuilderConstant extends OutputBuilderBase {
    */
   async write() {
     await this.removePreviousFiles()
-    const projectInfo = preferences.getProjectInfo()
-    for (const group of projectInfo.constants) {
-      const constants = []
-      for (const item of group.items) {
-        const singleType = item.type.replace('[]', '')
-        constants.push({
-          name: item.name,
-          label: item.label,
-          type: item.type,
-          singleType,
-          array: /\[\]$/.test(item.type),
-        })
+    for (const name of masterConstantsAccessor.getNames()) {
+      const constantsGroup = await masterConstantsAccessor.read(name)
+      if (constantsGroup) {
+        const constants = []
+        for (const item of constantsGroup.items) {
+          const singleType = item.type.replace('[]', '')
+          constants.push({
+            name: item.name,
+            label: item.label,
+            type: item.type,
+            singleType,
+            array: /\[\]$/.test(item.type),
+          })
+        }
+        const { fileNameTemplate } = this.constant
+        const data = { name: constantsGroup.name, description: constantsGroup.description, constants }
+        await this.writeSourceCode(this.constant.sourceCodeTemplate, data, { fileNameTemplate, name })
       }
-      const { fileNameTemplate } = this.constant
-      const { name, description } = group
-      const data = { name, description, constants }
-      await this.writeSourceCode(this.constant.sourceCodeTemplate, data, { fileNameTemplate, name })
     }
   }
 }

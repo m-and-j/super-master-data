@@ -19,11 +19,10 @@ export class SideMenuTable extends MJComponent<Props> {
   }
 
   createNode({ currentName, className }: Props) {
-    const newMode = !currentName && location.pathname !== '/tables-edit-json'
     return (
-      <div class={['flex flex-[0_0_300px] flex-col border-r-3 border-zinc-500', className]}>
+      <div class={['flex flex-col border-r-3 border-zinc-500', className]}>
         <div class="flex p-2">
-          <MJLink to="/tables" className={['flex-auto px-1 text-blue-500', newMode ? 'bg-zinc-700' : '']}>
+          <MJLink to="/tables" className={['flex-auto px-1 text-blue-500', currentName ? '' : 'bg-zinc-700']}>
             新規テーブル
           </MJLink>
         </div>

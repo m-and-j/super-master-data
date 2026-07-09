@@ -5,7 +5,6 @@ export interface ProjectInfoRaw {
   description: string
   schemas: DataStructRaw[]
   enumerations: EnumerationStructRaw[]
-  constants: ConstantGroupRaw[]
   outputs: OutputProjectRaw[]
 }
 
@@ -57,11 +56,13 @@ export interface ConstantGroupRaw {
   items: ConstantGroupItemRaw[]
 }
 
+export type ConstantValue = number | string | number[] | string[]
+
 export interface ConstantGroupItemRaw {
   name: string
   label: string
   type: ConstantKindType
-  value: number | string | number[] | string[]
+  value: ConstantValue
 }
 
 export interface OutputProjectRaw {

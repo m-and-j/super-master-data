@@ -7,6 +7,7 @@ import { ConfirmModal } from '@/components/modals/ConfirmModal'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { TabItem } from '@/components/wayFinders/TabItem'
 import { TabPanel } from '@/components/wayFinders/TabPanel'
+import { masterConstantsAccessor } from '@/systems/master-constants-accessor'
 import { masterDataAccessor } from '@/systems/master-data-accessor'
 import { OutputProject } from '@/systems/output-distributor/output-project'
 import { preferences } from '@/systems/preferences'
@@ -150,14 +151,14 @@ export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
           <div class="flex min-h-0 flex-1 gap-2">
             <div class="flex-[0_0_180px] pt-2 text-right text-sm">出力対象</div>
             <div class="scrollbar flex-auto overflow-y-scroll rounded-md border border-zinc-500">
-              {projectInfo.constants.map((constantsGroup) => (
+              {masterConstantsAccessor.getNames().map((name) => (
                 <CheckBox
-                  value={constantsGroup.name}
-                  checked={this.outputProject.hasConstantsDataTarget(constantsGroup.name)}
+                  value={name}
+                  checked={this.outputProject.hasConstantsDataTarget(name)}
                   labelClassName="px-2 py-0.5 w-full hover:bg-indigo-700"
                   onchange={(e) => this.outputProject.changeConstantsDataTarget(e)}
                 >
-                  {constantsGroup.name}
+                  {name}
                 </CheckBox>
               ))}
             </div>

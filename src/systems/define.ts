@@ -133,6 +133,7 @@ export const MouseButtonCode = {
  */
 export const ProjectFolder = {
   Tables: 'tables',
+  Constants: 'constants',
 } as const
 
 /**

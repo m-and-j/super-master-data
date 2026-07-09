@@ -83,10 +83,10 @@ export class Enumerations extends MJPage {
     }
     try {
       if (this.targetEnumeration) {
-        await preferences.updateEnumeration(this.targetEnumeration.name, name, description, items)
+        await preferences.updateEnumeration(this.targetEnumeration.name, { name, description, items })
         MJRouter.instance.push(`/enumerations/${name}`)
       } else {
-        await preferences.addEnumeration(name, description, items)
+        await preferences.addEnumeration({ name, description, items })
         MJRouter.instance.push(`/enumerations/${name}`)
       }
       ToastMessage.instance.open('success', '保存しました。')

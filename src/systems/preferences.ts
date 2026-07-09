@@ -1,6 +1,7 @@
 import { cacheStore } from '@/systems/cache-store'
+import { masterConstantsAccessor } from '@/systems/master-constants-accessor'
 import { masterDataAccessor } from '@/systems/master-data-accessor'
-import { ConstantGroupRaw, DataStructRaw, EnumerationStructItemRaw, EnumerationStructRaw, OutputProjectRaw, ProjectInfoRaw } from '@/systems/types'
+import { DataStructRaw, EnumerationStructRaw, OutputProjectRaw, ProjectInfoRaw } from '@/systems/types'
 import { readJsonFile, writeJsonFile } from '@/utilities/helper'
 import { exists } from '@tauri-apps/plugin-fs'
 
@@ -10,7 +11,6 @@ class Preferences {
   private description: string = ''
   private schemas: DataStructRaw[] = []
   private enumerations: EnumerationStructRaw[] = []
-  private constants: ConstantGroupRaw[] = []
   private outputs: OutputProjectRaw[] = []
   private folderPath: string | undefined
 
@@ -29,10 +29,10 @@ class Preferences {
             this.description = projectInfo.description
             this.schemas = projectInfo.schemas
             this.enumerations = projectInfo.enumerations
-            this.constants = projectInfo.constants
             this.outputs = projectInfo.outputs
             this.folderPath = savedPath
             await masterDataAccessor.readFiles()
+            await masterConstantsAccessor.readFiles()
             result = true
           } catch (e) {
             console.error('前回のプロジェクトファイルの読み込みに失敗しました:', e)
@@ -51,7 +51,6 @@ class Preferences {
       description: this.description,
       schemas: this.schemas,
       enumerations: this.enumerations,
-      constants: this.constants,
       outputs: this.outputs,
     }
   }
@@ -82,7 +81,6 @@ class Preferences {
       this.description = projectInfo.description
       this.schemas = projectInfo.schemas
       this.enumerations = projectInfo.enumerations
-      this.constants = projectInfo.constants
       this.outputs = projectInfo.outputs
       return false
     } else {
@@ -144,14 +142,14 @@ class Preferences {
 
   /**
    * 列挙型追加
-   * @param name
-   * @param description
-   * @param items
+   * @param enumeration
    */
-  async addEnumeration(name: string, description: string, items: EnumerationStructItemRaw[]) {
-    if (this.enumerations.some((e) => e.name === name)) {
+  async addEnumeration(enumeration: EnumerationStructRaw) {
+    if (this.enumerations.some((e) => e.name === enumeration.name)) {
       throw new Error('すでに同名の列挙型が存在します。')
     } else {
+      const { name, description, items } = enumeration
+      items.sort((a, b) => a.value - b.value)
       this.enumerations.push({ name, description, items })
       this.enumerations.sort((a, b) => a.name.localeCompare(b.name))
       await this.save()
@@ -161,16 +159,15 @@ class Preferences {
   /**
    * 列挙型更新
    * @param beforeName
-   * @param afterName
-   * @param description
-   * @param items
+   * @param newEnumeration
    */
-  async updateEnumeration(beforeName: string, afterName: string, description: string, items: EnumerationStructItemRaw[]) {
+  async updateEnumeration(beforeName: string, newEnumeration: EnumerationStructRaw) {
     const enumeration = this.enumerations.find((e) => e.name === beforeName)
     if (enumeration) {
-      enumeration.name = afterName
-      enumeration.description = description
-      enumeration.items = items
+      enumeration.name = newEnumeration.name
+      enumeration.description = newEnumeration.description
+      enumeration.items = newEnumeration.items.sort((a, b) => a.value - b.value)
+      this.enumerations.sort((a, b) => a.name.localeCompare(b.name))
       await this.save()
     }
   }
@@ -181,47 +178,6 @@ class Preferences {
    */
   async deleteEnumeration(name: string) {
     this.enumerations = this.enumerations.filter((e) => e.name !== name)
-    await this.save()
-  }
-
-  /**
-   * 定数グループ追加
-   * @param constant
-   */
-  async addConstant(constant: ConstantGroupRaw) {
-    if (this.constants.some((c) => c.name === constant.name)) {
-      throw new Error('すでに同名の定数グループが存在します。')
-    } else {
-      const { name, description, items } = constant
-      items.sort((a, b) => a.name.localeCompare(b.name))
-      this.constants.push({ name, description, items })
-      this.constants.sort((a, b) => a.name.localeCompare(b.name))
-      await this.save()
-    }
-  }
-
-  /**
-   * 定数グループ更新
-   * @param beforeName
-   * @param newConstant
-   */
-  async updateConstant(beforeName: string, newConstant: ConstantGroupRaw) {
-    const constant = this.constants.find((c) => c.name === beforeName)
-    if (constant) {
-      constant.name = newConstant.name
-      constant.description = newConstant.description
-      constant.items = newConstant.items.sort((a, b) => a.name.localeCompare(b.name))
-      this.constants.sort((a, b) => a.name.localeCompare(b.name))
-      await this.save()
-    }
-  }
-
-  /**
-   * 定数グループ削除
-   * @param name
-   */
-  async deleteConstant(name: string) {
-    this.constants = this.constants.filter((c) => c.name !== name)
     await this.save()
   }
 
@@ -272,7 +228,8 @@ class Preferences {
 
   /**
    * 対象のテーブル名を変更
-   * @param tableName
+   * @param oldTableName
+   * @param newTableName
    */
   async changeTableName(oldTableName: string, newTableName: string) {
     if (oldTableName !== newTableName) {
@@ -302,19 +259,41 @@ class Preferences {
   }
 
   /**
+   * 対象の定数グループ名を変更
+   * @param oldConstantGroupName
+   * @param newConstantGroupName
+   */
+  async changeConstantGroupName(oldConstantGroupName: string, newConstantGroupName: string) {
+    if (oldConstantGroupName !== newConstantGroupName) {
+      for (const output of this.outputs) {
+        const index = output.constantsData.targets.indexOf(oldConstantGroupName)
+        if (index >= 0) {
+          output.constantsData.targets.splice(index, 1, newConstantGroupName)
+          output.constantsData.targets.sort()
+        }
+      }
+      await this.save()
+    }
+  }
+
+  /**
+   * 対象の定数グループを削除
+   * @param constantGroupName
+   */
+  async deleteConstantGroupName(constantGroupName: string) {
+    for (const output of this.outputs) {
+      const index = output.constantsData.targets.indexOf(constantGroupName)
+      if (index >= 0) {
+        output.constantsData.targets.splice(index, 1)
+      }
+    }
+    await this.save()
+  }
+
+  /**
    * リストを丸ごと置換する(JSON 直接編集用)
    */
-  async replace({
-    schemas,
-    enumerations,
-    constants,
-    outputs,
-  }: {
-    schemas?: DataStructRaw[]
-    enumerations?: EnumerationStructRaw[]
-    constants?: ConstantGroupRaw[]
-    outputs?: OutputProjectRaw[]
-  }) {
+  async replace({ schemas, enumerations, outputs }: { schemas?: DataStructRaw[]; enumerations?: EnumerationStructRaw[]; outputs?: OutputProjectRaw[] }) {
     if (schemas) {
       this.schemas = []
       for (const { name, description, columns } of schemas.sort((a, b) => a.name.localeCompare(b.name))) {
@@ -325,12 +304,6 @@ class Preferences {
       this.enumerations = []
       for (const { name, description, items } of enumerations.sort((a, b) => a.name.localeCompare(b.name))) {
         this.enumerations.push({ name, description, items })
-      }
-    }
-    if (constants) {
-      this.constants = []
-      for (const { name, description, items } of constants.sort((a, b) => a.name.localeCompare(b.name))) {
-        this.constants.push({ name, description, items })
       }
     }
     if (outputs) {
@@ -350,15 +323,16 @@ class Preferences {
   private async save() {
     if (this.folderPath) {
       try {
-        const projectInfo: ProjectInfoRaw = {
-          name: this.name,
-          description: this.description,
-          schemas: this.schemas,
-          enumerations: this.enumerations,
-          constants: this.constants,
-          outputs: this.outputs,
-        }
-        await writeJsonFile(projectInfo, this.toProjectFilePath(this.folderPath))
+        await writeJsonFile<ProjectInfoRaw>(
+          {
+            name: this.name,
+            description: this.description,
+            schemas: this.schemas,
+            enumerations: this.enumerations,
+            outputs: this.outputs,
+          },
+          this.toProjectFilePath(this.folderPath),
+        )
       } catch (e) {
         console.error(e)
       }

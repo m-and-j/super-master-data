@@ -97,7 +97,7 @@ export async function readJsonFile<T>(path: string): Promise<T> {
  * @param value
  * @returns
  */
-export async function writeJsonFile(data: object, path: string) {
+export async function writeJsonFile<T>(data: T, path: string) {
   const jsonString = JSON.stringify(data, null, 2)
   const dataString = new TextEncoder().encode(jsonString)
   await writeFile(path, dataString)
