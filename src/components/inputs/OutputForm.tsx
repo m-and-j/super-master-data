@@ -51,7 +51,6 @@ export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
 
   createNode({ targetOutput }: Props) {
     this.outputProject.getOthers().forEach(() => this.otherOutputSourceCodeList.push(ref()))
-    const projectInfo = preferences.getProjectInfo()
     return (
       <>
         {/** 基本情報 */}

@@ -1,3 +1,4 @@
+import { ConstantKind, ConstantKindType } from '@/systems/define'
 import { masterConstantsAccessor } from '@/systems/master-constants-accessor'
 import { OutputBuilderBase } from '@/systems/output-distributor/output-builder-base'
 import { OutputProjectRaw, OutputProjectStandardRaw } from '@/systems/types'
@@ -31,12 +32,10 @@ export class OutputBuilderConstant extends OutputBuilderBase {
       if (constantsGroup) {
         const constants = []
         for (const item of constantsGroup.items) {
-          const singleType = item.type.replace('[]', '')
           constants.push({
             name: item.name,
             label: item.label,
-            type: item.type,
-            singleType,
+            type: this.convertConstantsType(item.type),
             array: /\[\]$/.test(item.type),
           })
         }
@@ -44,6 +43,45 @@ export class OutputBuilderConstant extends OutputBuilderBase {
         const data = { name: constantsGroup.name, description: constantsGroup.description, constants }
         await this.writeSourceCode(this.constant.sourceCodeTemplate, data, { fileNameTemplate, name })
       }
+    }
+  }
+
+  private convertConstantsType(type: ConstantKindType) {
+    switch (this.codeExtension) {
+      case 'ts':
+        switch (type) {
+          case ConstantKind.Int:
+          case ConstantKind.Float: {
+            return 'number'
+          }
+          case ConstantKind.IntArray:
+          case ConstantKind.FloatArray: {
+            return 'number[]'
+          }
+          case ConstantKind.String: {
+            return 'string'
+          }
+          case ConstantKind.StringArray: {
+            return 'string[]'
+          }
+        }
+      case 'cs':
+        switch (type) {
+          case ConstantKind.Int:
+          case ConstantKind.IntArray: {
+            return 'int'
+          }
+          case ConstantKind.Float:
+          case ConstantKind.FloatArray: {
+            return 'float'
+          }
+          case ConstantKind.String:
+          case ConstantKind.StringArray: {
+            return 'string'
+          }
+        }
+      default:
+        return type
     }
   }
 }
