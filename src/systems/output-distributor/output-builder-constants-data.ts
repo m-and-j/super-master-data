@@ -10,8 +10,8 @@ import { path } from '@tauri-apps/api'
 export class OutputBuilderConstantsData extends OutputBuilderBase {
   static async create(outputProject: OutputProjectRaw) {
     const folderPath = this.getFolderPath()
-    const outputPath = await path.join(folderPath, outputProject.constantsData.path)
-    const { targets } = outputProject.constantsData
+    const outputPath = await path.join(folderPath, outputProject.masterConstantsData.path)
+    const { targets } = outputProject.masterConstantsData
     return new OutputBuilderConstantsData(outputPath, 'json', targets)
   }
 

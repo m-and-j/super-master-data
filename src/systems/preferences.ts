@@ -1,6 +1,7 @@
 import { cacheStore } from '@/systems/cache-store'
 import { masterConstantsAccessor } from '@/systems/master-constants-accessor'
 import { masterDataAccessor } from '@/systems/master-data-accessor'
+import { masterListAccessor } from '@/systems/master-list-accessor'
 import { DataStructRaw, EnumerationStructRaw, OutputProjectRaw, ProjectInfoRaw } from '@/systems/types'
 import { readJsonFile, writeJsonFile } from '@/utilities/helper'
 import { exists } from '@tauri-apps/plugin-fs'
@@ -32,6 +33,7 @@ class Preferences {
             this.outputs = projectInfo.outputs
             this.folderPath = savedPath
             await masterDataAccessor.readFiles()
+            await masterListAccessor.readFiles()
             await masterConstantsAccessor.readFiles()
             result = true
           } catch (e) {
@@ -189,8 +191,20 @@ class Preferences {
     if (this.outputs.some((e) => e.name === outputProject.name)) {
       throw new Error('すでに同名の出力設定が存在します。')
     } else {
-      const { name, description, codeExtension, masterData, constantsData, entity, schema, enumeration, constant, others } = outputProject
-      this.outputs.push({ name, description, codeExtension, masterData, constantsData, entity, schema, enumeration, constant, others })
+      this.outputs.push({
+        name: outputProject.name,
+        description: outputProject.description,
+        codeExtension: outputProject.codeExtension,
+        masterData: outputProject.masterData,
+        masterListData: outputProject.masterListData,
+        masterConstantsData: outputProject.masterConstantsData,
+        masterDataEntity: outputProject.masterDataEntity,
+        masterListEntity: outputProject.masterListEntity,
+        schema: outputProject.schema,
+        enumeration: outputProject.enumeration,
+        constant: outputProject.constant,
+        others: outputProject.others,
+      })
       this.outputs.sort((a, b) => a.name.localeCompare(b.name))
       await this.save()
     }
@@ -207,8 +221,10 @@ class Preferences {
       output.description = outputProject.description
       output.codeExtension = outputProject.codeExtension
       output.masterData = outputProject.masterData
-      output.constantsData = outputProject.constantsData
-      output.entity = outputProject.entity
+      output.masterConstantsData = outputProject.masterConstantsData
+      output.masterListData = outputProject.masterListData
+      output.masterDataEntity = outputProject.masterDataEntity
+      output.masterListEntity = outputProject.masterListEntity
       output.schema = outputProject.schema
       output.enumeration = outputProject.enumeration
       output.constant = outputProject.constant
@@ -259,6 +275,38 @@ class Preferences {
   }
 
   /**
+   * 対象のリスト構造名を変更
+   * @param oldListStructName
+   * @param newListStructName
+   */
+  async changeListStructName(oldListStructName: string, newListStructName: string) {
+    if (oldListStructName !== newListStructName) {
+      for (const output of this.outputs) {
+        const index = output.masterListData.targets.indexOf(oldListStructName)
+        if (index >= 0) {
+          output.masterData.targets.splice(index, 1, newListStructName)
+          output.masterData.targets.sort()
+        }
+      }
+      await this.save()
+    }
+  }
+
+  /**
+   * 対象のリスト構造を削除
+   * @param listStructName
+   */
+  async deleteListStructName(listStructName: string) {
+    for (const output of this.outputs) {
+      const index = output.masterListData.targets.indexOf(listStructName)
+      if (index >= 0) {
+        output.masterData.targets.splice(index, 1)
+      }
+    }
+    await this.save()
+  }
+
+  /**
    * 対象の定数グループ名を変更
    * @param oldConstantGroupName
    * @param newConstantGroupName
@@ -266,10 +314,10 @@ class Preferences {
   async changeConstantGroupName(oldConstantGroupName: string, newConstantGroupName: string) {
     if (oldConstantGroupName !== newConstantGroupName) {
       for (const output of this.outputs) {
-        const index = output.constantsData.targets.indexOf(oldConstantGroupName)
+        const index = output.masterConstantsData.targets.indexOf(oldConstantGroupName)
         if (index >= 0) {
-          output.constantsData.targets.splice(index, 1, newConstantGroupName)
-          output.constantsData.targets.sort()
+          output.masterConstantsData.targets.splice(index, 1, newConstantGroupName)
+          output.masterConstantsData.targets.sort()
         }
       }
       await this.save()
@@ -282,9 +330,9 @@ class Preferences {
    */
   async deleteConstantGroupName(constantGroupName: string) {
     for (const output of this.outputs) {
-      const index = output.constantsData.targets.indexOf(constantGroupName)
+      const index = output.masterConstantsData.targets.indexOf(constantGroupName)
       if (index >= 0) {
-        output.constantsData.targets.splice(index, 1)
+        output.masterConstantsData.targets.splice(index, 1)
       }
     }
     await this.save()
@@ -309,8 +357,20 @@ class Preferences {
     if (outputs) {
       this.outputs = []
       for (const output of outputs.sort((a, b) => a.name.localeCompare(b.name))) {
-        const { name, description, codeExtension, masterData, constantsData, entity, schema, enumeration, constant, others } = output
-        this.outputs.push({ name, description, codeExtension, masterData, constantsData, entity, schema, enumeration, constant, others })
+        this.outputs.push({
+          name: output.name,
+          description: output.description,
+          codeExtension: output.codeExtension,
+          masterData: output.masterData,
+          masterListData: output.masterListData,
+          masterConstantsData: output.masterConstantsData,
+          masterDataEntity: output.masterDataEntity,
+          masterListEntity: output.masterListEntity,
+          schema: output.schema,
+          enumeration: output.enumeration,
+          constant: output.constant,
+          others: output.others,
+        })
       }
     }
     await this.save()

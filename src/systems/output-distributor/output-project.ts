@@ -9,9 +9,12 @@ export class OutputProject {
   private codeExtension = ''
   private masterDataPath = ''
   private masterDataTargets = new Set<string>()
-  private constantsDataPath = ''
-  private constantsDataTargets = new Set<string>()
-  private entity: OutputProjectStandardRaw = { path: '', fileNameTemplate: '{{filename}}', sourceCodeTemplate: '' }
+  private masterListDataPath = ''
+  private masterListDataTargets = new Set<string>()
+  private masterConstantsDataPath = ''
+  private masterConstantsDataTargets = new Set<string>()
+  private masterDataEntity: OutputProjectStandardRaw = { path: '', fileNameTemplate: '{{filename}}', sourceCodeTemplate: '' }
+  private masterListEntity: OutputProjectStandardRaw = { path: '', fileNameTemplate: '{{filename}}', sourceCodeTemplate: '' }
   private schema: OutputProjectStandardRaw = { path: '', fileNameTemplate: '{{filename}}', sourceCodeTemplate: '' }
   private enumeration: OutputProjectStandardRaw = { path: '', fileNameTemplate: '{{filename}}', sourceCodeTemplate: '' }
   private constant: OutputProjectStandardRaw = { path: '', fileNameTemplate: '{{filename}}', sourceCodeTemplate: '' }
@@ -25,9 +28,12 @@ export class OutputProject {
       this.codeExtension = copy.codeExtension
       this.masterDataPath = copy.masterData.path
       this.masterDataTargets = new Set(copy.masterData.targets)
-      this.constantsDataPath = copy.constantsData.path
-      this.constantsDataTargets = new Set(copy.constantsData.targets)
-      this.entity = copy.entity
+      this.masterListDataPath = copy.masterListData.path
+      this.masterListDataTargets = new Set(copy.masterListData.targets)
+      this.masterConstantsDataPath = copy.masterConstantsData.path
+      this.masterConstantsDataTargets = new Set(copy.masterConstantsData.targets)
+      this.masterDataEntity = copy.masterDataEntity
+      this.masterListEntity = copy.masterListEntity
       this.schema = copy.schema
       this.enumeration = copy.enumeration
       this.constant = copy.constant
@@ -55,16 +61,28 @@ export class OutputProject {
     return this.masterDataTargets.has(name)
   }
 
-  getConstantsDataPath() {
-    return this.constantsDataPath
+  getMasterListDataPath() {
+    return this.masterListDataPath
   }
 
-  hasConstantsDataTarget(name: string) {
-    return this.constantsDataTargets.has(name)
+  hasMasterListDataTarget(name: string) {
+    return this.masterListDataTargets.has(name)
   }
 
-  getEntity() {
-    return this.entity
+  getMasterConstantsDataPath() {
+    return this.masterConstantsDataPath
+  }
+
+  hasMasterConstantsDataTarget(name: string) {
+    return this.masterConstantsDataTargets.has(name)
+  }
+
+  getMasterDataEntity() {
+    return this.masterDataEntity
+  }
+
+  getMasterListEntity() {
+    return this.masterListEntity
   }
 
   getSchema() {
@@ -87,14 +105,17 @@ export class OutputProject {
     const masterDataTargets = Array.from(this.masterDataTargets)
       .filter((name) => masterDataAccessor.getNames().includes(name))
       .sort()
-    const constantsDataTargets = Array.from(this.constantsDataTargets).sort()
+    const masterListDataTargets = Array.from(this.masterListDataTargets).sort()
+    const masterConstantsDataTargets = Array.from(this.masterConstantsDataTargets).sort()
     return {
       name: this.name,
       description: this.description,
       codeExtension: this.codeExtension,
       masterData: { path: this.masterDataPath, targets: masterDataTargets },
-      constantsData: { path: this.constantsDataPath, targets: constantsDataTargets },
-      entity: this.entity,
+      masterListData: { path: this.masterListDataPath, targets: masterListDataTargets },
+      masterConstantsData: { path: this.masterConstantsDataPath, targets: masterConstantsDataTargets },
+      masterDataEntity: this.masterDataEntity,
+      masterListEntity: this.masterListEntity,
       schema: this.schema,
       enumeration: this.enumeration,
       constant: this.constant,
@@ -127,16 +148,29 @@ export class OutputProject {
     }
   }
 
-  changeConstantsDataPath(e: Event) {
-    this.constantsDataPath = (e.target as HTMLInputElement).value
+  changeMasterListDataPath(e: Event) {
+    this.masterListDataPath = (e.target as HTMLInputElement).value
   }
 
-  changeConstantsDataTarget(e: Event) {
+  changeMasterListDataTarget(e: Event) {
     const checkbox = e.target as HTMLInputElement
     if (checkbox.checked) {
-      this.constantsDataTargets.add(checkbox.value)
+      this.masterListDataTargets.add(checkbox.value)
     } else {
-      this.constantsDataTargets.delete(checkbox.value)
+      this.masterListDataTargets.delete(checkbox.value)
+    }
+  }
+
+  changeMasterConstantsDataPath(e: Event) {
+    this.masterConstantsDataPath = (e.target as HTMLInputElement).value
+  }
+
+  changeMasterConstantsDataTarget(e: Event) {
+    const checkbox = e.target as HTMLInputElement
+    if (checkbox.checked) {
+      this.masterConstantsDataTargets.add(checkbox.value)
+    } else {
+      this.masterConstantsDataTargets.delete(checkbox.value)
     }
   }
 

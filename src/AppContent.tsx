@@ -7,6 +7,8 @@ import { Constants } from '@/routes/Constants'
 import { Enumerations } from '@/routes/Enumerations'
 import { EnumerationsJsonEdit } from '@/routes/EnumerationsJsonEdit'
 import { Home } from '@/routes/Home'
+import { ListData } from '@/routes/ListData'
+import { ListStructs } from '@/routes/ListStructs'
 import { MasterData } from '@/routes/MasterData'
 import { Outputs } from '@/routes/Outputs'
 import { OUtputsJsonEdit } from '@/routes/OutputsJsonEdit'
@@ -34,10 +36,12 @@ export class AppContent extends MJComponent {
             { path: '/', icon: 'icon-[ic--baseline-home] text-2xl', unerasable: true, always: true },
             { path: '/outputs', group: '/outputs', title: '出力', icon: 'icon-[ic--outline-local-printshop] text-xl', unerasable: true },
             { path: '/tables', group: '/tables', title: 'テーブル', icon: 'icon-[ic--outline-table-chart] text-xl', unerasable: true },
+            { path: '/list-structs', group: '/list-structs', title: 'リスト構造', icon: 'icon-[ic--baseline-view-list] text-xl', unerasable: true },
             { path: '/schemas', group: '/schemas', title: 'スキーマ', icon: 'icon-[ic--outline-schema] text-xl', unerasable: true },
             { path: '/enumerations', group: '/enumerations', title: '列挙型', icon: 'icon-[ic--round-format-list-bulleted] text-xl', unerasable: true },
             { path: '/constants', group: '/constants', title: '定数', icon: 'icon-[ic--round-functions] text-xl', unerasable: true },
             { path: '/master-data', group: '/master-data', title: 'マスターデータ', icon: 'icon-[ic--outline-dataset] text-xl', unerasable: true },
+            { path: '/list-data', group: '/list-data', title: 'リストデータ', icon: 'icon-[ic--outline-dataset] text-xl', unerasable: true },
           ]}
         />
 
@@ -49,6 +53,8 @@ export class AppContent extends MJComponent {
             { path: '/enumerations', Page: Enumerations },
             { path: '/enumerations/{name}', Page: Enumerations },
             { path: '/enumerations-edit-json', Page: EnumerationsJsonEdit },
+            { path: '/list-structs', Page: ListStructs },
+            { path: '/list-structs/{name}', Page: ListStructs },
             { path: '/master-data', Page: MasterData },
             { path: '/master-data/{name}', Page: MasterData },
             { path: '/outputs', Page: Outputs },
@@ -59,6 +65,8 @@ export class AppContent extends MJComponent {
             { path: '/schemas-edit-json', Page: SchemasJsonEdit },
             { path: '/tables', Page: Tables },
             { path: '/tables/{name}', Page: Tables },
+            { path: '/list-data', Page: ListData },
+            { path: '/list-data/{name}', Page: ListData },
           ]}
           debug
         />

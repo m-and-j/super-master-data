@@ -12,7 +12,7 @@ export class OutputBuilderOther extends OutputBuilderBase {
   static async create(outputProject: OutputProjectRaw, outputProjectOther: OutputProjectOtherRaw) {
     const folderPath = this.getFolderPath()
     const outputPath = await path.join(folderPath, outputProjectOther.path)
-    return new OutputBuilderOther(outputPath, outputProject.codeExtension, outputProjectOther, outputProject.masterData.targets, outputProject.constantsData.targets)
+    return new OutputBuilderOther(outputPath, outputProject.codeExtension, outputProjectOther, outputProject.masterData.targets, outputProject.masterConstantsData.targets)
   }
 
   constructor(

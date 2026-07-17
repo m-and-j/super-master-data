@@ -131,7 +131,7 @@
 
   /** データグリッド */
   .data-grid-header {
-    @apply border-t border-l border-zinc-500;
+    @apply border-t border-b border-r border-zinc-500;
   }
   .data-grid-cell {
     @apply border-b border-r border-zinc-500;

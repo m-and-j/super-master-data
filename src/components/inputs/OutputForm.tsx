@@ -142,8 +142,8 @@ export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
             <div class="flex-auto">
               <InputText
                 placeholder="例: ../Client/Assets/MasterData"
-                value={this.outputProject.getConstantsDataPath()}
-                onchange={(e) => this.outputProject.changeConstantsDataPath(e)}
+                value={this.outputProject.getMasterConstantsDataPath()}
+                onchange={(e) => this.outputProject.changeMasterConstantsDataPath(e)}
               />
             </div>
           </div>
@@ -153,9 +153,9 @@ export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
               {masterConstantsAccessor.getNames().map((name) => (
                 <CheckBox
                   value={name}
-                  checked={this.outputProject.hasConstantsDataTarget(name)}
+                  checked={this.outputProject.hasMasterConstantsDataTarget(name)}
                   labelClassName="px-2 py-0.5 w-full hover:bg-indigo-700"
-                  onchange={(e) => this.outputProject.changeConstantsDataTarget(e)}
+                  onchange={(e) => this.outputProject.changeMasterConstantsDataTarget(e)}
                 >
                   {name}
                 </CheckBox>

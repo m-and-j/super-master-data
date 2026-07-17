@@ -7,15 +7,15 @@ import { path } from '@tauri-apps/api'
 /**
  * エンティティ出力クラス
  */
-export class OutputBuilderEntity extends OutputBuilderBase {
+export class OutputBuilderMasterDataEntity extends OutputBuilderBase {
   static async create(outputProject: OutputProjectRaw) {
     const folderPath = this.getFolderPath()
-    const outputPath = await path.join(folderPath, outputProject.entity.path)
+    const outputPath = await path.join(folderPath, outputProject.masterDataEntity.path)
     const { targets } = outputProject.masterData
-    return new OutputBuilderEntity(
+    return new OutputBuilderMasterDataEntity(
       outputPath,
       outputProject.codeExtension,
-      outputProject.entity,
+      outputProject.masterDataEntity,
       targets,
       outputProject.schema.fileNameTemplate,
       outputProject.enumeration.fileNameTemplate,

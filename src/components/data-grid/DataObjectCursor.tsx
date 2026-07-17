@@ -4,6 +4,7 @@ import { DataObjectTable } from '@/components/data-grid/DataObjectTable'
 import {
   DataClassification,
   DataClassificationLabelValues,
+  DataClassificationLabelValuesForNoId,
   DataClassificationType,
   DataKind,
   DataKindExtensionLabelValues,
@@ -22,6 +23,7 @@ import { MJ, MJCustomElement, ref, Reference } from '@mj/jsx'
 interface Props extends MJ.CEProps<HTMLDivElement> {
   schemaName: string
   dataObjectTable: Reference<DataObjectTable>
+  enabledIdColumn?: boolean
 }
 
 /**
@@ -49,11 +51,15 @@ export class DataObjectCursor extends MJCustomElement<Props>()(HTMLDivElement) {
     this.addEventListener('dblclick', () => this.openEditor())
   }
 
-  createNode({ schemaName }: Props) {
+  createNode({ schemaName, enabledIdColumn }: Props) {
     if (this.column && this.kind) {
       const { type } = this.column
       const { typeName, classification, extension } = type
-      const dataClassificationItems = DataClassificationLabelValues.map(([value, label]) => ({ label, value, selected: classification === value }))
+      const dataClassificationItems = (enabledIdColumn ? DataClassificationLabelValues : DataClassificationLabelValuesForNoId).map(([value, label]) => ({
+        label,
+        value,
+        selected: classification === value,
+      }))
       const dataKindItems = DataKindValues.map(([label, value]) => ({ label, value, selected: typeName === value }))
       const dataKindForIdItems = DataKindForIdValues.map(([label, value]) => ({ label, value, selected: typeName === value }))
       const dataKindForLabelItems = DataKindForLabelValues.map(([label, value]) => ({ label, value, selected: typeName === value }))

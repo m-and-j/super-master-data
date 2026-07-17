@@ -4,24 +4,24 @@ import { Button } from '@/components/inputs/Button'
 import { InputText } from '@/components/inputs/InputText'
 import { ConfirmModal } from '@/components/modals/ConfirmModal'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
-import { SideMenuTable } from '@/components/wayFinders/SideMenuTable'
-import { masterDataAccessor } from '@/systems/master-data-accessor'
+import { SideMenuListStruct } from '@/components/wayFinders/SideMenuListStruct'
+import { masterListAccessor } from '@/systems/master-list-accessor'
 import { preferences } from '@/systems/preferences'
 import { TableRaw } from '@/systems/types'
 import { deepCopy } from '@/utilities/helper'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
 
-export class Tables extends MJPage {
-  private originalTable?: TableRaw
-  private editableTable: TableRaw = { name: '', description: '', columns: [], data: [] }
+export class ListStructs extends MJPage {
+  private originalListStruct?: TableRaw
+  private editableListStruct: TableRaw = { name: '', description: '', columns: [], data: [] }
   private dataObjectTable: Reference<DataObjectTable> = ref()
 
   async beforeRender() {
     const { name } = this.params
-    this.originalTable = await masterDataAccessor.read(name)
-    if (this.originalTable) {
-      this.editableTable = deepCopy(this.originalTable)
+    this.originalListStruct = await masterListAccessor.read(name)
+    if (this.originalListStruct) {
+      this.editableListStruct = deepCopy(this.originalListStruct)
     }
   }
 
@@ -30,18 +30,18 @@ export class Tables extends MJPage {
     return (
       <div class="grid h-[calc(100vh-52px)] grid-cols-[300px_1fr] grid-rows-[90px_1fr] text-sm">
         {/** 左メニュー */}
-        <SideMenuTable currentName={name} className="row-span-2" />
+        <SideMenuListStruct currentName={name} className="row-span-2" />
 
         {/** コンテンツ */}
         <div class="flex flex-col justify-center">
           <div class="mx-3 flex items-center gap-2">
-            <div class="flex-[0_0_100px] text-right">テーブル名</div>
+            <div class="flex-[0_0_100px] text-right">リスト構造名</div>
             <div class="flex-[0_0_400px]">
-              <InputText placeholder="テーブル名" value={this.editableTable.name} onchange={(e) => this.changeName(e)} />
+              <InputText placeholder="リスト構造名" value={this.editableListStruct.name} onchange={(e) => this.changeName(e)} />
             </div>
             <div class="flex-[0_0_50px] text-right">説明</div>
             <div class="flex-auto">
-              <InputText placeholder="内容" value={this.editableTable.description} onchange={(e) => this.changeDescription(e)} />
+              <InputText placeholder="内容" value={this.editableListStruct.description} onchange={(e) => this.changeDescription(e)} />
             </div>
           </div>
           <div class="mx-2 mt-3 flex gap-2">
@@ -58,7 +58,7 @@ export class Tables extends MJPage {
                 保存
               </div>
             </Button>
-            {this.originalTable && (
+            {this.originalListStruct && (
               <Button type="button" variant="danger" size="sm" onclick={() => this.confirmDelete()}>
                 <div class="flex items-center justify-center gap-1">
                   <span class="icon-[ic--baseline-delete] text-lg"></span>
@@ -68,28 +68,28 @@ export class Tables extends MJPage {
             )}
           </div>
         </div>
-        <DataObjectTable columns={this.editableTable.columns} ref={this.dataObjectTable} />
-        <DataObjectCursor schemaName={this.editableTable.name} dataObjectTable={this.dataObjectTable} enabledIdColumn />
+        <DataObjectTable columns={this.editableListStruct.columns} ref={this.dataObjectTable} />
+        <DataObjectCursor schemaName={this.editableListStruct.name} dataObjectTable={this.dataObjectTable} />
       </div>
     )
   }
 
   private changeName(e: Event) {
-    this.editableTable.name = (e.target as HTMLInputElement).value
+    this.editableListStruct.name = (e.target as HTMLInputElement).value
   }
 
   private changeDescription(e: Event) {
-    this.editableTable.description = (e.target as HTMLInputElement).value
+    this.editableListStruct.description = (e.target as HTMLInputElement).value
   }
 
   private async register() {
     try {
-      if (this.originalTable) {
-        await masterDataAccessor.rename(this.originalTable.name, this.editableTable.name)
-        await preferences.changeTableName(this.originalTable.name, this.editableTable.name)
+      if (this.originalListStruct) {
+        await masterListAccessor.rename(this.originalListStruct.name, this.editableListStruct.name)
+        await preferences.changeListStructName(this.originalListStruct.name, this.editableListStruct.name)
       }
-      await masterDataAccessor.write(this.editableTable)
-      MJRouter.instance.push(`/tables/${this.editableTable.name}`)
+      await masterListAccessor.write(this.editableListStruct)
+      MJRouter.instance.push(`/list-structs/${this.editableListStruct.name}`)
       ToastMessage.instance.open('success', '保存しました。')
     } catch (e) {
       if (e instanceof Error) {
@@ -99,17 +99,17 @@ export class Tables extends MJPage {
   }
 
   private confirmDelete() {
-    if (this.originalTable) {
-      const { name } = this.originalTable
+    if (this.originalListStruct) {
+      const { name } = this.originalListStruct
       ConfirmModal.instance?.open(`「${name}」を削除します。よろしいですか?`, {
         headerTitle: '削除確認',
         positive: {
           label: '削除',
           variant: 'danger',
           callback: async () => {
-            await masterDataAccessor.remove(name)
-            await preferences.deleteTableName(name)
-            MJRouter.instance.push('/tables')
+            await masterListAccessor.remove(name)
+            await preferences.deleteListStructName(name)
+            MJRouter.instance.push('/list-structs')
             ToastMessage.instance.open('success', `「${name}」を削除しました。`)
           },
         },

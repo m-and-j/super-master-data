@@ -45,8 +45,8 @@ export class MasterDataGrid extends MJCustomElement<Props>()(HTMLDivElement) {
         {this.rows.length > 0 ? (
           this.rows.map((row, index) => (
             <>
-              <div class="data-grid-header flex flex-[0_0_60px] items-center justify-center">
-                <Button variant="danger" size="none" onclick={() => this.deleteRow(index)} className="flex h-7 w-7 items-center justify-center">
+              <div class="data-grid-cell flex flex-[0_0_60px] items-center justify-center">
+                <Button variant="danger" size="none" onclick={() => this.deleteRow(index)} className="flex h-6 w-7 items-center justify-center">
                   <span class="icon-[ic--baseline-delete-forever] text-xl"></span>
                 </Button>
               </div>

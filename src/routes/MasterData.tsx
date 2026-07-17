@@ -36,7 +36,7 @@ export class MasterData extends MJPage {
             {(this.idColumnCount === 1 && (
               <>
                 <div class="col-span-2 flex items-center gap-2 px-4">
-                  <div class="font-semibold">{this.table?.name}</div>
+                  <div class="font-semibold">{`${this.table?.name}【${this.table?.description}】`}</div>
                   <div class="text-sm text-zinc-400">{formatNumber(this.table?.data.length ?? 0)} 件</div>
                   <div class="flex-auto"></div>
                   <Button variant="success" size="sm" onclick={() => gridRef.value?.addRow()}>

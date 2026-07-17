@@ -1,3 +1,4 @@
+import { DataObjectCursor } from '@/components/data-grid/DataObjectCursor'
 import { DataObjectTable } from '@/components/data-grid/DataObjectTable'
 import { Button } from '@/components/inputs/Button'
 import { InputText } from '@/components/inputs/InputText'
@@ -64,6 +65,7 @@ export class Schemas extends MJPage {
           </div>
         </div>
         <DataObjectTable columns={this.editableSchema.columns} ref={this.dataObjectTable} />
+        <DataObjectCursor schemaName={this.editableSchema.name} dataObjectTable={this.dataObjectTable} />
       </div>
     )
   }
