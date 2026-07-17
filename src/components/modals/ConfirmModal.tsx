@@ -1,6 +1,6 @@
 import { Button } from '@/components/inputs/Button'
 import { ModalBase } from '@/components/modals/ModalBase'
-import { InputVariantType } from '@/systems/define'
+import { InputVariantType } from '@/systems/defines'
 import { MJ, MJCustomElement } from '@mj/jsx'
 
 interface ButtonInfo {

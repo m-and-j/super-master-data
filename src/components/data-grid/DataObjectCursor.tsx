@@ -13,7 +13,7 @@ import {
   DataKindForLabel,
   DataKindForLabelValues,
   DataKindValues,
-} from '@/systems/define'
+} from '@/systems/defines'
 import { masterDataAccessor } from '@/systems/master-data-accessor'
 import { preferences } from '@/systems/preferences'
 import { DataStructColumnLabel, DataStructColumnRaw } from '@/systems/types'
@@ -121,6 +121,10 @@ export class DataObjectCursor extends MJCustomElement<Props>()(HTMLDivElement) {
             }
             case DataClassification.ID: {
               this.dataKindForIdSelect.value?.show()
+              break
+            }
+            case DataClassification.EnumerationID: {
+              this.enumerationSelect.value?.show()
               break
             }
             case DataClassification.Label: {

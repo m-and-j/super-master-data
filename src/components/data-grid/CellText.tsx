@@ -14,7 +14,7 @@ interface Props {
 export class CellText extends MJComponent<Props> {
   createNode({ name, type = 'text', value, className, onchange }: Props) {
     return (
-      <div class={['data-grid-cell bg-zinc-800 px-2 py-1', className]}>
+      <div class={['data-grid-cell px-2 py-1', className]}>
         <input type={type} name={name} value={value} class="h-full w-full outline-hidden" onchange={onchange} />
       </div>
     )

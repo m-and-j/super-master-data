@@ -1,6 +1,6 @@
 import { DataObjectCell } from '@/components/data-grid/DataObjectCell'
 import { Button } from '@/components/inputs/Button'
-import { DataClassification, DataClassificationLabelValues, DataKindExtensionLabelValues, DataKindForIdValues, DataKindForLabelValues, DataKindValues } from '@/systems/define'
+import { DataClassification, DataClassificationLabelValues, DataKindExtensionLabelValues, DataKindForIdValues, DataKindForLabelValues, DataKindValues } from '@/systems/defines'
 import { preferences } from '@/systems/preferences'
 import { DataStructColumnRaw } from '@/systems/types'
 import { MJComponent } from '@mj/jsx'
@@ -31,6 +31,12 @@ export class DataObjectRow extends MJComponent<Props> {
         typeNameLabel = label ?? ''
         break
       }
+      case DataClassification.EnumerationID: {
+        const projectInfo = preferences.getProjectInfo()
+        const { name, description } = projectInfo.enumerations.find(({ name }) => typeName === name) ?? {}
+        typeNameLabel = `${name}【${description}】`
+        break
+      }
       case DataClassification.Label: {
         const [label] = DataKindForLabelValues.find(([, value]) => typeName === value) ?? []
         typeNameLabel = label ?? ''
@@ -52,12 +58,12 @@ export class DataObjectRow extends MJComponent<Props> {
     return (
       <>
         <div class="flex items-center justify-center bg-zinc-600">{index + 1}</div>
-        <DataObjectCell column={column} kind="name" value={name} />
-        <DataObjectCell column={column} kind="label" value={label} />
-        <DataObjectCell column={column} kind="typeClassification" value={dataClassificationLabel} selectable />
-        <DataObjectCell column={column} kind="typeName" value={typeNameLabel} selectable />
-        <DataObjectCell column={column} kind="typeExtension" value={dataKindOption} selectable />
-        <DataObjectCell column={column} kind="description" value={description} />
+        <DataObjectCell rowIndex={index} column={column} kind="name" value={name} />
+        <DataObjectCell rowIndex={index} column={column} kind="label" value={label} />
+        <DataObjectCell rowIndex={index} column={column} kind="typeClassification" value={dataClassificationLabel} selectable />
+        <DataObjectCell rowIndex={index} column={column} kind="typeName" value={typeNameLabel} selectable />
+        <DataObjectCell rowIndex={index} column={column} kind="typeExtension" value={dataKindOption} selectable />
+        <DataObjectCell rowIndex={index} column={column} kind="description" value={description} />
         <div class="data-grid-cell">
           <div class="m-1 flex justify-center">
             <Button variant="danger" size="none" className="flex-[0_0_40px]" onclick={() => deleteRow(index)}>

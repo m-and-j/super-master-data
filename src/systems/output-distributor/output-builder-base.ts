@@ -1,5 +1,5 @@
 import { ToastMessage } from '@/components/notifications/ToastMessage'
-import { DataClassification, DataKind } from '@/systems/define'
+import { DataClassification, DataKind } from '@/systems/defines'
 import { preferences } from '@/systems/preferences'
 import { DataStructColumnTypeRaw } from '@/systems/types'
 import { camelToKebabCase } from '@/utilities/helper-text'

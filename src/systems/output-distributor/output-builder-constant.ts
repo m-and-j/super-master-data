@@ -1,4 +1,4 @@
-import { ConstantKind, ConstantKindType } from '@/systems/define'
+import { ConstantKind, ConstantKindType } from '@/systems/defines'
 import { masterConstantsAccessor } from '@/systems/master-constants-accessor'
 import { OutputBuilderBase } from '@/systems/output-distributor/output-builder-base'
 import { OutputProjectRaw, OutputProjectStandardRaw } from '@/systems/types'

@@ -1,4 +1,4 @@
-import { DataClassification, DataKind, DataKindExtension } from '@/systems/define'
+import { DataClassification, DataKind, DataKindExtension } from '@/systems/defines'
 import { preferences } from '@/systems/preferences'
 import { DataStructColumnRaw } from '@/systems/types'
 

@@ -1,4 +1,4 @@
-import { ProjectFolder } from '@/systems/define'
+import { ProjectFolder } from '@/systems/defines'
 import { preferences } from '@/systems/preferences'
 import { ConstantGroupItemRaw, ConstantGroupRaw } from '@/systems/types'
 import { readJsonFile, writeJsonFile } from '@/utilities/helper'

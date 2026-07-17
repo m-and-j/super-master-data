@@ -1,5 +1,5 @@
 import { SubEditorPanel } from '@/components/data-grid/SubEditorPanel'
-import { DataClassification, DataKind, DataKindExtension } from '@/systems/define'
+import { DataClassification, DataKind, DataKindExtension } from '@/systems/defines'
 import { masterDataAccessor } from '@/systems/master-data-accessor'
 import { preferences } from '@/systems/preferences'
 import { DataStructColumnRaw, TableRaw } from '@/systems/types'
@@ -8,6 +8,7 @@ import { MJ, MJComponent, Reference } from '@mj/jsx'
 interface Props {
   column: DataStructColumnRaw
   value: any
+  rowIndex: number
   className?: MJ.ClassProp
   schemaPanelRef?: Reference<SubEditorPanel>
 }
@@ -25,9 +26,9 @@ export class MasterDataCell extends MJComponent<Props> {
     }
   }
 
-  createNode({ column, value, className, schemaPanelRef }: Props) {
+  createNode({ column, value, rowIndex, className, schemaPanelRef }: Props) {
     const { type } = column
-    const baseCss = 'data-grid-cell flex items-center px-2 py-1'
+    const baseCss = ['data-grid-cell flex items-center px-2 py-1', rowIndex % 2 === 0 ? 'bg-zinc-900' : 'bg-zinc-800']
     if (type.classification === DataClassification.Schema) {
       const summary = type.extension === DataKindExtension.Array ? `${(value as unknown[] | undefined)?.length ?? 0}件` : value ? '詳細' : '未設定'
       return (
@@ -56,19 +57,29 @@ export class MasterDataCell extends MJComponent<Props> {
     } else if (type.classification === DataClassification.RelationID) {
       let label
       let color
+      let error = false
       if (this.relationTable) {
-        const idColumnIdx = this.relationTable.columns.findIndex((c) => c.type.classification === DataClassification.ID)
-        const labelColumnIdx = this.relationTable.columns.findIndex((c) => c.type.classification === DataClassification.Label)
-        const item = this.relationTable.data.find((row) => `${row[idColumnIdx] ?? ''}` === value)
+        const idColumnName = this.relationTable.columns.find((c) => c.type.classification === DataClassification.ID)?.name ?? ''
+        const labelColumnName = this.relationTable.columns.find((c) => c.type.classification === DataClassification.Label)?.name ?? ''
+        const item = this.relationTable.data.find((row) => `${row[idColumnName] ?? ''}` === value)
         if (item) {
-          label = item[labelColumnIdx] ?? item[idColumnIdx]
+          label = item[labelColumnName] ?? item[idColumnName]
+        } else if (value) {
+          label = value
+          color = 'text-rose-500'
+          error = true
         } else if (type.extension === DataKindExtension.Optional) {
           label = '(未指定)'
           color = 'text-zinc-400'
+        } else {
+          label = '(未設定)'
+          color = 'text-rose-500'
+          error = true
         }
       }
       return (
         <div class={['justify-between', baseCss, className]} onclick={() => {}}>
+          {error && <span class="icon-[ic--baseline-error] text-lg text-rose-600"></span>}
           <span class={['truncate', color]}>{label}</span>
           <span class="icon-[ic--baseline-keyboard-arrow-down] text-lg"></span>
         </div>
@@ -83,14 +94,6 @@ export class MasterDataCell extends MJComponent<Props> {
               <span class={[checked ? 'icon-[ic--baseline-check-box]' : 'icon-[ic--baseline-check-box-outline-blank]', 'text-xl']}></span>
             </div>
           )
-        case DataKind.Int:
-        case DataKind.Float:
-        case DataKind.Double:
-          return (
-            <div class={[baseCss, className]} onclick={() => {}}>
-              <span class="truncate">{value ?? 0}</span>
-            </div>
-          )
         case DataKind.Date:
           return (
             <div class={[baseCss, className]}>
@@ -100,21 +103,20 @@ export class MasterDataCell extends MJComponent<Props> {
         case DataKind.Time:
           return (
             <div class={[baseCss, className]}>
-              <input type="time" value={value} class="h-full w-full bg-transparent outline-hidden" onchange={(e) => (value = (e.target as HTMLInputElement).value)} />
+              <span class="truncate">{value}</span>
             </div>
           )
         case DataKind.Datetime: {
           return (
-            <div class={['border border-transparent bg-zinc-800 px-2 py-1 has-[input:focus]:border-blue-500', className]}>
+            <div class={[baseCss, className]}>
               <span class="truncate">{value}</span>
             </div>
           )
         }
-        case DataKind.String:
         default: {
           return (
             <div class={[baseCss, className]} onclick={() => {}}>
-              <span class="truncate">{value}</span>
+              <span class="truncate">{`${value}`}</span>
             </div>
           )
         }

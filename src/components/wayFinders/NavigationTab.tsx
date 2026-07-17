@@ -1,5 +1,5 @@
 import { ScrollArea } from '@/components/viewers/ScrollArea'
-import { MouseButtonCode } from '@/systems/define'
+import { MouseButtonCode } from '@/systems/defines'
 import { preferences } from '@/systems/preferences'
 import { MJ, MJCustomElement } from '@mj/jsx'
 import { MJRouter } from '@mj/router'

@@ -1,4 +1,4 @@
-import { DataClassification, DataKindExtension } from '@/systems/define'
+import { DataClassification, DataKindExtension } from '@/systems/defines'
 import { OutputBuilderBase } from '@/systems/output-distributor/output-builder-base'
 import { preferences } from '@/systems/preferences'
 import { OutputProjectRaw, OutputProjectStandardRaw } from '@/systems/types'

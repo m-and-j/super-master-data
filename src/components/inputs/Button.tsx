@@ -1,4 +1,4 @@
-import { InputVariantType, SizeType } from '@/systems/define'
+import { InputVariantType, SizeType } from '@/systems/defines'
 import { MJ, MJComponent } from '@mj/jsx'
 
 interface Props {

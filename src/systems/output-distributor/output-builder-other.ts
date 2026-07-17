@@ -1,4 +1,4 @@
-import { OutputKind } from '@/systems/define'
+import { OutputKind } from '@/systems/defines'
 import { masterConstantsAccessor } from '@/systems/master-constants-accessor'
 import { masterDataAccessor } from '@/systems/master-data-accessor'
 import { OutputBuilderBase } from '@/systems/output-distributor/output-builder-base'

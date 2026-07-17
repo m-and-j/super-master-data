@@ -1,4 +1,4 @@
-import { OutputKind } from '@/systems/define'
+import { OutputKind } from '@/systems/defines'
 import { masterDataAccessor } from '@/systems/master-data-accessor'
 import { OutputProjectOtherRaw, OutputProjectRaw, OutputProjectStandardRaw } from '@/systems/types'
 import { deepCopy } from '@/utilities/helper'

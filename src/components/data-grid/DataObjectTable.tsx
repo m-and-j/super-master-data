@@ -1,6 +1,6 @@
 import { CellHeader } from '@/components/data-grid/CellHeader'
 import { DataObjectRow } from '@/components/data-grid/DataObjectRow'
-import { DataKindExtension } from '@/systems/define'
+import { DataKindExtension } from '@/systems/defines'
 import { DataStructColumnRaw } from '@/systems/types'
 import { MJ, MJCustomElement } from '@mj/jsx'
 

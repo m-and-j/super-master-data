@@ -1,4 +1,4 @@
-import { DataClassification, DataKind, DataKindExtension, ProjectFolder } from '@/systems/define'
+import { DataClassification, DataKind, DataKindExtension, ProjectFolder } from '@/systems/defines'
 import { preferences } from '@/systems/preferences'
 import { DataStructColumnRaw, MasterRecord, TableRaw } from '@/systems/types'
 import { readJsonFile, writeJsonFile } from '@/utilities/helper'

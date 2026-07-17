@@ -1,6 +1,6 @@
 import { MasterDataGrid } from '@/components/data-grid/MasterDataGrid'
 import { Button } from '@/components/inputs/Button'
-import { DataClassification } from '@/systems/define'
+import { DataClassification } from '@/systems/defines'
 import { preferences } from '@/systems/preferences'
 import { DataStructColumnRaw, MasterRecord } from '@/systems/types'
 import { MJ, MJCustomElement, ref, Reference } from '@mj/jsx'

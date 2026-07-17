@@ -3,7 +3,7 @@ import { SubEditorPanel } from '@/components/data-grid/SubEditorPanel'
 import { Button } from '@/components/inputs/Button'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { SideMenuMasterData } from '@/components/wayFinders/SideMenuMasterData'
-import { DataClassification } from '@/systems/define'
+import { IDColumns } from '@/systems/defines'
 import { masterDataAccessor } from '@/systems/master-data-accessor'
 import { TableRaw } from '@/systems/types'
 import { formatNumber } from '@/utilities/helper-text'
@@ -18,7 +18,7 @@ export class MasterData extends MJPage {
     const { name } = this.params
     this.table = await masterDataAccessor.read(name)
     const { columns = [] } = this.table ?? {}
-    this.idColumnCount = columns.filter((c) => c.type.classification === DataClassification.ID).length
+    this.idColumnCount = columns.filter((c) => IDColumns.includes(c.type.classification)).length
   }
 
   createNode() {

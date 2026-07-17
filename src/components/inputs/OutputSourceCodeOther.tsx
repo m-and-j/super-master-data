@@ -1,7 +1,7 @@
 import { Button } from '@/components/inputs/Button'
 import { InputText } from '@/components/inputs/InputText'
 import { SelectBox } from '@/components/inputs/SelectBox'
-import { OutputKind, OutputKindOptions, OutputKindType } from '@/systems/define'
+import { OutputKind, OutputKindOptions, OutputKindType } from '@/systems/defines'
 import { OutputProjectOtherRaw } from '@/systems/types'
 import { MJ, MJCustomElement } from '@mj/jsx'
 

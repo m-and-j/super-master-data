@@ -1,6 +1,7 @@
 export const DataClassification = {
   Scalar: 'scalar',
   ID: 'id',
+  EnumerationID: 'enumerationId',
   Label: 'label',
   RelationID: 'relationId',
   Schema: 'schema',
@@ -12,12 +13,18 @@ export const DataClassificationValues = Object.entries(DataClassification)
 export const DataClassificationLabels = {
   [DataClassification.Scalar]: '値型',
   [DataClassification.ID]: 'ID',
+  [DataClassification.EnumerationID]: '列挙型ID',
   [DataClassification.Label]: 'ラベル',
   [DataClassification.RelationID]: 'ID参照',
   [DataClassification.Schema]: 'スキーマ',
   [DataClassification.Enumeration]: '列挙型',
 } as const
 export const DataClassificationLabelValues = Object.entries(DataClassificationLabels)
+
+/**
+ * IDカラムリスト
+ */
+export const IDColumns: readonly DataClassificationType[] = [DataClassification.ID, DataClassification.EnumerationID] as const
 
 /**
  * データ型

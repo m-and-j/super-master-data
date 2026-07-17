@@ -1,4 +1,4 @@
-import { ConstantKindType, DataClassificationType, DataKindExtensionType, OutputKindType } from '@/systems/define'
+import { ConstantKindType, DataClassificationType, DataKindExtensionType, OutputKindType } from '@/systems/defines'
 
 export interface ProjectInfoRaw {
   name: string

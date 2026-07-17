@@ -3,6 +3,7 @@ import { DataStructColumnLabel, DataStructColumnRaw } from '@/systems/types'
 import { MJComponent } from '@mj/jsx'
 
 interface Props {
+  rowIndex: number
   column: DataStructColumnRaw
   kind: DataStructColumnLabel
   value: string
@@ -13,9 +14,10 @@ interface Props {
  * データオブジェクトテーブルセル
  */
 export class DataObjectCell extends MJComponent<Props> {
-  createNode({ column, kind, value, selectable }: Props) {
+  createNode({ rowIndex, column, kind, value, selectable }: Props) {
+    const bgColor = rowIndex % 2 === 0 ? 'bg-zinc-900' : 'bg-zinc-800'
     return (
-      <div class="data-grid-cell flex cursor-default items-center justify-between px-2" onclick={(e) => DataObjectCursor.instance?.select(e, column, kind)}>
+      <div class={['data-grid-cell flex cursor-default items-center justify-between px-2', bgColor]} onclick={(e) => DataObjectCursor.instance?.select(e, column, kind)}>
         <span class="truncate" title={value}>
           {value}
         </span>

@@ -1,7 +1,7 @@
 import { Button } from '@/components/inputs/Button'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { SideMenuSchema } from '@/components/wayFinders/SideMenuSchema'
-import { DataClassification, DataClassificationType } from '@/systems/define'
+import { DataClassification, DataClassificationType } from '@/systems/defines'
 import { preferences } from '@/systems/preferences'
 import { DataStructColumnRaw, DataStructColumnTypeRaw, DataStructRaw } from '@/systems/types'
 import { ref, Reference } from '@mj/jsx'
