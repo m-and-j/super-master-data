@@ -1,7 +1,7 @@
+import { masterConstantsAccessor } from '@/systems/accessors/master-constants-accessor'
+import { masterDataAccessor } from '@/systems/accessors/master-data-accessor'
 import { OutputKind } from '@/systems/defines'
-import { masterConstantsAccessor } from '@/systems/master-constants-accessor'
-import { masterDataAccessor } from '@/systems/master-data-accessor'
-import { OutputBuilderBase } from '@/systems/output-distributor/output-builder-base'
+import { OutputBuilderBase } from '@/systems/output-distributors/output-builder-base'
 import { OutputProjectOtherRaw, OutputProjectRaw } from '@/systems/types'
 import { path } from '@tauri-apps/api'
 
@@ -12,7 +12,7 @@ export class OutputBuilderOther extends OutputBuilderBase {
   static async create(outputProject: OutputProjectRaw, outputProjectOther: OutputProjectOtherRaw) {
     const folderPath = this.getFolderPath()
     const outputPath = await path.join(folderPath, outputProjectOther.path)
-    return new OutputBuilderOther(outputPath, outputProject.codeExtension, outputProjectOther, outputProject.masterData.targets, outputProject.masterConstantsData.targets)
+    return new OutputBuilderOther(outputPath, outputProject.codeExtension, outputProjectOther, outputProject.masterData.targets, outputProject.masterConstants.targets)
   }
 
   constructor(

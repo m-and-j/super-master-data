@@ -1,7 +1,7 @@
+import { masterConstantsAccessor } from '@/systems/accessors/master-constants-accessor'
+import { masterDataAccessor } from '@/systems/accessors/master-data-accessor'
+import { masterListAccessor } from '@/systems/accessors/master-list-accessor'
 import { cacheStore } from '@/systems/cache-store'
-import { masterConstantsAccessor } from '@/systems/master-constants-accessor'
-import { masterDataAccessor } from '@/systems/master-data-accessor'
-import { masterListAccessor } from '@/systems/master-list-accessor'
 import { DataStructRaw, EnumerationStructRaw, OutputProjectRaw, ProjectInfoRaw } from '@/systems/types'
 import { readJsonFile, writeJsonFile } from '@/utilities/helper'
 import { exists } from '@tauri-apps/plugin-fs'
@@ -196,10 +196,9 @@ class Preferences {
         description: outputProject.description,
         codeExtension: outputProject.codeExtension,
         masterData: outputProject.masterData,
-        masterListData: outputProject.masterListData,
-        masterConstantsData: outputProject.masterConstantsData,
-        masterDataEntity: outputProject.masterDataEntity,
-        masterListEntity: outputProject.masterListEntity,
+        masterList: outputProject.masterList,
+        masterConstants: outputProject.masterConstants,
+        entity: outputProject.entity,
         schema: outputProject.schema,
         enumeration: outputProject.enumeration,
         constant: outputProject.constant,
@@ -221,10 +220,9 @@ class Preferences {
       output.description = outputProject.description
       output.codeExtension = outputProject.codeExtension
       output.masterData = outputProject.masterData
-      output.masterConstantsData = outputProject.masterConstantsData
-      output.masterListData = outputProject.masterListData
-      output.masterDataEntity = outputProject.masterDataEntity
-      output.masterListEntity = outputProject.masterListEntity
+      output.masterList = outputProject.masterList
+      output.masterConstants = outputProject.masterConstants
+      output.entity = outputProject.entity
       output.schema = outputProject.schema
       output.enumeration = outputProject.enumeration
       output.constant = outputProject.constant
@@ -282,7 +280,7 @@ class Preferences {
   async changeListStructName(oldListStructName: string, newListStructName: string) {
     if (oldListStructName !== newListStructName) {
       for (const output of this.outputs) {
-        const index = output.masterListData.targets.indexOf(oldListStructName)
+        const index = output.masterList.targets.indexOf(oldListStructName)
         if (index >= 0) {
           output.masterData.targets.splice(index, 1, newListStructName)
           output.masterData.targets.sort()
@@ -298,7 +296,7 @@ class Preferences {
    */
   async deleteListStructName(listStructName: string) {
     for (const output of this.outputs) {
-      const index = output.masterListData.targets.indexOf(listStructName)
+      const index = output.masterList.targets.indexOf(listStructName)
       if (index >= 0) {
         output.masterData.targets.splice(index, 1)
       }
@@ -314,10 +312,10 @@ class Preferences {
   async changeConstantGroupName(oldConstantGroupName: string, newConstantGroupName: string) {
     if (oldConstantGroupName !== newConstantGroupName) {
       for (const output of this.outputs) {
-        const index = output.masterConstantsData.targets.indexOf(oldConstantGroupName)
+        const index = output.masterConstants.targets.indexOf(oldConstantGroupName)
         if (index >= 0) {
-          output.masterConstantsData.targets.splice(index, 1, newConstantGroupName)
-          output.masterConstantsData.targets.sort()
+          output.masterConstants.targets.splice(index, 1, newConstantGroupName)
+          output.masterConstants.targets.sort()
         }
       }
       await this.save()
@@ -330,9 +328,9 @@ class Preferences {
    */
   async deleteConstantGroupName(constantGroupName: string) {
     for (const output of this.outputs) {
-      const index = output.masterConstantsData.targets.indexOf(constantGroupName)
+      const index = output.masterConstants.targets.indexOf(constantGroupName)
       if (index >= 0) {
-        output.masterConstantsData.targets.splice(index, 1)
+        output.masterConstants.targets.splice(index, 1)
       }
     }
     await this.save()
@@ -362,10 +360,9 @@ class Preferences {
           description: output.description,
           codeExtension: output.codeExtension,
           masterData: output.masterData,
-          masterListData: output.masterListData,
-          masterConstantsData: output.masterConstantsData,
-          masterDataEntity: output.masterDataEntity,
-          masterListEntity: output.masterListEntity,
+          masterList: output.masterList,
+          masterConstants: output.masterConstants,
+          entity: output.entity,
           schema: output.schema,
           enumeration: output.enumeration,
           constant: output.constant,

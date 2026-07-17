@@ -1,18 +1,17 @@
-import { masterDataAccessor } from '@/systems/master-data-accessor'
-import { OutputBuilderBase } from '@/systems/output-distributor/output-builder-base'
+import { masterListAccessor } from '@/systems/accessors/master-list-accessor'
+import { OutputBuilderBase } from '@/systems/output-distributors/output-builder-base'
 import { OutputProjectRaw } from '@/systems/types'
 import { writeJsonFile } from '@/utilities/helper'
 import { path } from '@tauri-apps/api'
 
 /**
- * マスターデータ出力クラス
+ * マスターリスト出力クラス
  */
-export class OutputBuilderMasterData extends OutputBuilderBase {
+export class OutputBuilderMasterList extends OutputBuilderBase {
   static async create(outputProject: OutputProjectRaw) {
     const folderPath = this.getFolderPath()
-    const outputPath = await path.join(folderPath, outputProject.masterData.path)
-    const { targets } = outputProject.masterData
-    return new OutputBuilderMasterData(outputPath, 'json', targets)
+    const outputPath = await path.join(folderPath, outputProject.masterList.path)
+    return new OutputBuilderMasterList(outputPath, 'json', outputProject.masterData.targets)
   }
 
   constructor(
@@ -28,10 +27,10 @@ export class OutputBuilderMasterData extends OutputBuilderBase {
    */
   async write() {
     await this.removePreviousFiles()
-    const names = masterDataAccessor.getNames()
+    const names = masterListAccessor.getNames()
     for (const targetName of this.targets) {
       if (names.includes(targetName)) {
-        const table = await masterDataAccessor.read(targetName)
+        const table = await masterListAccessor.read(targetName)
         if (table) {
           // JSONデータ書き出し
           const dataFilePath = await path.join(this.outputPath, `${targetName}.json`)

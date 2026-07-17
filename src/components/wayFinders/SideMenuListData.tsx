@@ -1,4 +1,4 @@
-import { masterListAccessor } from '@/systems/master-list-accessor'
+import { masterListAccessor } from '@/systems/accessors/master-list-accessor'
 import { SideMenuScroller } from '@/utilities/side-menu-scroller'
 import { MJ, MJComponent } from '@mj/jsx'
 import { MJLink } from '@mj/router'

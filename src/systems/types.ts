@@ -70,10 +70,9 @@ export interface OutputProjectRaw {
   description: string
   codeExtension: string
   masterData: OutputProjectMasterDataRaw
-  masterListData: OutputProjectMasterDataRaw
-  masterConstantsData: OutputProjectMasterDataRaw
-  masterDataEntity: OutputProjectStandardRaw
-  masterListEntity: OutputProjectStandardRaw
+  masterList: OutputProjectMasterDataRaw
+  masterConstants: OutputProjectMasterDataRaw
+  entity: OutputProjectStandardRaw
   schema: OutputProjectStandardRaw
   enumeration: OutputProjectStandardRaw
   constant: OutputProjectStandardRaw

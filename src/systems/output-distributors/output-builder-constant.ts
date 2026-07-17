@@ -1,6 +1,6 @@
+import { masterConstantsAccessor } from '@/systems/accessors/master-constants-accessor'
 import { ConstantKind, ConstantKindType } from '@/systems/defines'
-import { masterConstantsAccessor } from '@/systems/master-constants-accessor'
-import { OutputBuilderBase } from '@/systems/output-distributor/output-builder-base'
+import { OutputBuilderBase } from '@/systems/output-distributors/output-builder-base'
 import { OutputProjectRaw, OutputProjectStandardRaw } from '@/systems/types'
 import { path } from '@tauri-apps/api'
 

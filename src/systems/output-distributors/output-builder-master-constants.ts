@@ -1,5 +1,5 @@
-import { masterConstantsAccessor } from '@/systems/master-constants-accessor'
-import { OutputBuilderBase } from '@/systems/output-distributor/output-builder-base'
+import { masterConstantsAccessor } from '@/systems/accessors/master-constants-accessor'
+import { OutputBuilderBase } from '@/systems/output-distributors/output-builder-base'
 import { OutputProjectRaw } from '@/systems/types'
 import { writeJsonFile } from '@/utilities/helper'
 import { path } from '@tauri-apps/api'
@@ -7,12 +7,11 @@ import { path } from '@tauri-apps/api'
 /**
  * 定数データ出力クラス
  */
-export class OutputBuilderConstantsData extends OutputBuilderBase {
+export class OutputBuilderMasterConstants extends OutputBuilderBase {
   static async create(outputProject: OutputProjectRaw) {
     const folderPath = this.getFolderPath()
-    const outputPath = await path.join(folderPath, outputProject.masterConstantsData.path)
-    const { targets } = outputProject.masterConstantsData
-    return new OutputBuilderConstantsData(outputPath, 'json', targets)
+    const outputPath = await path.join(folderPath, outputProject.masterConstants.path)
+    return new OutputBuilderMasterConstants(outputPath, 'json', outputProject.masterConstants.targets)
   }
 
   constructor(

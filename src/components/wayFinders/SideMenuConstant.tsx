@@ -1,4 +1,4 @@
-import { masterConstantsAccessor } from '@/systems/master-constants-accessor'
+import { masterConstantsAccessor } from '@/systems/accessors/master-constants-accessor'
 import { SideMenuScroller } from '@/utilities/side-menu-scroller'
 import { MJ, MJComponent } from '@mj/jsx'
 import { MJLink } from '@mj/router'

@@ -1,15 +1,16 @@
 import { Button } from '@/components/inputs/Button'
-import { CheckBox } from '@/components/inputs/CheckBox'
 import { InputText } from '@/components/inputs/InputText'
+import { OutputDataList } from '@/components/inputs/OutputDataList'
 import { OutputSourceCodeOther } from '@/components/inputs/OutputSourceCodeOther'
 import { OutputSourceCodeStandard } from '@/components/inputs/OutputSourceCodeStandard'
 import { ConfirmModal } from '@/components/modals/ConfirmModal'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { TabItem } from '@/components/wayFinders/TabItem'
 import { TabPanel } from '@/components/wayFinders/TabPanel'
-import { masterConstantsAccessor } from '@/systems/master-constants-accessor'
-import { masterDataAccessor } from '@/systems/master-data-accessor'
-import { OutputProject } from '@/systems/output-distributor/output-project'
+import { masterConstantsAccessor } from '@/systems/accessors/master-constants-accessor'
+import { masterDataAccessor } from '@/systems/accessors/master-data-accessor'
+import { masterListAccessor } from '@/systems/accessors/master-list-accessor'
+import { OutputProject } from '@/systems/output-distributors/output-project'
 import { preferences } from '@/systems/preferences'
 import { OutputProjectRaw } from '@/systems/types'
 import { MJ, MJCustomElement, ref, Reference } from '@mj/jsx'
@@ -102,74 +103,9 @@ export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
           class={['flex h-[calc(100vh-260px)] flex-col gap-3 rounded-b-md border-x border-b border-zinc-500 p-3', this.mode !== Mode.MasterData && 'hidden']}
           ref={this.masterFieldset}
         >
-          <div class="border-b border-l-6 border-zinc-500 py-1 pl-2 text-lg font-bold">マスターデータJSON出力設定</div>
-          <div class="flex items-center gap-2">
-            <div class="flex-[0_0_180px] text-right text-sm">出力先パス</div>
-            <div class="flex-auto">
-              <InputText
-                placeholder="例: ../Client/Assets/MasterData"
-                value={this.outputProject.getMasterDataPath()}
-                onchange={(e) => this.outputProject.changeMasterDataPath(e)}
-              />
-            </div>
-          </div>
-          <div class="flex min-h-0 flex-3 gap-2">
-            <div class="flex-[0_0_180px] pt-2 text-right text-sm">出力対象</div>
-            <div class="scrollbar flex-auto overflow-y-scroll rounded-md border border-zinc-500">
-              {masterDataAccessor.getNames().map((name) => (
-                <CheckBox
-                  value={name}
-                  checked={this.outputProject.hasMasterDataTarget(name)}
-                  labelClassName="px-2 py-0.5 w-full hover:bg-indigo-700"
-                  onchange={(e) => this.outputProject.changeMasterDataTarget(e)}
-                >
-                  {name}
-                </CheckBox>
-              ))}
-            </div>
-            <div class="flex flex-col gap-1">
-              <Button type="button" variant="success" size="sm" onclick={() => this.selectAllMasterData()}>
-                すべて選択
-              </Button>
-              <Button type="button" variant="secondary" size="sm" onclick={() => this.deselectAllMasterData()}>
-                すべて解除
-              </Button>
-            </div>
-          </div>
-          <div class="border-b border-l-6 border-zinc-500 py-1 pl-2 text-lg font-bold">定数データJSON出力設定</div>
-          <div class="flex items-center gap-2">
-            <div class="flex-[0_0_180px] text-right text-sm">出力先パス</div>
-            <div class="flex-auto">
-              <InputText
-                placeholder="例: ../Client/Assets/MasterData"
-                value={this.outputProject.getMasterConstantsDataPath()}
-                onchange={(e) => this.outputProject.changeMasterConstantsDataPath(e)}
-              />
-            </div>
-          </div>
-          <div class="flex min-h-0 flex-1 gap-2">
-            <div class="flex-[0_0_180px] pt-2 text-right text-sm">出力対象</div>
-            <div class="scrollbar flex-auto overflow-y-scroll rounded-md border border-zinc-500">
-              {masterConstantsAccessor.getNames().map((name) => (
-                <CheckBox
-                  value={name}
-                  checked={this.outputProject.hasMasterConstantsDataTarget(name)}
-                  labelClassName="px-2 py-0.5 w-full hover:bg-indigo-700"
-                  onchange={(e) => this.outputProject.changeMasterConstantsDataTarget(e)}
-                >
-                  {name}
-                </CheckBox>
-              ))}
-            </div>
-            <div class="flex flex-col gap-1">
-              <Button type="button" variant="success" size="sm" onclick={() => this.selectAllMasterData()}>
-                すべて選択
-              </Button>
-              <Button type="button" variant="secondary" size="sm" onclick={() => this.deselectAllMasterData()}>
-                すべて解除
-              </Button>
-            </div>
-          </div>
+          <OutputDataList outputData={this.outputProject.getMasterData()} dataNames={masterDataAccessor.getNames()} title="マスターデータJSON出力設定" outputTargetFlex={2} />
+          <OutputDataList outputData={this.outputProject.getMasterList()} dataNames={masterListAccessor.getNames()} title="マスターリストJSON出力設定" outputTargetFlex={2} />
+          <OutputDataList outputData={this.outputProject.getMasterConstants()} dataNames={masterConstantsAccessor.getNames()} title="定数データJSON出力設定" outputTargetFlex={1} />
         </fieldset>
         <OutputSourceCodeStandard outputProjectStandard={this.outputProject.getEntity()} mode={Mode.Entity} currentMode={this.mode} ref={this.entityOutputSourceCode} />
         <OutputSourceCodeStandard outputProjectStandard={this.outputProject.getSchema()} mode={Mode.Schema} currentMode={this.mode} ref={this.schemaOutputSourceCode} />
@@ -233,16 +169,6 @@ export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
   private removeOutputSourceCodeOther(index: number) {
     this.outputProject.removeOther(index)
     this.mode = Mode.MasterData
-    this.render()
-  }
-
-  private selectAllMasterData() {
-    this.outputProject.allCheckMasterDataTargets()
-    this.render()
-  }
-
-  private deselectAllMasterData() {
-    this.outputProject.allClearMasterDataTargets()
     this.render()
   }
 

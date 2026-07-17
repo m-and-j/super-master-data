@@ -1,6 +1,6 @@
 import { SubEditorPanel } from '@/components/data-grid/SubEditorPanel'
+import { masterDataAccessor } from '@/systems/accessors/master-data-accessor'
 import { DataClassification, DataKind, DataKindExtension } from '@/systems/defines'
-import { masterDataAccessor } from '@/systems/master-data-accessor'
 import { preferences } from '@/systems/preferences'
 import { DataStructColumnRaw, TableRaw } from '@/systems/types'
 import { MJ, MJComponent, Reference } from '@mj/jsx'

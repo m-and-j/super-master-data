@@ -56,3 +56,7 @@ export class AdditionalMap<K> extends Map<K, number> {
     return [...this.entries()]
   }
 }
+
+export function arrayUnique<T>(...array: T[][]): T[] {
+  return Array.from(new Set(array.flat()))
+}

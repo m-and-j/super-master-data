@@ -1,6 +1,7 @@
 import { DataObjectCellSelect } from '@/components/data-grid/DataObjectCellSelect'
 import { DataObjectCellText } from '@/components/data-grid/DataObjectCellText'
 import { DataObjectTable } from '@/components/data-grid/DataObjectTable'
+import { masterDataAccessor } from '@/systems/accessors/master-data-accessor'
 import {
   DataClassification,
   DataClassificationLabelValues,
@@ -15,7 +16,6 @@ import {
   DataKindForLabelValues,
   DataKindValues,
 } from '@/systems/defines'
-import { masterDataAccessor } from '@/systems/master-data-accessor'
 import { preferences } from '@/systems/preferences'
 import { DataStructColumnLabel, DataStructColumnRaw } from '@/systems/types'
 import { MJ, MJCustomElement, ref, Reference } from '@mj/jsx'
