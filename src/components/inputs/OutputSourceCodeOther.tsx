@@ -104,6 +104,10 @@ export class OutputSourceCodeOther extends MJCustomElement<Props>()(HTMLFieldSet
         outputProjectOther.fileNameTemplate = '{{filename}}'
         break
       }
+      case OutputKind.MultipleLists: {
+        outputProjectOther.fileNameTemplate = '{{filename}}'
+        break
+      }
     }
     this.render()
   }

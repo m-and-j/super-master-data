@@ -57,6 +57,12 @@ export class AdditionalMap<K> extends Map<K, number> {
   }
 }
 
-export function arrayUnique<T>(...array: T[][]): T[] {
-  return Array.from(new Set(array.flat()))
+export function arrayUnique<T>(...arrays: T[][]) {
+  return Array.from(new Set(arrays.flat()))
+}
+
+export function arrayIntersect<T>(first: T[], ...arrays: T[][]) {
+  const firstUnique = arrayUnique(first)
+  const uniques = arrays.map((array) => new Set(array))
+  return firstUnique.filter((value) => uniques.every((set) => set.has(value)))
 }

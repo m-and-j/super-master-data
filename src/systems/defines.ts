@@ -1,7 +1,7 @@
 export const DataClassification = {
   Scalar: 'scalar',
   ID: 'id',
-  EnumerationID: 'enumerationId',
+  EnumerationID: 'enumId',
   Label: 'label',
   RelationID: 'relationId',
   Schema: 'schema',
@@ -124,15 +124,18 @@ export const ColumnParams = {
 export const OutputKind = {
   Single: 'single',
   MultipleTables: 'multipleTables',
+  MultipleLists: 'multipleLists',
 } as const
 export type OutputKindType = (typeof OutputKind)[keyof typeof OutputKind]
 export const OutputKindLabels = {
   [OutputKind.Single]: '単一ファイル出力',
   [OutputKind.MultipleTables]: '複数ファイル出力(テーブル単位)',
+  [OutputKind.MultipleLists]: '複数ファイル出力(リスト単位)',
 } as const
 export const OutputKindOptions = [
   { label: OutputKindLabels[OutputKind.Single], value: OutputKind.Single },
   { label: OutputKindLabels[OutputKind.MultipleTables], value: OutputKind.MultipleTables },
+  { label: OutputKindLabels[OutputKind.MultipleLists], value: OutputKind.MultipleLists },
 ]
 
 /**

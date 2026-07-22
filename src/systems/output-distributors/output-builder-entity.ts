@@ -3,7 +3,7 @@ import { masterListAccessor } from '@/systems/accessors/master-list-accessor'
 import { DataClassification, DataKindExtension } from '@/systems/defines'
 import { OutputBuilderBase } from '@/systems/output-distributors/output-builder-base'
 import { OutputProjectRaw, OutputProjectStandardRaw, TableRaw } from '@/systems/types'
-import { arrayUnique } from '@/utilities/helper-collection'
+import { arrayIntersect } from '@/utilities/helper-collection'
 import { path } from '@tauri-apps/api'
 
 /**
@@ -41,12 +41,12 @@ export class OutputBuilderEntity extends OutputBuilderBase {
    */
   async write() {
     await this.removePreviousFiles()
-    const masterDataTargets = arrayUnique(masterDataAccessor.getNames(), this.masterDataTargets)
+    const masterDataTargets = arrayIntersect(masterDataAccessor.getNames(), this.masterDataTargets)
     for (const targetName of masterDataTargets) {
       const table = await masterDataAccessor.read(targetName)
       await this.writeTable(table)
     }
-    const masterListTargets = arrayUnique(masterListAccessor.getNames(), this.masterListTargets)
+    const masterListTargets = arrayIntersect(masterListAccessor.getNames(), this.masterListTargets)
     for (const targetName of masterListTargets) {
       const table = await masterListAccessor.read(targetName)
       await this.writeTable(table)
@@ -70,7 +70,8 @@ export class OutputBuilderEntity extends OutputBuilderBase {
           defaultValue: 'default!',
         })
         switch (classification) {
-          case DataClassification.Enumeration: {
+          case DataClassification.Enumeration:
+          case DataClassification.EnumerationID: {
             if (!enumerationMap.has(typeName)) {
               enumerationMap.set(typeName, {
                 name: typeName,
