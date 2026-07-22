@@ -101,6 +101,24 @@ export class DataObjectCursor extends MJCustomElement<Props>()(HTMLDivElement) {
     }
   }
 
+  getFocusColumn() {
+    return this.column
+  }
+
+  async rerender() {
+    const { dataObjectTable } = this.props
+    const columnElement = dataObjectTable.value?.getColumnElement(this.column, this.kind)
+    if (columnElement) {
+      this.classList.remove('hidden')
+      const { top, height, left, width } = columnElement.getBoundingClientRect()
+      this.style.top = `${top}px`
+      this.style.left = `${left}px`
+      this.style.width = `${width}px`
+      this.style.height = `${height}px`
+      await this.render()
+    }
+  }
+
   private openEditor() {
     if (this.column && this.kind) {
       this.closeEditor()

@@ -17,7 +17,8 @@ export class EnumerationTable extends MJCustomElement<Props>()(HTMLDivElement) {
 
   createNode({ items }: Props) {
     return (
-      <div class="grid grid-cols-[auto_auto_auto_60px]">
+      <div class="grid grid-cols-[45px_auto_auto_auto_60px]">
+        <CellHeader className="justify-center">#</CellHeader>
         <CellHeader>項目名</CellHeader>
         <CellHeader>値</CellHeader>
         <CellHeader>説明</CellHeader>

@@ -1,7 +1,8 @@
 import { CellHeader } from '@/components/data-grid/CellHeader'
+import { DataObjectCursor } from '@/components/data-grid/DataObjectCursor'
 import { DataObjectRow } from '@/components/data-grid/DataObjectRow'
 import { DataKindExtension } from '@/systems/defines'
-import { DataStructColumnRaw } from '@/systems/types'
+import { DataStructColumnLabel, DataStructColumnRaw } from '@/systems/types'
 import { MJ, MJCustomElement } from '@mj/jsx'
 
 interface Props extends MJ.CEProps<DataObjectTable> {
@@ -44,23 +45,41 @@ export class DataObjectTable extends MJCustomElement<Props>()(HTMLDivElement) {
     await this.render()
   }
 
-  async moveUp(index: number) {
-    if (index > 0) {
+  async moveUp() {
+    const column = DataObjectCursor.instance?.getFocusColumn()
+    if (column) {
       const { columns } = this.props
-      const tmp = columns[index]
-      columns[index] = columns[index - 1]
-      columns[index - 1] = tmp
+      const index = columns.indexOf(column)
+      if (index > 0) {
+        columns.splice(index, 1)
+        columns.splice(index - 1, 0, column)
+      }
+      await this.render()
+      DataObjectCursor.instance?.rerender()
     }
-    await this.render()
   }
 
-  async moveDown(index: number) {
-    const { columns } = this.props
-    if (index < columns.length - 1) {
-      const tmp = columns[index]
-      columns[index] = columns[index + 1]
-      columns[index + 1] = tmp
+  async moveDown() {
+    const column = DataObjectCursor.instance?.getFocusColumn()
+    if (column) {
+      const { columns } = this.props
+      const index = columns.indexOf(column)
+      if (index >= 0) {
+        columns.splice(index, 1)
+        columns.splice(index + 1, 0, column)
+      }
+      await this.render()
+      DataObjectCursor.instance?.rerender()
     }
-    await this.render()
+  }
+
+  getColumnElement(column?: DataStructColumnRaw, kind?: DataStructColumnLabel) {
+    if (column && kind) {
+      const { columns } = this.props
+      const rowIndex = columns.indexOf(column)
+      return this.querySelector(`[data-row-index="${rowIndex}"][data-kind="${kind}"]`)
+    } else {
+      return null
+    }
   }
 }

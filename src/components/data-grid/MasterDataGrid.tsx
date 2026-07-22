@@ -27,7 +27,7 @@ export class MasterDataGrid extends MJCustomElement<Props>()(HTMLDivElement) {
   }
 
   createNode({ columns, schemaPanelRef }: Props) {
-    const gridTemplateColumns = ['45px', ...new Array(columns.length).fill('auto')].join(' ')
+    const gridTemplateColumns = ['45px', ...new Array(columns.length).fill('auto'), '45px'].join(' ')
     return (
       <div class="grid" style={{ gridTemplateColumns }}>
         {/** ヘッダー */}
@@ -40,19 +40,21 @@ export class MasterDataGrid extends MJCustomElement<Props>()(HTMLDivElement) {
             {column.description && <span class="icon-[ic--baseline-comment] text-lg text-emerald-400" title={column.description}></span>}
           </CellHeader>
         ))}
+        <CellHeader className="justify-center">操作</CellHeader>
 
         {/** 行 */}
         {this.rows.length > 0 ? (
           this.rows.map((row, index) => (
             <>
-              <div class="data-grid-cell flex flex-[0_0_60px] items-center justify-center">
+              <div class="flex items-center justify-center bg-zinc-600">{index + 1}</div>
+              {columns.map((column) => (
+                <MasterDataCell column={column} value={row[column.name]} rowIndex={index} schemaPanelRef={schemaPanelRef} />
+              ))}
+              <div class="data-grid-cell flex flex-[0_0_60px] items-center justify-center" data-row-index={index}>
                 <Button variant="danger" size="none" onclick={() => this.deleteRow(index)} className="flex h-6 w-7 items-center justify-center">
                   <span class="icon-[ic--baseline-delete-forever] text-xl"></span>
                 </Button>
               </div>
-              {columns.map((column) => (
-                <MasterDataCell column={column} value={row[column.name]} rowIndex={index} schemaPanelRef={schemaPanelRef} />
-              ))}
             </>
           ))
         ) : (

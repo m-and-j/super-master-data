@@ -15,13 +15,13 @@ interface Props {
  */
 export class EnumerationRow extends MJComponent<Props> {
   createNode({ item, index, deleteRow }: Props) {
-    const bgColor = index % 2 === 0 ? 'bg-zinc-900' : 'bg-zinc-800'
     return (
       <>
-        <CellText className={bgColor} name={ColumnParams.Names} value={item.label} />
-        <CellText className={bgColor} name={ColumnParams.Values} value={item.value} type="number" />
-        <CellText className={bgColor} name={ColumnParams.Descriptions} value={item.description} />
-        <div class={['data-grid-cell', bgColor]}>
+        <div class="flex items-center justify-center bg-zinc-600">{index + 1}</div>
+        <CellText name={ColumnParams.Names} value={item.label} rowIndex={index} />
+        <CellText name={ColumnParams.Values} value={item.value} type="number" rowIndex={index} />
+        <CellText name={ColumnParams.Descriptions} value={item.description} rowIndex={index} />
+        <div class="data-grid-cell" data-row-index={index}>
           <div class="m-1 flex justify-center">
             <Button variant="danger" size="none" className="flex-[0_0_40px]" onclick={() => deleteRow(index)}>
               <span class="icon-[ic--baseline-delete-forever] text-2xl"></span>

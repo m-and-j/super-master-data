@@ -28,18 +28,18 @@ export class MasterDataCell extends MJComponent<Props> {
 
   createNode({ column, value, rowIndex, className, schemaPanelRef }: Props) {
     const { type } = column
-    const baseCss = ['data-grid-cell flex items-center px-2 py-1', rowIndex % 2 === 0 ? 'bg-zinc-900' : 'bg-zinc-800']
+    const baseCss = 'data-grid-cell flex items-center px-2 py-1'
     if (type.classification === DataClassification.Schema) {
       const summary = type.extension === DataKindExtension.Array ? `${(value as unknown[] | undefined)?.length ?? 0}件` : value ? '詳細' : '未設定'
       return (
-        <div class={['cursor-pointer hover:bg-zinc-700', baseCss, className]} onclick={() => schemaPanelRef?.value?.open(column, value)}>
+        <div class={['cursor-pointer hover:bg-zinc-700', baseCss, className]} data-row-index={rowIndex} onclick={() => schemaPanelRef?.value?.open(column, value)}>
           <span class="truncate text-sm text-blue-400">{summary}</span>
         </div>
       )
     } else if (type.extension === DataKindExtension.Array) {
       const summary = `${(value as unknown[] | undefined)?.length ?? 0}件`
       return (
-        <div class={['cursor-pointer hover:bg-zinc-700', baseCss, className]} onclick={() => schemaPanelRef?.value?.open(column, value)}>
+        <div class={['cursor-pointer hover:bg-zinc-700', baseCss, className]} data-row-index={rowIndex} onclick={() => schemaPanelRef?.value?.open(column, value)}>
           <span class="truncate text-sm text-blue-400">{summary}</span>
         </div>
       )
@@ -47,7 +47,7 @@ export class MasterDataCell extends MJComponent<Props> {
       const enumeration = preferences.getProjectInfo().enumerations.find((e) => e.name === column.type.typeName)
       const item = enumeration?.items.find((item) => value === item.value)
       return (
-        <div class={['justify-between', baseCss, className]} onclick={() => {}}>
+        <div class={['justify-between', baseCss, className]} data-row-index={rowIndex} onclick={() => {}}>
           <span class="truncate" title={item?.label}>
             {item?.description}
           </span>
@@ -78,7 +78,7 @@ export class MasterDataCell extends MJComponent<Props> {
         }
       }
       return (
-        <div class={['justify-between', baseCss, className]} onclick={() => {}}>
+        <div class={['justify-between', baseCss, className]} data-row-index={rowIndex} onclick={() => {}}>
           {error && <span class="icon-[ic--baseline-error] text-lg text-rose-600"></span>}
           <span class={['truncate', color]}>{label}</span>
           <span class="icon-[ic--baseline-keyboard-arrow-down] text-lg"></span>
@@ -90,32 +90,32 @@ export class MasterDataCell extends MJComponent<Props> {
         case DataKind.Bool:
           const checked = Boolean(value)
           return (
-            <div class={['justify-center', baseCss, className]} onclick={() => {}}>
+            <div class={['justify-center', baseCss, className]} data-row-index={rowIndex} onclick={() => {}}>
               <span class={[checked ? 'icon-[ic--baseline-check-box]' : 'icon-[ic--baseline-check-box-outline-blank]', 'text-xl']}></span>
             </div>
           )
         case DataKind.Date:
           return (
-            <div class={[baseCss, className]}>
+            <div class={[baseCss, className]} data-row-index={rowIndex}>
               <span class="truncate">{value}</span>
             </div>
           )
         case DataKind.Time:
           return (
-            <div class={[baseCss, className]}>
+            <div class={[baseCss, className]} data-row-index={rowIndex}>
               <span class="truncate">{value}</span>
             </div>
           )
         case DataKind.Datetime: {
           return (
-            <div class={[baseCss, className]}>
+            <div class={[baseCss, className]} data-row-index={rowIndex}>
               <span class="truncate">{value}</span>
             </div>
           )
         }
         default: {
           return (
-            <div class={[baseCss, className]} onclick={() => {}}>
+            <div class={[baseCss, className]} data-row-index={rowIndex} onclick={() => {}}>
               <span class="truncate">{`${value}`}</span>
             </div>
           )

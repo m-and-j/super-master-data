@@ -15,13 +15,13 @@ interface Props {
  */
 export class ConstantRow extends MJComponent<Props> {
   createNode({ item, index, deleteRow }: Props) {
-    const bgColor = index % 2 === 0 ? 'bg-zinc-900' : 'bg-zinc-800'
     const valueText = Array.isArray(item.value) ? JSON.stringify(item.value) : String(item.value ?? '')
     return (
       <>
-        <CellText className={bgColor} name={ColumnParams.Names} value={item.name} />
-        <CellText className={bgColor} name={ColumnParams.Labels} value={item.label} />
-        <div class={['data-grid-cell px-2 py-1', bgColor]}>
+        <div class="flex items-center justify-center bg-zinc-600">{index + 1}</div>
+        <CellText name={ColumnParams.Names} value={item.name} rowIndex={index} />
+        <CellText name={ColumnParams.Labels} value={item.label} rowIndex={index} />
+        <div class="data-grid-cell px-2 py-1" data-row-index={index}>
           <select name={ColumnParams.Types} class="h-full w-full bg-transparent outline-hidden">
             {ConstantKindOptions.map(({ label, value }) => (
               <option value={value} selected={value === item.type}>
@@ -30,8 +30,8 @@ export class ConstantRow extends MJComponent<Props> {
             ))}
           </select>
         </div>
-        <CellText className={bgColor} name={ColumnParams.Values} value={valueText} />
-        <div class={['data-grid-cell', bgColor]}>
+        <CellText name={ColumnParams.Values} value={valueText} rowIndex={index} />
+        <div class="data-grid-cell" data-row-index={index}>
           <div class="m-1 flex justify-center">
             <Button variant="danger" size="none" className="flex-[0_0_40px]" onclick={() => deleteRow(index)}>
               <span class="icon-[ic--baseline-delete-forever] text-2xl"></span>

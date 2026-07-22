@@ -18,7 +18,8 @@ export class ConstantTable extends MJCustomElement<Props>()(HTMLDivElement) {
 
   createNode({ items }: Props) {
     return (
-      <div class="grid grid-cols-[auto_auto_120px_auto_60px]">
+      <div class="grid grid-cols-[45px_auto_auto_120px_auto_60px]">
+        <CellHeader className="justify-center">#</CellHeader>
         <CellHeader>定数名</CellHeader>
         <CellHeader>ラベル</CellHeader>
         <CellHeader>型</CellHeader>

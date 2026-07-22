@@ -64,7 +64,7 @@ export class DataObjectRow extends MJComponent<Props> {
         <DataObjectCell rowIndex={index} column={column} kind="typeName" value={typeNameLabel} selectable />
         <DataObjectCell rowIndex={index} column={column} kind="typeExtension" value={dataKindOption} selectable />
         <DataObjectCell rowIndex={index} column={column} kind="description" value={description} />
-        <div class="data-grid-cell">
+        <div class="data-grid-cell" data-row-index={index}>
           <div class="m-1 flex justify-center">
             <Button variant="danger" size="none" className="flex-[0_0_40px]" onclick={() => deleteRow(index)}>
               <span class="icon-[ic--baseline-delete-forever] text-2xl"></span>

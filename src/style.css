@@ -136,4 +136,18 @@
   .data-grid-cell {
     @apply border-b border-r border-zinc-500;
   }
+  .data-grid-cell[data-row-index$="0"],
+  .data-grid-cell[data-row-index$="2"],
+  .data-grid-cell[data-row-index$="4"],
+  .data-grid-cell[data-row-index$="6"],
+  .data-grid-cell[data-row-index$="8"] {
+    @apply bg-zinc-900;
+  }
+  .data-grid-cell[data-row-index$="1"],
+  .data-grid-cell[data-row-index$="3"],
+  .data-grid-cell[data-row-index$="5"],
+  .data-grid-cell[data-row-index$="7"],
+  .data-grid-cell[data-row-index$="9"] {
+    @apply bg-zinc-800;
+  }
 }

@@ -48,6 +48,16 @@ export class Schemas extends MJPage {
               </div>
             </Button>
             <div class="flex-auto"></div>
+            <Button type="button" variant="success" size="xs" onclick={() => this.dataObjectTable.value?.moveUp()}>
+              <div class="flex items-center justify-center gap-1">
+                <span class="icon-[ic--baseline-arrow-upward] text-lg"></span>
+              </div>
+            </Button>
+            <Button type="button" variant="success" size="xs" onclick={() => this.dataObjectTable.value?.moveDown()}>
+              <div class="flex items-center justify-center gap-1">
+                <span class="icon-[ic--baseline-arrow-downward] text-lg"></span>
+              </div>
+            </Button>
             <Button type="button" variant="primary" size="sm" onclick={() => this.register()}>
               <div class="flex items-center justify-center gap-1">
                 <span class="icon-[ic--baseline-save] text-lg"></span>
