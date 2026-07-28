@@ -11,13 +11,14 @@ export class OutputBuilderConstant extends OutputBuilderBase {
   static async create(outputProject: OutputProjectRaw) {
     const folderPath = this.getFolderPath()
     const outputPath = await path.join(folderPath, outputProject.constant.path)
-    return new OutputBuilderConstant(outputPath, outputProject.codeExtension, outputProject.constant)
+    return new OutputBuilderConstant(outputPath, outputProject.codeExtension, outputProject.constant, outputProject.masterConstants.targets)
   }
 
   constructor(
     outputPath: string,
     codeExtension: string,
     private constant: OutputProjectStandardRaw,
+    private targets: string[],
   ) {
     super(outputPath, codeExtension)
   }
@@ -27,21 +28,24 @@ export class OutputBuilderConstant extends OutputBuilderBase {
    */
   async write() {
     await this.removePreviousFiles()
-    for (const name of masterConstantsAccessor.getNames()) {
-      const constantsGroup = await masterConstantsAccessor.read(name)
-      if (constantsGroup) {
-        const constants = []
-        for (const item of constantsGroup.items) {
-          constants.push({
-            name: item.name,
-            label: item.label,
-            type: this.convertConstantsType(item.type),
-            array: /\[\]$/.test(item.type),
-          })
+    const names = masterConstantsAccessor.getNames()
+    for (const targetName of this.targets) {
+      if (names.includes(targetName)) {
+        const constantsGroup = await masterConstantsAccessor.read(targetName)
+        if (constantsGroup) {
+          const constants = []
+          for (const item of constantsGroup.items) {
+            constants.push({
+              name: item.name,
+              label: item.label,
+              type: this.convertConstantsType(item.type),
+              array: /\[\]$/.test(item.type),
+            })
+          }
+          const { fileNameTemplate } = this.constant
+          const data = { name: constantsGroup.name, description: constantsGroup.description, constants }
+          await this.writeSourceCode(this.constant.sourceCodeTemplate, data, { fileNameTemplate, name: targetName })
         }
-        const { fileNameTemplate } = this.constant
-        const data = { name: constantsGroup.name, description: constantsGroup.description, constants }
-        await this.writeSourceCode(this.constant.sourceCodeTemplate, data, { fileNameTemplate, name })
       }
     }
   }
