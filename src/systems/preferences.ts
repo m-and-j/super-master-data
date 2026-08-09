@@ -282,8 +282,8 @@ class Preferences {
       for (const output of this.outputs) {
         const index = output.masterList.targets.indexOf(oldListStructName)
         if (index >= 0) {
-          output.masterData.targets.splice(index, 1, newListStructName)
-          output.masterData.targets.sort()
+          output.masterList.targets.splice(index, 1, newListStructName)
+          output.masterList.targets.sort()
         }
       }
       await this.save()
