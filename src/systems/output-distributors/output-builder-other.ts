@@ -1,7 +1,7 @@
 import { masterConstantsAccessor } from '@/systems/accessors/master-constants-accessor'
 import { masterDataAccessor } from '@/systems/accessors/master-data-accessor'
 import { masterListAccessor } from '@/systems/accessors/master-list-accessor'
-import { OutputKind } from '@/systems/defines'
+import { DataClassification, OutputKind } from '@/systems/defines'
 import { OutputBuilderBase } from '@/systems/output-distributors/output-builder-base'
 import { OutputProjectOtherRaw, OutputProjectRaw } from '@/systems/types'
 import { path } from '@tauri-apps/api'
@@ -81,8 +81,11 @@ export class OutputBuilderOther extends OutputBuilderBase {
             const table = await masterDataAccessor.read(targetName)
             if (table) {
               const { fileNameTemplate = '' } = this.other
-              const { name, description } = table
-              await this.writeSourceCode(this.other.sourceCodeTemplate, { name, description }, { fileNameTemplate, name })
+              const { name, description, columns } = table
+              const idColumn = columns.find((c) => c.type.classification === DataClassification.ID || c.type.classification === DataClassification.EnumerationID)
+              const idName = idColumn?.name
+              const idType = idColumn?.type.typeName
+              await this.writeSourceCode(this.other.sourceCodeTemplate, { name, description, idName, idType }, { fileNameTemplate, name })
             }
           }
         }
