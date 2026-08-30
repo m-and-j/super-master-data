@@ -72,46 +72,50 @@ export abstract class OutputBuilderBase {
     return fileNameTemplate.replace('{{filename}}', name).replace('{{filenameSingular}}', pluralize.singular(name)).replace('{{filenameKebab}}', camelToKebabCase(name))
   }
 
-  protected convertTypeName(columnType: DataStructColumnTypeRaw) {
-    const { typeName, classification } = columnType
-    switch (this.codeExtension) {
-      case 'ts':
-        switch (typeName) {
-          case DataKind.Int:
-          case DataKind.Float:
-          case DataKind.Double: {
-            return 'number'
+  protected convertTypeName(columnType?: DataStructColumnTypeRaw) {
+    if (columnType) {
+      const { typeName, classification } = columnType
+      switch (this.codeExtension) {
+        case 'ts':
+          switch (typeName) {
+            case DataKind.Int:
+            case DataKind.Float:
+            case DataKind.Double: {
+              return 'number'
+            }
+            case DataKind.String:
+            case DataKind.Datetime:
+            case DataKind.Date:
+            case DataKind.Time: {
+              return 'string'
+            }
+            case DataKind.Bool: {
+              return 'boolean'
+            }
+            default: {
+              return classification === DataClassification.RelationID ? 'string' : typeName
+            }
           }
-          case DataKind.String:
-          case DataKind.Datetime:
-          case DataKind.Date:
-          case DataKind.Time: {
-            return 'string'
+        case 'cs':
+          switch (typeName) {
+            case DataKind.Date:
+            case DataKind.Datetime: {
+              //return 'System.DateTime'
+              return 'string'
+            }
+            case DataKind.Time: {
+              //return 'System.TimeSpan'
+              return 'string'
+            }
+            default: {
+              return classification === DataClassification.RelationID ? 'string' : typeName
+            }
           }
-          case DataKind.Bool: {
-            return 'boolean'
-          }
-          default: {
-            return classification === DataClassification.RelationID ? 'string' : typeName
-          }
-        }
-      case 'cs':
-        switch (typeName) {
-          case DataKind.Date:
-          case DataKind.Datetime: {
-            //return 'System.DateTime'
-            return 'string'
-          }
-          case DataKind.Time: {
-            //return 'System.TimeSpan'
-            return 'string'
-          }
-          default: {
-            return classification === DataClassification.RelationID ? 'string' : typeName
-          }
-        }
-      default:
-        return typeName
+        default:
+          return typeName
+      }
+    } else {
+      return undefined
     }
   }
 }

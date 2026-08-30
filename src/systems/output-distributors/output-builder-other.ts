@@ -84,7 +84,7 @@ export class OutputBuilderOther extends OutputBuilderBase {
               const { name, description, columns } = table
               const idColumn = columns.find((c) => c.type.classification === DataClassification.ID || c.type.classification === DataClassification.EnumerationID)
               const idName = idColumn?.name
-              const idType = idColumn?.type.typeName
+              const idType = this.convertTypeName(idColumn?.type)
               await this.writeSourceCode(this.other.sourceCodeTemplate, { name, description, idName, idType }, { fileNameTemplate, name })
             }
           }
