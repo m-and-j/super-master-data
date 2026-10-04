@@ -1,7 +1,9 @@
 import { DataObjectCellSelect } from '@/components/data-grid/DataObjectCellSelect'
 import { DataObjectCellText } from '@/components/data-grid/DataObjectCellText'
 import { DataObjectTable } from '@/components/data-grid/DataObjectTable'
+import { enumerationAccessor } from '@/systems/accessors/enumeration-accessor'
 import { masterDataAccessor } from '@/systems/accessors/master-data-accessor'
+import { schemaAccessor } from '@/systems/accessors/schema-accessor'
 import {
   DataClassification,
   DataClassificationLabelValues,
@@ -16,7 +18,6 @@ import {
   DataKindForLabelValues,
   DataKindValues,
 } from '@/systems/defines'
-import { preferences } from '@/systems/preferences'
 import { DataStructColumnLabel, DataStructColumnRaw } from '@/systems/types'
 import { MJ, MJCustomElement, ref, Reference } from '@mj/jsx'
 
@@ -64,10 +65,9 @@ export class DataObjectCursor extends MJCustomElement<Props>()(HTMLDivElement) {
       const dataKindForIdItems = DataKindForIdValues.map(([label, value]) => ({ label, value, selected: typeName === value }))
       const dataKindForLabelItems = DataKindForLabelValues.map(([label, value]) => ({ label, value, selected: typeName === value }))
       const dataKindExtensionItems = DataKindExtensionLabelValues.map(([value, label]) => ({ label, value, selected: extension === value }))
-      const tables = masterDataAccessor.getNames().map((name) => ({ label: name, value: name, selected: typeName === name }))
-      const projectInfo = preferences.getProjectInfo()
-      const schemas = projectInfo.schemas.filter(({ name }) => name !== schemaName).map(({ name }) => ({ label: name, value: name, selected: typeName === name }))
-      const enumerations = projectInfo.enumerations.map(({ name, description }) => ({ label: `${name}【${description}】`, value: name, selected: typeName === name }))
+      const tables = masterDataAccessor.map(({ name }) => ({ label: name, value: name, selected: typeName === name }))
+      const schemaItems = schemaAccessor.filter(({ name }) => name !== schemaName).map(({ name }) => ({ label: name, value: name, selected: typeName === name }))
+      const enumerationItems = enumerationAccessor.map(({ name, description }) => ({ label: `${name}【${description}】`, value: name, selected: typeName === name }))
       return (
         <>
           <DataObjectCellText ref={this.inputField} onblur={() => this.closeEditor()} onchange={(e) => this.changeValue(e)} />
@@ -77,8 +77,8 @@ export class DataObjectCursor extends MJCustomElement<Props>()(HTMLDivElement) {
           <DataObjectCellSelect items={dataKindForLabelItems} ref={this.dataKindForLabelSelect} onblur={() => this.closeEditor()} onchange={(e) => this.changeValue(e)} />
           <DataObjectCellSelect items={dataKindExtensionItems} ref={this.dataKindExtensionSelect} onblur={() => this.closeEditor()} onchange={(e) => this.changeValue(e)} />
           <DataObjectCellSelect items={tables} ref={this.tableSelect} onblur={() => this.closeEditor()} onchange={(e) => this.changeValue(e)} />
-          <DataObjectCellSelect items={schemas} ref={this.schemaSelect} onblur={() => this.closeEditor()} onchange={(e) => this.changeValue(e)} />
-          <DataObjectCellSelect items={enumerations} ref={this.enumerationSelect} onblur={() => this.closeEditor()} onchange={(e) => this.changeValue(e)} />
+          <DataObjectCellSelect items={schemaItems} ref={this.schemaSelect} onblur={() => this.closeEditor()} onchange={(e) => this.changeValue(e)} />
+          <DataObjectCellSelect items={enumerationItems} ref={this.enumerationSelect} onblur={() => this.closeEditor()} onchange={(e) => this.changeValue(e)} />
         </>
       )
     } else {
@@ -186,8 +186,10 @@ export class DataObjectCursor extends MJCustomElement<Props>()(HTMLDivElement) {
   private closeEditor() {
     this.inputField.value?.hide()
     this.typeClassificationSelect.value?.hide()
+    this.dataKindSelect.value?.hide()
     this.dataKindForIdSelect.value?.hide()
     this.dataKindForLabelSelect.value?.hide()
+    this.dataKindExtensionSelect.value?.hide()
     this.tableSelect.value?.hide()
     this.schemaSelect.value?.hide()
     this.enumerationSelect.value?.hide()
@@ -220,15 +222,16 @@ export class DataObjectCursor extends MJCustomElement<Props>()(HTMLDivElement) {
               break
             }
             case DataClassification.RelationID: {
-              this.column.type.typeName = masterDataAccessor.getNames()[0] ?? ''
+              this.column.type.typeName = masterDataAccessor.get(0)?.name ?? ''
               break
             }
             case DataClassification.Schema: {
-              this.column.type.typeName = preferences.getProjectInfo().schemas[0]?.name ?? ''
+              this.column.type.typeName = schemaAccessor.get(0)?.name ?? ''
               break
             }
-            case DataClassification.Enumeration: {
-              this.column.type.typeName = preferences.getProjectInfo().enumerations[0]?.name ?? ''
+            case DataClassification.Enumeration:
+            case DataClassification.EnumerationID: {
+              this.column.type.typeName = enumerationAccessor.get(0)?.name ?? ''
               break
             }
           }

@@ -1,17 +1,17 @@
 import { masterConstantsAccessor } from '@/systems/accessors/master-constants-accessor'
 import { ConstantKind, ConstantKindType } from '@/systems/defines'
 import { OutputBuilderBase } from '@/systems/output-distributors/output-builder-base'
-import { OutputProjectRaw, OutputProjectStandardRaw } from '@/systems/types'
-import { path } from '@tauri-apps/api'
+import { OutputProject } from '@/systems/output-distributors/output-project'
+import { OutputProjectStandardRaw } from '@/systems/types'
 
 /**
  * 定数出力クラス
  */
 export class OutputBuilderConstant extends OutputBuilderBase {
-  static async create(outputProject: OutputProjectRaw) {
-    const folderPath = this.getFolderPath()
-    const outputPath = await path.join(folderPath, outputProject.constant.path)
-    return new OutputBuilderConstant(outputPath, outputProject.codeExtension, outputProject.constant, outputProject.masterConstants.targets)
+  static async create(outputProject: OutputProject) {
+    const outputPath = await outputProject.getConstantPath()
+    const raw = outputProject.toRaw()
+    return new OutputBuilderConstant(outputPath, raw.codeExtension, raw.constant, raw.masterConstants.targets)
   }
 
   constructor(
@@ -28,24 +28,20 @@ export class OutputBuilderConstant extends OutputBuilderBase {
    */
   async write() {
     await this.removePreviousFiles()
-    const names = masterConstantsAccessor.getNames()
-    for (const targetName of this.targets) {
-      if (names.includes(targetName)) {
-        const constantsGroup = await masterConstantsAccessor.read(targetName)
-        if (constantsGroup) {
-          const constants = []
-          for (const item of constantsGroup.items) {
-            constants.push({
-              name: item.name,
-              label: item.label,
-              type: this.convertConstantsType(item.type),
-              array: /\[\]$/.test(item.type),
-            })
-          }
-          const { fileNameTemplate } = this.constant
-          const data = { name: constantsGroup.name, description: constantsGroup.description, constants }
-          await this.writeSourceCode(this.constant.sourceCodeTemplate, data, { fileNameTemplate, name: targetName })
+    for (const constantsGroup of masterConstantsAccessor.getAll()) {
+      if (this.targets.includes(constantsGroup.name)) {
+        const constants = []
+        for (const item of constantsGroup.items) {
+          constants.push({
+            name: item.name,
+            label: item.label,
+            type: this.convertConstantsType(item.type),
+            array: /\[\]$/.test(item.type),
+          })
         }
+        const { fileNameTemplate } = this.constant
+        const data = { name: constantsGroup.name, description: constantsGroup.description, constants }
+        await this.writeSourceCode(this.constant.sourceCodeTemplate, data, { fileNameTemplate, name: constantsGroup.name })
       }
     }
   }

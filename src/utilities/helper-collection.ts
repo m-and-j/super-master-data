@@ -66,3 +66,35 @@ export function arrayIntersect<T>(first: T[], ...arrays: T[][]) {
   const uniques = arrays.map((array) => new Set(array))
   return firstUnique.filter((value) => uniques.every((set) => set.has(value)))
 }
+
+/**
+ * 配列の要素を置き換える
+ * @param array
+ * @param from
+ * @param to
+ * @returns
+ */
+export function arrayReplace<T>(array: T[], from: T, to: T) {
+  if (from !== to) {
+    const index = array.indexOf(from)
+    if (index >= 0) {
+      array.splice(index, 1, to)
+      array.sort()
+    }
+  }
+  return array
+}
+
+/**
+ * 配列から要素を削除
+ * @param array
+ * @param value
+ * @returns
+ */
+export function arrayRemove<T>(array: T[], value: T) {
+  const index = array.indexOf(value)
+  if (index >= 0) {
+    array.splice(index, 1)
+  }
+  return array
+}

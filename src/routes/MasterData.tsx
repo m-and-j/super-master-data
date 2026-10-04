@@ -5,24 +5,16 @@ import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { SideMenuMasterData } from '@/components/wayFinders/SideMenuMasterData'
 import { masterDataAccessor } from '@/systems/accessors/master-data-accessor'
 import { IDColumns } from '@/systems/defines'
-import { TableRaw } from '@/systems/types'
 import { formatNumber } from '@/utilities/helper-text'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage } from '@mj/router'
 
 export class MasterData extends MJPage {
-  private table?: TableRaw
-  private idColumnCount = 0
-
-  async beforeRender() {
-    const { name } = this.params
-    this.table = await masterDataAccessor.read(name)
-    const { columns = [] } = this.table ?? {}
-    this.idColumnCount = columns.filter((c) => IDColumns.includes(c.type.classification)).length
-  }
-
   createNode() {
     const { name } = this.params
+    const table = masterDataAccessor.get(name)
+    const { columns = [] } = table ?? {}
+    const idColumnCount = columns.filter((c) => IDColumns.includes(c.type.classification)).length
     const gridRef: Reference<MasterDataGrid> = ref()
     const schemaPanelRef: Reference<SubEditorPanel> = ref()
     return (
@@ -31,13 +23,13 @@ export class MasterData extends MJPage {
         <SideMenuMasterData currentName={name} className="row-span-2" />
 
         {/** コンテンツ */}
-        {(this.table && (
+        {(table && (
           <>
-            {(this.idColumnCount === 1 && (
+            {(idColumnCount === 1 && (
               <>
                 <div class="col-span-2 flex items-center gap-2 px-4">
-                  <div class="font-semibold">{`${this.table?.name}【${this.table?.description}】`}</div>
-                  <div class="text-sm text-zinc-400">{formatNumber(this.table?.data.length ?? 0)} 件</div>
+                  <div class="font-semibold">{`${table.name}【${table.description}】`}</div>
+                  <div class="text-sm text-zinc-400">{formatNumber(table.data.length ?? 0)} 件</div>
                   <div class="flex-auto"></div>
                   <Button variant="success" size="sm" onclick={() => gridRef.value?.addRow()}>
                     <span class="icon-[ic--baseline-add] text-lg"></span>
@@ -48,7 +40,7 @@ export class MasterData extends MJPage {
                     保存
                   </Button>
                 </div>
-                <MasterDataGrid columns={this.table.columns} data={this.table.data} className="col-span-2" ref={gridRef} schemaPanelRef={schemaPanelRef} />
+                <MasterDataGrid columns={table.columns} data={table.data} className="col-span-2" ref={gridRef} schemaPanelRef={schemaPanelRef} />
               </>
             )) || (
               <div class="col-span-2 row-span-2 flex h-full flex-auto items-center justify-center px-6 text-center text-rose-300">
@@ -57,7 +49,7 @@ export class MasterData extends MJPage {
                   <div class="text-sm">
                     テーブル「{name}」のIDカラムは1つでなければなりません。
                     <br />
-                    現在の ID カラム数: {formatNumber(this.idColumnCount)} 個
+                    現在の ID カラム数: {formatNumber(idColumnCount)} 個
                   </div>
                 </div>
               </div>
@@ -67,19 +59,21 @@ export class MasterData extends MJPage {
 
         {/** データ編集用分割パネル */}
         <SubEditorPanel
-          className="hidden"
-          ref={schemaPanelRef}
           openCallback={() => gridRef.value?.classList.remove('col-span-2')}
           closeCallback={() => gridRef.value?.classList.add('col-span-2')}
+          className="hidden"
+          ref={schemaPanelRef}
         />
       </div>
     )
   }
 
   private async save() {
-    if (this.table) {
+    const { name } = this.params
+    const table = masterDataAccessor.get(name)
+    if (table) {
       try {
-        const tableData = JSON.parse(JSON.stringify(this.table))
+        const tableData = JSON.parse(JSON.stringify(table))
         await masterDataAccessor.write(tableData)
         ToastMessage.instance.open('success', '保存しました。')
       } catch (e) {

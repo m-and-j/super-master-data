@@ -1,6 +1,4 @@
-import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { DataClassification, DataKind } from '@/systems/defines'
-import { preferences } from '@/systems/preferences'
 import { DataStructColumnTypeRaw } from '@/systems/types'
 import { camelToKebabCase } from '@/utilities/helper-text'
 import { path } from '@tauri-apps/api'
@@ -9,15 +7,6 @@ import pluralize from '@theothergothamdev/pluralize-ts'
 import { Eta } from 'eta'
 
 export abstract class OutputBuilderBase {
-  protected static getFolderPath() {
-    const folderPath = preferences.getFolderPath()
-    if (folderPath) {
-      return folderPath
-    } else {
-      throw new Error('プロジェクトフォルダが設定されていません')
-    }
-  }
-
   constructor(
     protected outputPath: string,
     protected codeExtension: string,
@@ -41,14 +30,9 @@ export abstract class OutputBuilderBase {
       singular: (value: string) => pluralize.singular(value),
       kebab: (value: string) => camelToKebabCase(value),
     }
-    try {
-      const contents = eta.renderString(sourceCodeTemplate, { ...data, ...utils })
-      const dataString = new TextEncoder().encode(contents)
-      await writeFile(filePath, dataString)
-    } catch (e) {
-      console.error(e)
-      ToastMessage.instance.open('danger', 'データ出力に失敗しました。')
-    }
+    const contents = eta.renderString(sourceCodeTemplate, { ...data, ...utils })
+    const dataString = new TextEncoder().encode(contents)
+    await writeFile(filePath, dataString)
   }
 
   /**
@@ -100,11 +84,9 @@ export abstract class OutputBuilderBase {
           switch (typeName) {
             case DataKind.Date:
             case DataKind.Datetime: {
-              //return 'System.DateTime'
               return 'string'
             }
             case DataKind.Time: {
-              //return 'System.TimeSpan'
               return 'string'
             }
             default: {
@@ -116,6 +98,34 @@ export abstract class OutputBuilderBase {
       }
     } else {
       return undefined
+    }
+  }
+
+  /**
+   * 型がオブジェクトであるか
+   * @param columnType
+   * @returns
+   */
+  protected isObject(columnType?: DataStructColumnTypeRaw) {
+    if (columnType) {
+      const { classification } = columnType
+      switch (this.codeExtension) {
+        case 'ts':
+          switch (classification) {
+            case DataClassification.Enumeration:
+            case DataClassification.EnumerationID:
+            case DataClassification.Schema: {
+              return true
+            }
+            default: {
+              return false
+            }
+          }
+        default:
+          return false
+      }
+    } else {
+      return false
     }
   }
 }

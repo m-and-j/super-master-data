@@ -28,7 +28,7 @@ export class SideMenuListStruct extends MJComponent<Props> {
         </div>
         <hr class="border-zinc-500" />
         <div class="scrollbar flex h-[calc(100vh-94px)] flex-col overflow-y-scroll p-2" ref={this.sideMenuScroller.scrollRef}>
-          {masterListAccessor.getNames().map((name) => (
+          {masterListAccessor.map(({ name }) => (
             <MJLink to={`/list-structs/${name}`} className={['px-1 text-blue-500', name === currentName ? 'bg-zinc-700' : '']}>
               {name}
             </MJLink>

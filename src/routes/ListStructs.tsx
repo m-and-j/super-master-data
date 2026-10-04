@@ -6,27 +6,21 @@ import { ConfirmModal } from '@/components/modals/ConfirmModal'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { SideMenuListStruct } from '@/components/wayFinders/SideMenuListStruct'
 import { masterListAccessor } from '@/systems/accessors/master-list-accessor'
-import { preferences } from '@/systems/preferences'
 import { TableRaw } from '@/systems/types'
 import { deepCopy } from '@/utilities/helper'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
 
 export class ListStructs extends MJPage {
-  private originalListStruct?: TableRaw
   private editableListStruct: TableRaw = { name: '', description: '', columns: [], data: [] }
   private dataObjectTable: Reference<DataObjectTable> = ref()
 
-  async beforeRender() {
-    const { name } = this.params
-    this.originalListStruct = await masterListAccessor.read(name)
-    if (this.originalListStruct) {
-      this.editableListStruct = deepCopy(this.originalListStruct)
-    }
-  }
-
   createNode() {
     const { name } = this.params
+    const originalListStruct = masterListAccessor.get(name)
+    if (originalListStruct) {
+      this.editableListStruct = deepCopy(originalListStruct)
+    }
     return (
       <div class="grid h-[calc(100vh-52px)] grid-cols-[300px_1fr] grid-rows-[90px_1fr] text-sm">
         {/** 左メニュー */}
@@ -62,14 +56,14 @@ export class ListStructs extends MJPage {
                 <span class="icon-[ic--baseline-arrow-downward] text-lg"></span>
               </div>
             </Button>
-            <Button type="button" variant="primary" size="sm" onclick={() => this.register()}>
+            <Button type="button" variant="primary" size="sm" onclick={() => this.register(originalListStruct)}>
               <div class="flex items-center justify-center gap-1">
                 <span class="icon-[ic--baseline-save] text-lg"></span>
                 保存
               </div>
             </Button>
-            {this.originalListStruct && (
-              <Button type="button" variant="danger" size="sm" onclick={() => this.confirmDelete()}>
+            {originalListStruct && (
+              <Button type="button" variant="danger" size="sm" onclick={() => this.confirmDelete(originalListStruct)}>
                 <div class="flex items-center justify-center gap-1">
                   <span class="icon-[ic--baseline-delete] text-lg"></span>
                   削除
@@ -92,13 +86,9 @@ export class ListStructs extends MJPage {
     this.editableListStruct.description = (e.target as HTMLInputElement).value
   }
 
-  private async register() {
+  private async register(originalListStruct?: TableRaw) {
     try {
-      if (this.originalListStruct) {
-        await masterListAccessor.rename(this.originalListStruct.name, this.editableListStruct.name)
-        await preferences.changeListStructName(this.originalListStruct.name, this.editableListStruct.name)
-      }
-      await masterListAccessor.write(this.editableListStruct)
+      await masterListAccessor.write(this.editableListStruct, originalListStruct?.name)
       MJRouter.instance.push(`/list-structs/${this.editableListStruct.name}`)
       ToastMessage.instance.open('success', '保存しました。')
     } catch (e) {
@@ -108,19 +98,17 @@ export class ListStructs extends MJPage {
     }
   }
 
-  private confirmDelete() {
-    if (this.originalListStruct) {
-      const { name } = this.originalListStruct
-      ConfirmModal.instance?.open(`「${name}」を削除します。よろしいですか?`, {
+  private confirmDelete(originalListStruct?: TableRaw) {
+    if (originalListStruct) {
+      ConfirmModal.instance?.open(`「${originalListStruct.name}」を削除します。よろしいですか?`, {
         headerTitle: '削除確認',
         positive: {
           label: '削除',
           variant: 'danger',
           callback: async () => {
-            await masterListAccessor.remove(name)
-            await preferences.deleteListStructName(name)
+            await masterListAccessor.remove(originalListStruct)
             MJRouter.instance.push('/list-structs')
-            ToastMessage.instance.open('success', `「${name}」を削除しました。`)
+            ToastMessage.instance.open('success', `「${originalListStruct.name}」を削除しました。`)
           },
         },
         negative: { label: 'キャンセル', callback: () => {} },

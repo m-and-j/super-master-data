@@ -3,6 +3,7 @@ import { InputText } from '@/components/inputs/InputText'
 import { LoadingMessage } from '@/components/notifications/LoadingMessage'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { NavigationTab } from '@/components/wayFinders/NavigationTab'
+import { outputAccessor } from '@/systems/accessors/output-accessor'
 import { outputDistribution } from '@/systems/output-distributors/output-distributor'
 import { preferences } from '@/systems/preferences'
 import { OutputProjectRaw } from '@/systems/types'
@@ -76,10 +77,10 @@ export class Home extends MJPage {
               すべて出力
             </Button>
             <div class="flex-auto"></div>
-            {projectInfo.outputs.map((output) => (
+            {outputAccessor.map((output) => (
               <Button variant="secondary" size="md" onclick={() => this.onClickOutput(output)}>
                 <span class="icon-[ic--baseline-sim-card-download] text-xl"></span>
-                {output.name}
+                {output.description}
               </Button>
             ))}
           </div>
@@ -142,14 +143,15 @@ export class Home extends MJPage {
   private async onClickOutputAll() {
     try {
       LoadingMessage.instance?.attach()
-      const outputs = preferences.getProjectInfo().outputs
-      for (const output of outputs) {
+      for (const output of outputAccessor.getAll()) {
         await outputDistribution(output)
       }
-      LoadingMessage.instance?.detach()
       ToastMessage.instance.open('success', 'データを出力しました')
     } catch (e) {
       console.error(e)
+      ToastMessage.instance.open('danger', 'データ出力に失敗しました')
+    } finally {
+      LoadingMessage.instance?.detach()
     }
   }
 
@@ -157,10 +159,12 @@ export class Home extends MJPage {
     try {
       LoadingMessage.instance?.attach()
       await outputDistribution(output)
-      LoadingMessage.instance?.detach()
       ToastMessage.instance.open('success', `「${output.name}」データを出力しました`)
     } catch (e) {
       console.error(e)
+      ToastMessage.instance.open('danger', `「${output.name}」データ出力に失敗しました`)
+    } finally {
+      LoadingMessage.instance?.detach()
     }
   }
 }

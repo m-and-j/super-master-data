@@ -108,3 +108,12 @@ export function encodeBase64(str: string) {
 export function decodeBase64(str: string) {
   return new TextDecoder().decode(Uint8Array.from(atob(str), (c) => c.charCodeAt(0)))
 }
+
+/**
+ * ファイル名チェック
+ * @param str
+ * @returns
+ */
+export function isSafeFilename(str: string) {
+  return /^[a-zA-Z0-9._-]+$/.test(str)
+}

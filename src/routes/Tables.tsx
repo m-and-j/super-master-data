@@ -6,27 +6,21 @@ import { ConfirmModal } from '@/components/modals/ConfirmModal'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { SideMenuTable } from '@/components/wayFinders/SideMenuTable'
 import { masterDataAccessor } from '@/systems/accessors/master-data-accessor'
-import { preferences } from '@/systems/preferences'
 import { TableRaw } from '@/systems/types'
 import { deepCopy } from '@/utilities/helper'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
 
 export class Tables extends MJPage {
-  private originalTable?: TableRaw
   private editableTable: TableRaw = { name: '', description: '', columns: [], data: [] }
   private dataObjectTable: Reference<DataObjectTable> = ref()
 
-  async beforeRender() {
-    const { name } = this.params
-    this.originalTable = await masterDataAccessor.read(name)
-    if (this.originalTable) {
-      this.editableTable = deepCopy(this.originalTable)
-    }
-  }
-
   createNode() {
     const { name } = this.params
+    const originalTable = masterDataAccessor.get(name)
+    if (originalTable) {
+      this.editableTable = deepCopy(originalTable)
+    }
     return (
       <div class="grid h-[calc(100vh-52px)] grid-cols-[300px_1fr] grid-rows-[90px_1fr] text-sm">
         {/** 左メニュー */}
@@ -62,14 +56,14 @@ export class Tables extends MJPage {
                 <span class="icon-[ic--baseline-arrow-downward] text-lg"></span>
               </div>
             </Button>
-            <Button type="button" variant="primary" size="sm" onclick={() => this.register()}>
+            <Button type="button" variant="primary" size="sm" onclick={() => this.register(originalTable)}>
               <div class="flex items-center justify-center gap-1">
                 <span class="icon-[ic--baseline-save] text-lg"></span>
                 保存
               </div>
             </Button>
-            {this.originalTable && (
-              <Button type="button" variant="danger" size="sm" onclick={() => this.confirmDelete()}>
+            {originalTable && (
+              <Button type="button" variant="danger" size="sm" onclick={() => this.confirmDelete(originalTable)}>
                 <div class="flex items-center justify-center gap-1">
                   <span class="icon-[ic--baseline-delete] text-lg"></span>
                   削除
@@ -92,35 +86,30 @@ export class Tables extends MJPage {
     this.editableTable.description = (e.target as HTMLInputElement).value
   }
 
-  private async register() {
+  private async register(originalTable?: TableRaw) {
     try {
-      if (this.originalTable) {
-        await masterDataAccessor.rename(this.originalTable.name, this.editableTable.name)
-        await preferences.changeTableName(this.originalTable.name, this.editableTable.name)
-      }
-      await masterDataAccessor.write(this.editableTable)
+      await masterDataAccessor.write(this.editableTable, originalTable?.name)
       MJRouter.instance.push(`/tables/${this.editableTable.name}`)
       ToastMessage.instance.open('success', '保存しました。')
     } catch (e) {
+      console.error(e)
       if (e instanceof Error) {
         ToastMessage.instance.open('danger', e.message)
       }
     }
   }
 
-  private confirmDelete() {
-    if (this.originalTable) {
-      const { name } = this.originalTable
-      ConfirmModal.instance?.open(`「${name}」を削除します。よろしいですか?`, {
+  private confirmDelete(originalTable?: TableRaw) {
+    if (originalTable) {
+      ConfirmModal.instance?.open(`「${originalTable.name}」を削除します。よろしいですか?`, {
         headerTitle: '削除確認',
         positive: {
           label: '削除',
           variant: 'danger',
           callback: async () => {
-            await masterDataAccessor.remove(name)
-            await preferences.deleteTableName(name)
+            await masterDataAccessor.remove(originalTable)
             MJRouter.instance.push('/tables')
-            ToastMessage.instance.open('success', `「${name}」を削除しました。`)
+            ToastMessage.instance.open('success', `「${originalTable.name}」を削除しました。`)
           },
         },
         negative: { label: 'キャンセル', callback: () => {} },

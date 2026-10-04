@@ -2,8 +2,8 @@ import { CellHeader } from '@/components/data-grid/CellHeader'
 import { MasterDataGrid } from '@/components/data-grid/MasterDataGrid'
 import { Button } from '@/components/inputs/Button'
 import { masterDataAccessor } from '@/systems/accessors/master-data-accessor'
+import { schemaAccessor } from '@/systems/accessors/schema-accessor'
 import { DataClassification } from '@/systems/defines'
-import { preferences } from '@/systems/preferences'
 import { DataStructColumnRaw, MasterRecord, TableRaw } from '@/systems/types'
 import { MJ, MJCustomElement, ref, Reference } from '@mj/jsx'
 
@@ -56,8 +56,7 @@ export class SubEditorPanel extends MJCustomElement<Props>()(HTMLDivElement) {
       const { type } = this.column
       switch (type.classification) {
         case DataClassification.Schema: {
-          const projectInfo = preferences.getProjectInfo()
-          const schema = projectInfo.schemas.find((s) => s.name === type.typeName)
+          const schema = schemaAccessor.findName(type.typeName)
           if (schema) {
             return <MasterDataGrid ref={this.grid} columns={schema.columns} data={this.data} className="contents" />
           } else {
@@ -119,7 +118,7 @@ export class SubEditorPanel extends MJCustomElement<Props>()(HTMLDivElement) {
     this.column = column
     this.data = data
     if (column.type.classification === DataClassification.RelationID) {
-      this.relationTable = await masterDataAccessor.read(column.type.typeName)
+      this.relationTable = masterDataAccessor.get(column.type.typeName)
     }
     this.classList.remove('hidden')
     this.props.openCallback?.()

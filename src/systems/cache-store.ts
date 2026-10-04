@@ -61,6 +61,10 @@ class CacheStore {
   get sideMenuScrollTop() {
     return this._sideMenuScrollTop
   }
+
+  getOutputFolderPath(projectId: string, outputId: string) {
+    return new CacheString(`super-master-data.output-folder-path.${projectId}.${outputId}`)
+  }
 }
 
 export const cacheStore = new CacheStore()

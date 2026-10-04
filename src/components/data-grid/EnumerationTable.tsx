@@ -32,7 +32,8 @@ export class EnumerationTable extends MJCustomElement<Props>()(HTMLDivElement) {
 
   async addRow() {
     const { items } = this.props
-    items.push({ label: '', value: 0, description: '' })
+    const maxValue = Math.max(...items.map((item) => item.value))
+    items.push({ label: '', value: maxValue + 1, description: '' })
     await this.render()
   }
 

@@ -5,15 +5,12 @@ import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { NavigationTab } from '@/components/wayFinders/NavigationTab'
 import { Constants } from '@/routes/Constants'
 import { Enumerations } from '@/routes/Enumerations'
-import { EnumerationsJsonEdit } from '@/routes/EnumerationsJsonEdit'
 import { Home } from '@/routes/Home'
 import { ListData } from '@/routes/ListData'
 import { ListStructs } from '@/routes/ListStructs'
 import { MasterData } from '@/routes/MasterData'
 import { Outputs } from '@/routes/Outputs'
-import { OUtputsJsonEdit } from '@/routes/OutputsJsonEdit'
 import { Schemas } from '@/routes/Schemas'
-import { SchemasJsonEdit } from '@/routes/SchemasJsonEdit'
 import { Tables } from '@/routes/Tables'
 import { cacheStore } from '@/systems/cache-store'
 import { MJComponent } from '@mj/jsx'
@@ -52,17 +49,14 @@ export class AppContent extends MJComponent {
             { path: '/constants/{name}', Page: Constants },
             { path: '/enumerations', Page: Enumerations },
             { path: '/enumerations/{name}', Page: Enumerations },
-            { path: '/enumerations-edit-json', Page: EnumerationsJsonEdit },
             { path: '/list-structs', Page: ListStructs },
             { path: '/list-structs/{name}', Page: ListStructs },
             { path: '/master-data', Page: MasterData },
             { path: '/master-data/{name}', Page: MasterData },
             { path: '/outputs', Page: Outputs },
             { path: '/outputs/{name}', Page: Outputs },
-            { path: '/outputs-edit-json', Page: OUtputsJsonEdit },
             { path: '/schemas', Page: Schemas },
             { path: '/schemas/{name}', Page: Schemas },
-            { path: '/schemas-edit-json', Page: SchemasJsonEdit },
             { path: '/tables', Page: Tables },
             { path: '/tables/{name}', Page: Tables },
             { path: '/list-data', Page: ListData },

@@ -1,4 +1,5 @@
 import { AccessorBase } from '@/systems/accessors/accessor-base'
+import { outputAccessor } from '@/systems/accessors/output-accessor'
 import { DataClassification, DataKind, DataKindExtension, ProjectFolder } from '@/systems/defines'
 import { DataStructColumnRaw, MasterRecord, TableRaw } from '@/systems/types'
 
@@ -7,7 +8,7 @@ class MasterDataAccessor extends AccessorBase<TableRaw> {
     super('MasterData', ProjectFolder.Tables)
   }
 
-  async write(table: TableRaw) {
+  async write(table: TableRaw, oldName?: string) {
     // JSONパラメータ整列のためのデータ再構築
     const columns: DataStructColumnRaw[] = []
     for (const { name, label, type, description } of table.columns) {
@@ -71,7 +72,15 @@ class MasterDataAccessor extends AccessorBase<TableRaw> {
       }
       data.push(value)
     }
-    await super.write({ name: table.name, description: table.description, columns, data })
+    await super.write({ name: table.name, description: table.description, columns, data }, oldName)
+    if (oldName && oldName !== table.name) {
+      await outputAccessor.changeName({ table: { oldName, newName: table.name } })
+    }
+  }
+
+  async remove(table: TableRaw) {
+    await super.remove(table)
+    await outputAccessor.deleteName({ tableName: table.name })
   }
 }
 

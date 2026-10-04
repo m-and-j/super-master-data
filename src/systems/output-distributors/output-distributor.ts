@@ -6,9 +6,11 @@ import { OutputBuilderMasterData } from '@/systems/output-distributors/output-bu
 import { OutputBuilderMasterList } from '@/systems/output-distributors/output-builder-master-list'
 import { OutputBuilderOther } from '@/systems/output-distributors/output-builder-other'
 import { OutputBuilderSchema } from '@/systems/output-distributors/output-builder-schema'
+import { OutputProject } from '@/systems/output-distributors/output-project'
 import { OutputProjectRaw } from '@/systems/types'
 
-export async function outputDistribution(outputProject: OutputProjectRaw) {
+export async function outputDistribution(outputProjectRaw: OutputProjectRaw) {
+  const outputProject = new OutputProject(outputProjectRaw)
   const outputs = await Promise.all([
     OutputBuilderMasterData.create(outputProject),
     OutputBuilderMasterList.create(outputProject),
@@ -17,7 +19,7 @@ export async function outputDistribution(outputProject: OutputProjectRaw) {
     OutputBuilderSchema.create(outputProject),
     OutputBuilderEnumeration.create(outputProject),
     OutputBuilderConstant.create(outputProject),
-    ...outputProject.others.map((other) => OutputBuilderOther.create(outputProject, other)),
+    ...outputProject.getOthers().map((_, index) => OutputBuilderOther.create(outputProject, index)),
   ])
   await Promise.all(outputs.map((output) => output.write()))
 }

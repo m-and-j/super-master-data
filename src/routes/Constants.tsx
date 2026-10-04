@@ -6,7 +6,6 @@ import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { SideMenuConstant } from '@/components/wayFinders/SideMenuConstant'
 import { masterConstantsAccessor } from '@/systems/accessors/master-constants-accessor'
 import { ColumnParams, ConstantKind, ConstantKindType, ConstantKindValues } from '@/systems/defines'
-import { preferences } from '@/systems/preferences'
 import { ConstantGroupItemRaw, ConstantGroupRaw, ConstantValue } from '@/systems/types'
 import { deepCopy } from '@/utilities/helper'
 import { FormDataEx } from '@/utilities/helper-frontend'
@@ -14,22 +13,17 @@ import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
 
 export class Constants extends MJPage {
-  private originalConstant?: ConstantGroupRaw
   private editableConstant: ConstantGroupRaw = { name: '', description: '', items: [] }
   private constantTable: Reference<ConstantTable> = ref()
 
-  async beforeRender() {
-    const { name } = this.params
-    this.originalConstant = await masterConstantsAccessor.read(name)
-    if (this.originalConstant) {
-      this.editableConstant = deepCopy(this.originalConstant)
-    }
-  }
-
   createNode() {
     const { name } = this.params
+    const originalConstant = masterConstantsAccessor.get(name)
+    if (originalConstant) {
+      this.editableConstant = deepCopy(originalConstant)
+    }
     return (
-      <form class="grid h-[calc(100vh-52px)] grid-cols-[300px_1fr] grid-rows-[90px_1fr] text-sm" onsubmit={(e) => this.register(e)}>
+      <form class="grid h-[calc(100vh-52px)] grid-cols-[300px_1fr] grid-rows-[90px_1fr] text-sm" onsubmit={(e) => this.register(e, originalConstant)}>
         {/** 左メニュー */}
         <SideMenuConstant currentName={name} className="row-span-2" />
 
@@ -59,8 +53,8 @@ export class Constants extends MJPage {
                 保存
               </div>
             </Button>
-            {this.originalConstant && (
-              <Button type="button" variant="danger" size="sm" onclick={() => this.confirmDelete()}>
+            {originalConstant && (
+              <Button type="button" variant="danger" size="sm" onclick={() => this.confirmDelete(originalConstant)}>
                 <div class="flex items-center justify-center gap-1">
                   <span class="icon-[ic--baseline-delete] text-lg"></span>
                   削除
@@ -74,7 +68,7 @@ export class Constants extends MJPage {
     )
   }
 
-  private async register(event: SubmitEvent) {
+  private async register(event: SubmitEvent, originalConstant?: ConstantGroupRaw) {
     event.preventDefault()
     const formData = new FormDataEx(event)
     const name = formData.getString('name', '')
@@ -94,11 +88,7 @@ export class Constants extends MJPage {
       })
     }
     try {
-      if (this.originalConstant) {
-        await masterConstantsAccessor.rename(this.originalConstant.name, name)
-        await preferences.changeConstantGroupName(this.originalConstant.name, name)
-      }
-      await masterConstantsAccessor.write({ name, description, items })
+      await masterConstantsAccessor.write({ name, description, items }, originalConstant?.name)
       MJRouter.instance.push(`/constants/${name}`)
       ToastMessage.instance.open('success', '保存しました。')
     } catch (e) {
@@ -108,19 +98,17 @@ export class Constants extends MJPage {
     }
   }
 
-  private confirmDelete() {
-    if (this.originalConstant) {
-      const { name } = this.originalConstant
-      ConfirmModal.instance?.open(`「${name}」を削除します。よろしいですか?`, {
+  private confirmDelete(originalConstant?: ConstantGroupRaw) {
+    if (originalConstant) {
+      ConfirmModal.instance?.open(`「${originalConstant.name}」を削除します。よろしいですか?`, {
         headerTitle: '削除確認',
         positive: {
           label: '削除',
           variant: 'danger',
           callback: async () => {
-            await masterConstantsAccessor.remove(name)
-            await preferences.deleteConstantGroupName(name)
+            await masterConstantsAccessor.remove(originalConstant)
             MJRouter.instance.push('/constants')
-            ToastMessage.instance.open('success', `「${name}」を削除しました。`)
+            ToastMessage.instance.open('success', `「${originalConstant.name}」を削除しました。`)
           },
         },
         negative: { label: 'キャンセル', callback: () => {} },

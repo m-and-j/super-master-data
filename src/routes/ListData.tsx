@@ -12,13 +12,9 @@ import { MJPage } from '@mj/router'
 export class ListData extends MJPage {
   private table?: TableRaw
 
-  async beforeRender() {
-    const { name } = this.params
-    this.table = await masterListAccessor.read(name)
-  }
-
   createNode() {
     const { name } = this.params
+    this.table = masterListAccessor.get(name)
     const gridRef: Reference<MasterDataGrid> = ref()
     const schemaPanelRef: Reference<SubEditorPanel> = ref()
     return (
@@ -48,10 +44,10 @@ export class ListData extends MJPage {
 
         {/** データ編集用分割パネル */}
         <SubEditorPanel
-          className="hidden"
-          ref={schemaPanelRef}
           openCallback={() => gridRef.value?.classList.remove('col-span-2')}
           closeCallback={() => gridRef.value?.classList.add('col-span-2')}
+          className="hidden"
+          ref={schemaPanelRef}
         />
       </div>
     )

@@ -1,17 +1,17 @@
+import { schemaAccessor } from '@/systems/accessors/schema-accessor'
 import { DataClassification, DataKindExtension } from '@/systems/defines'
 import { OutputBuilderBase } from '@/systems/output-distributors/output-builder-base'
-import { preferences } from '@/systems/preferences'
-import { OutputProjectRaw, OutputProjectStandardRaw } from '@/systems/types'
-import { path } from '@tauri-apps/api'
+import { OutputProject } from '@/systems/output-distributors/output-project'
+import { OutputProjectStandardRaw } from '@/systems/types'
 
 /**
  * スキーマ出力クラス
  */
 export class OutputBuilderSchema extends OutputBuilderBase {
-  static async create(outputProject: OutputProjectRaw) {
-    const folderPath = this.getFolderPath()
-    const outputPath = await path.join(folderPath, outputProject.schema.path)
-    return new OutputBuilderSchema(outputPath, outputProject.codeExtension, outputProject.schema, outputProject.enumeration.fileNameTemplate)
+  static async create(outputProject: OutputProject) {
+    const outputPath = await outputProject.getSchemaPath()
+    const raw = outputProject.toRaw()
+    return new OutputBuilderSchema(outputPath, raw.codeExtension, raw.schema, raw.enumeration.fileNameTemplate)
   }
 
   constructor(
@@ -28,11 +28,10 @@ export class OutputBuilderSchema extends OutputBuilderBase {
    */
   async write() {
     await this.removePreviousFiles()
-    const projectInfo = preferences.getProjectInfo()
-    for (const item of projectInfo.schemas) {
+    for (const schema of schemaAccessor.getAll()) {
       const columns = []
       const enumerationMap = new Map<string, object>()
-      for (const column of item.columns) {
+      for (const column of schema.columns) {
         const { name, label, description, type } = column
         const { typeName, extension, classification } = type
         const typeForLang = this.convertTypeName(type)
@@ -50,7 +49,7 @@ export class OutputBuilderSchema extends OutputBuilderBase {
           })
         }
       }
-      const { name, description } = item
+      const { name, description } = schema
       const enumerations = Array.from(enumerationMap.values())
       const { fileNameTemplate } = this.schema
       await this.writeSourceCode(this.schema.sourceCodeTemplate, { name, description, columns, enumerations }, { fileNameTemplate, name })

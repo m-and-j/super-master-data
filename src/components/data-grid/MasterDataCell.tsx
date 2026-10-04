@@ -1,8 +1,8 @@
 import { SubEditorPanel } from '@/components/data-grid/SubEditorPanel'
+import { enumerationAccessor } from '@/systems/accessors/enumeration-accessor'
 import { masterDataAccessor } from '@/systems/accessors/master-data-accessor'
 import { DataClassification, DataKind, DataKindExtension } from '@/systems/defines'
-import { preferences } from '@/systems/preferences'
-import { DataStructColumnRaw, TableRaw } from '@/systems/types'
+import { DataStructColumnRaw } from '@/systems/types'
 import { MJ, MJComponent, Reference } from '@mj/jsx'
 
 interface Props {
@@ -17,15 +17,6 @@ interface Props {
  * カラムセルのエディタ
  */
 export class MasterDataCell extends MJComponent<Props> {
-  private relationTable?: TableRaw
-
-  async beforeRender({ column }: Props) {
-    const { type } = column
-    if (type.classification === DataClassification.RelationID) {
-      this.relationTable = await masterDataAccessor.read(type.typeName)
-    }
-  }
-
   createNode({ column, value, rowIndex, className, schemaPanelRef }: Props) {
     const { type } = column
     const baseCss = 'data-grid-cell flex items-center px-2 py-1'
@@ -44,7 +35,7 @@ export class MasterDataCell extends MJComponent<Props> {
         </div>
       )
     } else if (type.classification === DataClassification.Enumeration) {
-      const enumeration = preferences.getProjectInfo().enumerations.find((e) => e.name === column.type.typeName)
+      const enumeration = enumerationAccessor.findName(column.type.typeName)
       const item = enumeration?.items.find((item) => value === item.value)
       return (
         <div class={['justify-between', baseCss, className]} data-row-index={rowIndex} onclick={() => {}}>
@@ -58,10 +49,11 @@ export class MasterDataCell extends MJComponent<Props> {
       let label
       let color
       let error = false
-      if (this.relationTable) {
-        const idColumnName = this.relationTable.columns.find((c) => c.type.classification === DataClassification.ID)?.name ?? ''
-        const labelColumnName = this.relationTable.columns.find((c) => c.type.classification === DataClassification.Label)?.name ?? ''
-        const item = this.relationTable.data.find((row) => `${row[idColumnName] ?? ''}` === value)
+      const relationTable = masterDataAccessor.get(type.typeName)
+      if (relationTable) {
+        const idColumnName = relationTable.columns.find((c) => c.type.classification === DataClassification.ID)?.name ?? ''
+        const labelColumnName = relationTable.columns.find((c) => c.type.classification === DataClassification.Label)?.name ?? ''
+        const item = relationTable.data.find((row) => `${row[idColumnName] ?? ''}` === value)
         if (item) {
           label = item[labelColumnName] ?? item[idColumnName]
         } else if (value) {

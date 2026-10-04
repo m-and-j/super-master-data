@@ -1,11 +1,9 @@
 import { ConstantKindType, DataClassificationType, DataKindExtensionType, OutputKindType } from '@/systems/defines'
 
 export interface ProjectInfoRaw {
+  uuid: string
   name: string
   description: string
-  schemas: DataStructRaw[]
-  enumerations: EnumerationStructRaw[]
-  outputs: OutputProjectRaw[]
 }
 
 export interface TableRaw {
@@ -66,6 +64,7 @@ export interface ConstantGroupItemRaw {
 }
 
 export interface OutputProjectRaw {
+  uuid: string
   name: string
   description: string
   codeExtension: string
@@ -96,4 +95,9 @@ export interface OutputProjectOtherRaw {
   path: string
   fileNameTemplate?: string
   sourceCodeTemplate: string
+}
+
+export interface ChangeNameInfo {
+  oldName: string
+  newName: string
 }

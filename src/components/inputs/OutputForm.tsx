@@ -1,23 +1,16 @@
-import { Button } from '@/components/inputs/Button'
-import { InputText } from '@/components/inputs/InputText'
 import { OutputDataList } from '@/components/inputs/OutputDataList'
 import { OutputSourceCodeOther } from '@/components/inputs/OutputSourceCodeOther'
 import { OutputSourceCodeStandard } from '@/components/inputs/OutputSourceCodeStandard'
-import { ConfirmModal } from '@/components/modals/ConfirmModal'
-import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { TabItem } from '@/components/wayFinders/TabItem'
 import { TabPanel } from '@/components/wayFinders/TabPanel'
 import { masterConstantsAccessor } from '@/systems/accessors/master-constants-accessor'
 import { masterDataAccessor } from '@/systems/accessors/master-data-accessor'
 import { masterListAccessor } from '@/systems/accessors/master-list-accessor'
 import { OutputProject } from '@/systems/output-distributors/output-project'
-import { preferences } from '@/systems/preferences'
-import { OutputProjectRaw } from '@/systems/types'
 import { MJ, MJCustomElement, ref, Reference } from '@mj/jsx'
-import { MJRouter } from '@mj/router'
 
 interface Props extends MJ.CEProps<OutputForm> {
-  targetOutput?: OutputProjectRaw
+  outputProject: OutputProject
 }
 
 const Mode = {
@@ -31,9 +24,8 @@ const Mode = {
 /**
  * マスターデータ出力設定
  */
-export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
+export class OutputForm extends MJCustomElement<Props>()(HTMLDivElement) {
   private mode: string = Mode.MasterData
-  private outputProject = new OutputProject()
   private masterFieldset: Reference<HTMLFieldSetElement> = ref()
   private entityOutputSourceCode: Reference<OutputSourceCodeStandard> = ref()
   private schemaOutputSourceCode: Reference<OutputSourceCodeStandard> = ref()
@@ -41,38 +33,10 @@ export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
   private constantOutputSourceCode: Reference<OutputSourceCodeStandard> = ref()
   private otherOutputSourceCodeList: Reference<OutputSourceCodeOther>[] = []
 
-  connectedCallback() {
-    this.addClassName('flex-auto p-2')
-    this.addEventListener('submit', (e) => this.register(e))
-  }
-
-  async initialize({ targetOutput }: Props) {
-    this.outputProject.setRaw(targetOutput)
-  }
-
-  createNode({ targetOutput }: Props) {
-    this.outputProject.getOthers().forEach(() => this.otherOutputSourceCodeList.push(ref()))
+  createNode({ outputProject }: Props) {
+    outputProject.getOthers().forEach(() => this.otherOutputSourceCodeList.push(ref()))
     return (
       <>
-        {/** 基本情報 */}
-        <div class="mx-1 mb-2 flex items-center gap-2">
-          <div class="flex-[0_0_180px] text-right text-sm">出力名</div>
-          <div class="flex-[0_0_400px]">
-            <InputText placeholder="例: クライアント用 / サーバー用" value={this.outputProject.getName()} onchange={(e) => this.outputProject.changeName(e)} />
-          </div>
-          <div class="flex-[0_0_50px] text-right text-sm">説明</div>
-          <div class="flex-auto">
-            <InputText placeholder="内容" value={this.outputProject.getDescription()} onchange={(e) => this.outputProject.changeDescription(e)} />
-          </div>
-        </div>
-        <div class="mx-1 mb-3 flex items-center gap-2">
-          <div class="flex-[0_0_180px] text-right text-sm">コード拡張子</div>
-          <div class="flex-[0_0_120px]">
-            <InputText placeholder="例: cs" value={this.outputProject.getCodeExtension()} onchange={(e) => this.outputProject.changeCodeExtension(e)} />
-          </div>
-          <div class="flex-auto text-xs text-zinc-400">再出力時に指定された拡張子のファイルをすべて削除してから出力します。</div>
-        </div>
-
         {/** 各ソースコード出力セクション */}
         <TabPanel>
           <TabItem type="change" name={Mode.MasterData} onchange={(name) => this.changeTab(name)} defaultActive={this.mode === Mode.MasterData}>
@@ -90,7 +54,7 @@ export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
           <TabItem type="change" name={Mode.Constant} onchange={(name) => this.changeTab(name)} defaultActive={this.mode === Mode.Constant}>
             定数
           </TabItem>
-          {this.outputProject.getOthers().map((item, index) => (
+          {outputProject.getOthers().map((item, index) => (
             <TabItem type="change" name={`${index}`} onchange={(name) => this.changeTab(name)} defaultActive={this.mode === `${index}`}>
               {item.name}
             </TabItem>
@@ -103,20 +67,15 @@ export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
           class={['flex h-[calc(100vh-260px)] flex-col gap-3 rounded-b-md border-x border-b border-zinc-500 p-3', this.mode !== Mode.MasterData && 'hidden']}
           ref={this.masterFieldset}
         >
-          <OutputDataList outputData={this.outputProject.getMasterData()} dataNames={masterDataAccessor.getNames()} title="マスターデータJSON出力設定" outputTargetFlex={2} />
-          <OutputDataList outputData={this.outputProject.getMasterList()} dataNames={masterListAccessor.getNames()} title="マスターリストJSON出力設定" outputTargetFlex={2} />
-          <OutputDataList outputData={this.outputProject.getMasterConstants()} dataNames={masterConstantsAccessor.getNames()} title="定数データJSON出力設定" outputTargetFlex={1} />
+          <OutputDataList outputData={outputProject.getMasterData()} dataNames={masterDataAccessor.getNames()} title="マスターデータJSON出力設定" outputTargetFlex={2} />
+          <OutputDataList outputData={outputProject.getMasterList()} dataNames={masterListAccessor.getNames()} title="マスターリストJSON出力設定" outputTargetFlex={2} />
+          <OutputDataList outputData={outputProject.getMasterConstants()} dataNames={masterConstantsAccessor.getNames()} title="定数データJSON出力設定" outputTargetFlex={1} />
         </fieldset>
-        <OutputSourceCodeStandard outputProjectStandard={this.outputProject.getEntity()} mode={Mode.Entity} currentMode={this.mode} ref={this.entityOutputSourceCode} />
-        <OutputSourceCodeStandard outputProjectStandard={this.outputProject.getSchema()} mode={Mode.Schema} currentMode={this.mode} ref={this.schemaOutputSourceCode} />
-        <OutputSourceCodeStandard
-          outputProjectStandard={this.outputProject.getEnumeration()}
-          mode={Mode.Enumeration}
-          currentMode={this.mode}
-          ref={this.enumerationOutputSourceCode}
-        />
-        <OutputSourceCodeStandard outputProjectStandard={this.outputProject.getConstant()} mode={Mode.Constant} currentMode={this.mode} ref={this.constantOutputSourceCode} />
-        {this.outputProject.getOthers().map((item, index) => (
+        <OutputSourceCodeStandard outputProjectStandard={outputProject.getEntity()} mode={Mode.Entity} currentMode={this.mode} ref={this.entityOutputSourceCode} />
+        <OutputSourceCodeStandard outputProjectStandard={outputProject.getSchema()} mode={Mode.Schema} currentMode={this.mode} ref={this.schemaOutputSourceCode} />
+        <OutputSourceCodeStandard outputProjectStandard={outputProject.getEnumeration()} mode={Mode.Enumeration} currentMode={this.mode} ref={this.enumerationOutputSourceCode} />
+        <OutputSourceCodeStandard outputProjectStandard={outputProject.getConstant()} mode={Mode.Constant} currentMode={this.mode} ref={this.constantOutputSourceCode} />
+        {outputProject.getOthers().map((item, index) => (
           <OutputSourceCodeOther
             outputProjectOther={item}
             mode={`${index}`}
@@ -125,25 +84,6 @@ export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
             ref={this.otherOutputSourceCodeList[index]}
           />
         ))}
-
-        {/** 保存 / 削除ボタン */}
-        <div class="mx-1 mt-4 flex gap-2">
-          <div class="flex-auto" />
-          <Button type="submit" variant="primary" size="sm">
-            <div class="flex items-center justify-center gap-1">
-              <span class="icon-[ic--baseline-save] text-lg"></span>
-              保存
-            </div>
-          </Button>
-          {targetOutput && (
-            <Button type="button" variant="danger" size="sm" onclick={() => this.confirmDelete()}>
-              <div class="flex items-center justify-center gap-1">
-                <span class="icon-[ic--baseline-delete] text-lg"></span>
-                削除
-              </div>
-            </Button>
-          )}
-        </div>
       </>
     )
   }
@@ -161,53 +101,16 @@ export class OutputForm extends MJCustomElement<Props>()(HTMLFormElement) {
   }
 
   private addOutputSourceCodeOther() {
-    const newIndex = this.outputProject.addOther()
+    const { outputProject } = this.props
+    const newIndex = outputProject.addOther()
     this.mode = `${newIndex}`
     this.render()
   }
 
   private removeOutputSourceCodeOther(index: number) {
-    this.outputProject.removeOther(index)
+    const { outputProject } = this.props
+    outputProject.removeOther(index)
     this.mode = Mode.MasterData
     this.render()
-  }
-
-  private async register(event: SubmitEvent) {
-    event.preventDefault()
-    const { targetOutput } = this.props
-    try {
-      if (targetOutput) {
-        await preferences.updateOutput(this.outputProject.toRaw())
-        this.render()
-      } else {
-        await preferences.addOutput(this.outputProject.toRaw())
-        MJRouter.instance.push(`/outputs/${this.outputProject.getName()}`)
-      }
-      ToastMessage.instance.open('success', '保存しました。')
-    } catch (e) {
-      if (e instanceof Error) {
-        ToastMessage.instance.open('danger', e.message)
-      }
-    }
-  }
-
-  private confirmDelete() {
-    const { targetOutput } = this.props
-    if (targetOutput) {
-      const { name } = targetOutput
-      ConfirmModal.instance?.open(`「${name}」を削除します。よろしいですか?`, {
-        headerTitle: '削除確認',
-        positive: {
-          label: '削除',
-          variant: 'danger',
-          callback: async () => {
-            await preferences.deleteOutput(name)
-            MJRouter.instance.push('/outputs')
-            ToastMessage.instance.open('success', `「${name}」を削除しました。`)
-          },
-        },
-        negative: { label: 'キャンセル', callback: () => {} },
-      })
-    }
   }
 }

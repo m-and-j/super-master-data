@@ -1,11 +1,15 @@
 import { masterConstantsAccessor } from '@/systems/accessors/master-constants-accessor'
 import { masterDataAccessor } from '@/systems/accessors/master-data-accessor'
 import { masterListAccessor } from '@/systems/accessors/master-list-accessor'
+import { cacheStore } from '@/systems/cache-store'
 import { OutputKind } from '@/systems/defines'
+import { preferences } from '@/systems/preferences'
 import { OutputProjectOtherRaw, OutputProjectRaw, OutputProjectStandardRaw } from '@/systems/types'
 import { deepCopy } from '@/utilities/helper'
+import { path } from '@tauri-apps/api'
 
 export class OutputProject {
+  private uuid: string
   private name = ''
   private description = ''
   private codeExtension = ''
@@ -18,9 +22,10 @@ export class OutputProject {
   private constant: OutputProjectStandardRaw = { path: '', fileNameTemplate: '{{filename}}', sourceCodeTemplate: '' }
   private others: OutputProjectOtherRaw[] = []
 
-  setRaw(raw?: OutputProjectRaw) {
+  constructor(raw?: OutputProjectRaw) {
     if (raw) {
       const copy = deepCopy(raw)
+      this.uuid = copy.uuid || crypto.randomUUID()
       this.name = copy.name
       this.description = copy.description
       this.codeExtension = copy.codeExtension
@@ -32,6 +37,8 @@ export class OutputProject {
       this.enumeration = copy.enumeration
       this.constant = copy.constant
       this.others = copy.others
+    } else {
+      this.uuid = crypto.randomUUID()
     }
   }
 
@@ -79,8 +86,57 @@ export class OutputProject {
     return this.others
   }
 
+  getOther(index: number) {
+    return this.others[index]
+  }
+
+  tryGetBasePath() {
+    return cacheStore.getOutputFolderPath(preferences.getProjectInfo().uuid, this.uuid).getValue() ?? preferences.getFolderPath()
+  }
+
+  saveBasePath(newBasePath: string) {
+    cacheStore.getOutputFolderPath(preferences.getProjectInfo().uuid, this.uuid).setValue(newBasePath)
+  }
+
+  clearBasePath() {
+    cacheStore.getOutputFolderPath(preferences.getProjectInfo().uuid, this.uuid).remove()
+  }
+
+  async getMasterDataPath() {
+    return await path.join(this.getBasePath(), this.masterData.getPath())
+  }
+
+  async getMasterListPath() {
+    return await path.join(this.getBasePath(), this.masterList.getPath())
+  }
+
+  async getMasterConstantsPath() {
+    return await path.join(this.getBasePath(), this.masterConstants.getPath())
+  }
+
+  async getEntityPath() {
+    return await path.join(this.getBasePath(), this.entity.path)
+  }
+
+  async getSchemaPath() {
+    return await path.join(this.getBasePath(), this.schema.path)
+  }
+
+  async getEnumerationPath() {
+    return await path.join(this.getBasePath(), this.enumeration.path)
+  }
+
+  async getConstantPath() {
+    return await path.join(this.getBasePath(), this.constant.path)
+  }
+
+  async getOtherPath(index: number) {
+    return await path.join(this.getBasePath(), this.others[index].path)
+  }
+
   toRaw(): OutputProjectRaw {
     return {
+      uuid: this.uuid,
       name: this.name,
       description: this.description,
       codeExtension: this.codeExtension,
@@ -114,6 +170,15 @@ export class OutputProject {
 
   removeOther(index: number) {
     this.others.splice(index, 1)
+  }
+
+  private getBasePath() {
+    const basePath = this.tryGetBasePath()
+    if (basePath) {
+      return basePath
+    } else {
+      throw new Error('プロジェクトフォルダが設定されていません')
+    }
   }
 }
 

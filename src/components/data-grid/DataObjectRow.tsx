@@ -1,7 +1,7 @@
 import { DataObjectCell } from '@/components/data-grid/DataObjectCell'
 import { Button } from '@/components/inputs/Button'
+import { enumerationAccessor } from '@/systems/accessors/enumeration-accessor'
 import { DataClassification, DataClassificationLabelValues, DataKindExtensionLabelValues, DataKindForIdValues, DataKindForLabelValues, DataKindValues } from '@/systems/defines'
-import { preferences } from '@/systems/preferences'
 import { DataStructColumnRaw } from '@/systems/types'
 import { MJComponent } from '@mj/jsx'
 
@@ -32,8 +32,7 @@ export class DataObjectRow extends MJComponent<Props> {
         break
       }
       case DataClassification.EnumerationID: {
-        const projectInfo = preferences.getProjectInfo()
-        const { name, description } = projectInfo.enumerations.find(({ name }) => typeName === name) ?? {}
+        const { name, description } = enumerationAccessor.findName(typeName) ?? {}
         typeNameLabel = `${name}【${description}】`
         break
       }
@@ -48,8 +47,7 @@ export class DataObjectRow extends MJComponent<Props> {
         break
       }
       case DataClassification.Enumeration: {
-        const projectInfo = preferences.getProjectInfo()
-        const { name, description } = projectInfo.enumerations.find(({ name }) => typeName === name) ?? {}
+        const { name, description } = enumerationAccessor.findName(typeName) ?? {}
         typeNameLabel = `${name}【${description}】`
         break
       }

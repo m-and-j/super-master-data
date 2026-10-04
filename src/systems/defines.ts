@@ -154,6 +154,9 @@ export const ProjectFolder = {
   Tables: 'tables',
   Constants: 'constants',
   Lists: 'lists',
+  Enumerations: 'enumerations',
+  Schemas: 'schemas',
+  Outputs: 'outputs',
 } as const
 
 /**

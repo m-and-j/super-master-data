@@ -1,22 +1,22 @@
+import { enumerationAccessor } from '@/systems/accessors/enumeration-accessor'
 import { OutputBuilderBase } from '@/systems/output-distributors/output-builder-base'
-import { preferences } from '@/systems/preferences'
-import { OutputProjectRaw, OutputProjectStandardRaw } from '@/systems/types'
-import { path } from '@tauri-apps/api'
+import { OutputProject } from '@/systems/output-distributors/output-project'
+import { OutputProjectStandardRaw } from '@/systems/types'
 
 /**
  * 列挙型出力クラス
  */
 export class OutputBuilderEnumeration extends OutputBuilderBase {
-  static async create(outputProject: OutputProjectRaw) {
-    const folderPath = this.getFolderPath()
-    const outputPath = await path.join(folderPath, outputProject.enumeration.path)
-    return new OutputBuilderEnumeration(outputPath, outputProject.codeExtension, outputProject.enumeration)
+  static async create(outputProject: OutputProject) {
+    const outputPath = await outputProject.getEnumerationPath()
+    const raw = outputProject.toRaw()
+    return new OutputBuilderEnumeration(outputPath, raw.codeExtension, raw.enumeration)
   }
 
   constructor(
     outputPath: string,
     codeExtension: string,
-    private enumeration: OutputProjectStandardRaw,
+    private enumerationOutput: OutputProjectStandardRaw,
   ) {
     super(outputPath, codeExtension)
   }
@@ -26,11 +26,10 @@ export class OutputBuilderEnumeration extends OutputBuilderBase {
    */
   async write() {
     await this.removePreviousFiles()
-    const projectInfo = preferences.getProjectInfo()
-    for (const item of projectInfo.enumerations) {
-      const { fileNameTemplate } = this.enumeration
-      const { name } = item
-      await this.writeSourceCode(this.enumeration.sourceCodeTemplate, item, { fileNameTemplate, name })
+    for (const enumeration of enumerationAccessor.getAll()) {
+      const { fileNameTemplate, sourceCodeTemplate } = this.enumerationOutput
+      const { name } = enumeration
+      await this.writeSourceCode(sourceCodeTemplate, enumeration, { fileNameTemplate, name })
     }
   }
 }

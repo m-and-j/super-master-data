@@ -5,23 +5,21 @@ import { InputText } from '@/components/inputs/InputText'
 import { ConfirmModal } from '@/components/modals/ConfirmModal'
 import { ToastMessage } from '@/components/notifications/ToastMessage'
 import { SideMenuSchema } from '@/components/wayFinders/SideMenuSchema'
-import { preferences } from '@/systems/preferences'
+import { schemaAccessor } from '@/systems/accessors/schema-accessor'
 import { DataStructRaw } from '@/systems/types'
 import { deepCopy } from '@/utilities/helper'
 import { ref, Reference } from '@mj/jsx'
 import { MJPage, MJRouter } from '@mj/router'
 
 export class Schemas extends MJPage {
-  private originalSchema?: DataStructRaw
   private editableSchema: DataStructRaw = { name: '', description: '', columns: [] }
   private dataObjectTable: Reference<DataObjectTable> = ref()
 
   createNode() {
     const { name } = this.params
-    const projectInfo = preferences.getProjectInfo()
-    this.originalSchema = projectInfo.schemas.find((s) => s.name === name)
-    if (this.originalSchema) {
-      this.editableSchema = deepCopy(this.originalSchema)
+    const originalSchema = schemaAccessor.get(name)
+    if (originalSchema) {
+      this.editableSchema = deepCopy(originalSchema)
     }
     return (
       <div class="grid h-[calc(100vh-52px)] grid-cols-[300px_1fr] grid-rows-[90px_1fr] text-sm">
@@ -58,14 +56,14 @@ export class Schemas extends MJPage {
                 <span class="icon-[ic--baseline-arrow-downward] text-lg"></span>
               </div>
             </Button>
-            <Button type="button" variant="primary" size="sm" onclick={() => this.register()}>
+            <Button type="button" variant="primary" size="sm" onclick={() => this.register(originalSchema)}>
               <div class="flex items-center justify-center gap-1">
                 <span class="icon-[ic--baseline-save] text-lg"></span>
                 保存
               </div>
             </Button>
-            {this.originalSchema && (
-              <Button type="button" variant="danger" size="sm" onclick={() => this.confirmDelete()}>
+            {originalSchema && (
+              <Button type="button" variant="danger" size="sm" onclick={() => this.confirmDelete(originalSchema)}>
                 <div class="flex items-center justify-center gap-1">
                   <span class="icon-[ic--baseline-delete] text-lg"></span>
                   削除
@@ -88,13 +86,9 @@ export class Schemas extends MJPage {
     this.editableSchema.description = (e.target as HTMLInputElement).value
   }
 
-  private async register() {
+  private async register(originalSchema?: DataStructRaw) {
     try {
-      if (this.originalSchema) {
-        await preferences.updateSchema(this.originalSchema.name, this.editableSchema)
-      } else {
-        await preferences.addSchema(this.editableSchema)
-      }
+      await schemaAccessor.write(this.editableSchema, originalSchema?.name)
       MJRouter.instance.push(`/schemas/${this.editableSchema.name}`)
       ToastMessage.instance.open('success', '保存しました。')
     } catch (e) {
@@ -104,18 +98,17 @@ export class Schemas extends MJPage {
     }
   }
 
-  private confirmDelete() {
-    if (this.originalSchema) {
-      const { name } = this.originalSchema
-      ConfirmModal.instance?.open(`「${name}」を削除します。よろしいですか?`, {
+  private confirmDelete(originalSchema?: DataStructRaw) {
+    if (originalSchema) {
+      ConfirmModal.instance?.open(`「${originalSchema.name}」を削除します。よろしいですか?`, {
         headerTitle: '削除確認',
         positive: {
           label: '削除',
           variant: 'danger',
           callback: async () => {
-            await preferences.deleteSchema(name)
+            await schemaAccessor.remove(originalSchema)
             MJRouter.instance.push('/schemas')
-            ToastMessage.instance.open('success', `「${name}」を削除しました。`)
+            ToastMessage.instance.open('success', `「${originalSchema.name}」を削除しました。`)
           },
         },
         negative: { label: 'キャンセル', callback: () => {} },

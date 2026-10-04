@@ -3,24 +3,17 @@ import { masterDataAccessor } from '@/systems/accessors/master-data-accessor'
 import { masterListAccessor } from '@/systems/accessors/master-list-accessor'
 import { DataClassification, OutputKind } from '@/systems/defines'
 import { OutputBuilderBase } from '@/systems/output-distributors/output-builder-base'
-import { OutputProjectOtherRaw, OutputProjectRaw } from '@/systems/types'
-import { path } from '@tauri-apps/api'
+import { OutputProject } from '@/systems/output-distributors/output-project'
+import { OutputProjectOtherRaw } from '@/systems/types'
 
 /**
  * その他出力クラス
  */
 export class OutputBuilderOther extends OutputBuilderBase {
-  static async create(outputProject: OutputProjectRaw, outputProjectOther: OutputProjectOtherRaw) {
-    const folderPath = this.getFolderPath()
-    const outputPath = await path.join(folderPath, outputProjectOther.path)
-    return new OutputBuilderOther(
-      outputPath,
-      outputProject.codeExtension,
-      outputProjectOther,
-      outputProject.masterData.targets,
-      outputProject.masterList.targets,
-      outputProject.masterConstants.targets,
-    )
+  static async create(outputProject: OutputProject, otherIndex: number) {
+    const outputPath = await outputProject.getOtherPath(otherIndex)
+    const raw = outputProject.toRaw()
+    return new OutputBuilderOther(outputPath, raw.codeExtension, outputProject.getOther(otherIndex), raw.masterData.targets, raw.masterList.targets, raw.masterConstants.targets)
   }
 
   constructor(
@@ -40,34 +33,22 @@ export class OutputBuilderOther extends OutputBuilderBase {
   async write() {
     switch (this.other.kind) {
       case OutputKind.Single: {
-        const tableNames = masterDataAccessor.getNames()
         const tables = []
-        for (const targetName of this.masterDataTargets) {
-          if (tableNames.includes(targetName)) {
-            const table = await masterDataAccessor.read(targetName)
-            if (table) {
-              tables.push({ name: table.name, description: table.description })
-            }
+        for (const table of masterDataAccessor.getAll()) {
+          if (this.masterDataTargets.includes(table.name)) {
+            tables.push({ name: table.name, description: table.description })
           }
         }
-        const listNames = masterListAccessor.getNames()
         const lists = []
-        for (const targetName of this.masterListTargets) {
-          if (listNames.includes(targetName)) {
-            const list = await masterListAccessor.read(targetName)
-            if (list) {
-              lists.push({ name: list.name, description: list.description })
-            }
+        for (const list of masterListAccessor.getAll()) {
+          if (this.masterListTargets.includes(list.name)) {
+            lists.push({ name: list.name, description: list.description })
           }
         }
-        const constantsGroupNames = masterConstantsAccessor.getNames()
         const constants = []
-        for (const targetName of this.constantsDataTargets) {
-          if (constantsGroupNames.includes(targetName)) {
-            const constantsGroup = await masterConstantsAccessor.read(targetName)
-            if (constantsGroup) {
-              constants.push({ name: constantsGroup.name, description: constantsGroup.description })
-            }
+        for (const constantsGroup of masterConstantsAccessor.getAll()) {
+          if (this.constantsDataTargets.includes(constantsGroup.name)) {
+            constants.push({ name: constantsGroup.name, description: constantsGroup.description })
           }
         }
         await this.writeSourceCode(this.other.sourceCodeTemplate, { tables, lists, constants })
@@ -75,33 +56,27 @@ export class OutputBuilderOther extends OutputBuilderBase {
       }
       case OutputKind.MultipleTables: {
         await this.removePreviousFiles()
-        const names = masterDataAccessor.getNames()
-        for (const targetName of this.masterDataTargets) {
-          if (names.includes(targetName)) {
-            const table = await masterDataAccessor.read(targetName)
-            if (table) {
-              const { fileNameTemplate = '' } = this.other
-              const { name, description, columns } = table
-              const idColumn = columns.find((c) => c.type.classification === DataClassification.ID || c.type.classification === DataClassification.EnumerationID)
-              const idName = idColumn?.name
-              const idType = this.convertTypeName(idColumn?.type)
-              await this.writeSourceCode(this.other.sourceCodeTemplate, { name, description, idName, idType }, { fileNameTemplate, name })
-            }
+        for (const table of masterDataAccessor.getAll()) {
+          if (this.masterDataTargets.includes(table.name)) {
+            const { fileNameTemplate = '' } = this.other
+            const { name, description, columns } = table
+            const idColumn = columns.find((c) => c.type.classification === DataClassification.ID || c.type.classification === DataClassification.EnumerationID)
+            const idName = idColumn?.name
+            const idType = this.convertTypeName(idColumn?.type)
+            const idClassification = idColumn?.type.classification
+            const idTypeObjectFlag = this.isObject(idColumn?.type)
+            await this.writeSourceCode(this.other.sourceCodeTemplate, { name, description, idName, idType, idClassification, idTypeObjectFlag }, { fileNameTemplate, name })
           }
         }
         break
       }
       case OutputKind.MultipleLists: {
         await this.removePreviousFiles()
-        const names = masterListAccessor.getNames()
-        for (const targetName of this.masterListTargets) {
-          if (names.includes(targetName)) {
-            const list = await masterListAccessor.read(targetName)
-            if (list) {
-              const { fileNameTemplate = '' } = this.other
-              const { name, description } = list
-              await this.writeSourceCode(this.other.sourceCodeTemplate, { name, description }, { fileNameTemplate, name })
-            }
+        for (const list of masterListAccessor.getAll()) {
+          if (this.masterListTargets.includes(list.name)) {
+            const { fileNameTemplate = '' } = this.other
+            const { name, description } = list
+            await this.writeSourceCode(this.other.sourceCodeTemplate, { name, description }, { fileNameTemplate, name })
           }
         }
         break

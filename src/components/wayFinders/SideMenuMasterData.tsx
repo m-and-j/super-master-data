@@ -21,7 +21,7 @@ export class SideMenuMasterData extends MJComponent<Props> {
   createNode({ currentName, className }: Props) {
     return (
       <div class={['scrollbar flex flex-col overflow-y-scroll border-r-3 border-zinc-500 p-2', className]} ref={this.sideMenuScroller.scrollRef}>
-        {masterDataAccessor.getNames().map((name) => (
+        {masterDataAccessor.map(({ name }) => (
           <MJLink to={`/master-data/${name}`} className={['px-1 text-blue-500', name === currentName ? 'bg-zinc-700' : '']}>
             {name}
           </MJLink>

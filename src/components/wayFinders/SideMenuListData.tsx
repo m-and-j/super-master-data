@@ -21,7 +21,7 @@ export class SideMenuListData extends MJComponent<Props> {
   createNode({ currentName, className }: Props) {
     return (
       <div class={['scrollbar flex flex-col overflow-y-scroll border-r-3 border-zinc-500 p-2', className]} ref={this.sideMenuScroller.scrollRef}>
-        {masterListAccessor.getNames().map((name) => (
+        {masterListAccessor.map(({ name }) => (
           <MJLink to={`/list-data/${name}`} className={['px-1 text-blue-500', name === currentName ? 'bg-zinc-700' : '']}>
             {name}
           </MJLink>

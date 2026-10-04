@@ -1,5 +1,5 @@
+import { enumerationAccessor } from '@/systems/accessors/enumeration-accessor'
 import { DataClassification, DataKind, DataKindExtension } from '@/systems/defines'
-import { preferences } from '@/systems/preferences'
 import { DataStructColumnRaw } from '@/systems/types'
 
 /**
@@ -26,7 +26,7 @@ export function defaultValueFor(column: DataStructColumnRaw): any {
         }
       }
       case DataClassification.Enumeration: {
-        const enumeration = preferences.getProjectInfo().enumerations.find((e) => e.name === column.type.typeName)
+        const enumeration = enumerationAccessor.findName(column.type.typeName)
         return enumeration?.items[0]?.value ?? 0
       }
       case DataClassification.Schema: {

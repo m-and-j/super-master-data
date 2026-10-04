@@ -28,7 +28,7 @@ export class SideMenuConstant extends MJComponent<Props> {
         </div>
         <hr class="border-zinc-500" />
         <div class="scrollbar flex h-[calc(100vh-94px)] flex-col overflow-y-scroll p-2" ref={this.sideMenuScroller.scrollRef}>
-          {masterConstantsAccessor.getNames().map((name) => (
+          {masterConstantsAccessor.map(({ name }) => (
             <MJLink to={`/constants/${name}`} className={['px-1 text-blue-500', name === currentName ? 'bg-zinc-700' : '']}>
               {name}
             </MJLink>

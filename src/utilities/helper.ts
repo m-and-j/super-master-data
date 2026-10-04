@@ -64,6 +64,17 @@ export function deepCopy<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj)) as T
 }
 
+export function promiseState<T>(promise?: Promise<T>) {
+  if (promise) {
+    const state = Symbol()
+    return Promise.race([promise, Promise.resolve(state)])
+      .then((value) => (value === state ? 'pending' : 'fulfilled'))
+      .catch(() => 'rejected')
+  } else {
+    return undefined
+  }
+}
+
 /**
  * JSON文字列をオブジェクトに変換する
  * @param value
@@ -93,7 +104,7 @@ export async function readJsonFile<T>(path: string): Promise<T> {
 }
 
 /**
- * JSONファイルを読み込んでオブジェクトを出力する
+ * オブジェクトをJSONファイルとして書き出す
  * @param value
  * @returns
  */
